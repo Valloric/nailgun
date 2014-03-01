@@ -62,8 +62,8 @@ impl Expression for LiteralExpression {
       indices_and_chars.iter().map( | &( _, ch ) | ch ).collect();
 
     if self.text == chars {
-      Some( ParseResult { parse_state: Increment( parse_state.clone(),
-                                                  self.text.len() ),
+      Some( ParseResult { parse_state: MoveForward( parse_state.clone(),
+                                                    self.text.len() ),
                           node: Some( Node {
                             name: LITERAL_EXPRESSION,
                             start: indices_and_chars.head().unwrap().val0(),
@@ -138,7 +138,7 @@ impl CharClassExpression {
           match chars.get( index ) {
             Some( character ) => char_class.single_chars.push( *character ),
             _ => break
-          }
+          };
           index += 1;
         }
       };
@@ -174,12 +174,13 @@ impl Expression for CharClassExpression {
 }
 
 
-fn Increment<B, T: Iterator<B> >( mut iter: T, steps: uint ) -> T {
+fn MoveForward<B, T: Iterator<B> >( mut iter: T, steps: uint ) -> T {
   for i in range( 0, steps ) {
     iter.next();
   }
   iter
 }
+
 
 pub fn parseString( input: &str ) -> Node {
   Node { name: LITERAL_EXPRESSION,
