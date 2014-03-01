@@ -1,5 +1,6 @@
 use super::{ ParseState, LiteralExpression, LITERAL_EXPRESSION, DotExpression,
-DOT_EXPRESSION, Text, ParseResult, Node, Expression};
+DOT_EXPRESSION, Text, ParseResult, Node, Expression, CHAR_CLASS_EXPRESSION,
+CharClassExpression };
 
 
 fn ToParseState<'a>( text: &'a str ) -> ParseState<'a> {
@@ -88,3 +89,41 @@ fn DotExpression_Match_InputSeveralChars() {
 fn DotExpression_NoMatch() {
   assert!( DotExpression.apply( &ToParseState( "" ) ).is_none() )
 }
+
+
+fn charClassMatch( char_class: CharClassExpression, input: &str ) {
+  match char_class.apply( &ToParseState( input ) ) {
+    Some( ParseResult{ node: Some( ref node ),
+                       parse_state: mut parse_state } ) => {
+      assert_eq!( *node,
+                  Node { name: CHAR_CLASS_EXPRESSION,
+                         start: 0,
+                         end: 1,
+                         contents: Text( input.to_owned() ) } );
+      assert_eq!( parse_state.next(), None );
+    }
+    _ => fail!( "No match!" )
+  };
+}
+
+
+#[test]
+fn CharClassExpression_Match() {
+  charClassMatch( CharClassExpression::new( "a" ), "a" );
+  charClassMatch( CharClassExpression::new( "abcdef" ), "e" );
+  charClassMatch( CharClassExpression::new( "a-z" ), "a" );
+  charClassMatch( CharClassExpression::new( "a-z" ), "c" );
+  charClassMatch( CharClassExpression::new( "a-z" ), "z" );
+  charClassMatch( CharClassExpression::new( "0-9" ), "2" );
+  charClassMatch( CharClassExpression::new( "α-ω" ), "η" );
+  charClassMatch( CharClassExpression::new( "-" ), "-" );
+  charClassMatch( CharClassExpression::new( "a-" ), "-" );
+  charClassMatch( CharClassExpression::new( "-a" ), "-" );
+  charClassMatch( CharClassExpression::new( "a-zA-Z-" ), "-" );
+  charClassMatch( CharClassExpression::new( "aa-zA-Z-a" ), "-" );
+  charClassMatch( CharClassExpression::new( "a-zA-Z-" ), "z" );
+  charClassMatch( CharClassExpression::new( "aa-zA-Z-0" ), "0" );
+  charClassMatch( CharClassExpression::new( "a-cdefgh-k" ), "e" );
+}
+
+
