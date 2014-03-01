@@ -104,49 +104,46 @@ impl Expression for NotExpression {
 
 struct CharClassExpression {
   // All the single chars in the char class
-  single_chars: ~[char],
+  single_chars: ~[ char ],
 
   // Sequence of [from, to] (inclusive bounds) char ranges
-  ranges: ~[(char, char)]
+  ranges: ~[ ( char, char ) ]
 }
 
 
 impl CharClassExpression {
   // Takes the inner content of square brackets, so for [a-z], send "a-z".
   fn new( contents: &str ) -> CharClassExpression {
-    let mut char_class = CharClassExpression { single_chars: ~[],
-                                               ranges: ~[] };
-    let mut in_range = false;
-    let mut prev_char : Option< char > = None;
-    for character in contents.chars() {
-      if in_range {
-        char_class.ranges.push( ( prev_char.unwrap(), character ) );
-        in_range = false;
-        prev_char = None;
-      } else {
-        if character == '-' {
-          if prev_char.is_some() {
-            in_range = true;
-          } else {
-            char_class.single_chars.push( '-' );
-          }
-        } else {
-          if prev_char.is_some() {
-            char_class.single_chars.push( prev_char.unwrap() );
-          }
-          prev_char = Some( character );
-        }
+    fn rangeAtIndex( index: uint, chars: &[char] ) -> Option<( char, char )> {
+      match ( chars.get( index ),
+              chars.get( index + 1 ),
+              chars.get( index + 2 ) ) {
+        ( Some( char1 ), Some( char2 ), Some( char3 ) ) if *char2 == '-' =>
+            Some( ( *char1, *char3 ) ),
+        _ => None
       }
     }
 
-    if prev_char.is_some() {
-      char_class.single_chars.push( prev_char.unwrap() )
+    let chars: ~[ char ] = contents.chars().collect();
+    let mut char_class = CharClassExpression { single_chars: ~[],
+                                               ranges: ~[] };
+    let mut index = 0;
+    loop {
+      match rangeAtIndex( index, chars ) {
+        Some( range ) => {
+          char_class.ranges.push( range );
+          index += 3;
+        },
+        _ => {
+          match chars.get( index ) {
+            Some( character ) => char_class.single_chars.push( *character ),
+            _ => break
+          }
+          index += 1;
+        }
+      };
     }
 
-    // Handles char classes like [a-]
-    if in_range {
-      char_class.single_chars.push( '-' );
-    }
     char_class
   }
 
