@@ -91,7 +91,7 @@ fn DotExpression_NoMatch() {
 }
 
 
-fn charClassMatch( char_class: CharClassExpression, input: &str ) {
+fn charClassMatch( char_class: CharClassExpression, input: &str ) -> bool {
   match char_class.apply( &ToParseState( input ) ) {
     Some( ParseResult{ node: Some( ref node ),
                        parse_state: mut parse_state } ) => {
@@ -101,29 +101,41 @@ fn charClassMatch( char_class: CharClassExpression, input: &str ) {
                          end: 1,
                          contents: Text( input.to_owned() ) } );
       assert_eq!( parse_state.next(), None );
+      true
     }
-    _ => fail!( "No match!" )
-  };
+    _ => false
+  }
 }
 
 
 #[test]
 fn CharClassExpression_Match() {
-  charClassMatch( CharClassExpression::new( "a" ), "a" );
-  charClassMatch( CharClassExpression::new( "abcdef" ), "e" );
-  charClassMatch( CharClassExpression::new( "a-z" ), "a" );
-  charClassMatch( CharClassExpression::new( "a-z" ), "c" );
-  charClassMatch( CharClassExpression::new( "a-z" ), "z" );
-  charClassMatch( CharClassExpression::new( "0-9" ), "2" );
-  charClassMatch( CharClassExpression::new( "α-ω" ), "η" );
-  charClassMatch( CharClassExpression::new( "-" ), "-" );
-  charClassMatch( CharClassExpression::new( "a-" ), "-" );
-  charClassMatch( CharClassExpression::new( "-a" ), "-" );
-  charClassMatch( CharClassExpression::new( "a-zA-Z-" ), "-" );
-  charClassMatch( CharClassExpression::new( "aa-zA-Z-a" ), "-" );
-  charClassMatch( CharClassExpression::new( "a-zA-Z-" ), "z" );
-  charClassMatch( CharClassExpression::new( "aa-zA-Z-0" ), "0" );
-  charClassMatch( CharClassExpression::new( "a-cdefgh-k" ), "e" );
+  assert!( charClassMatch( CharClassExpression::new( "a" ), "a" ) );
+  assert!( charClassMatch( CharClassExpression::new( "abcdef" ), "e" ) );
+  assert!( charClassMatch( CharClassExpression::new( "a-z" ), "a" ) );
+  assert!( charClassMatch( CharClassExpression::new( "a-z" ), "c" ) );
+  assert!( charClassMatch( CharClassExpression::new( "a-z" ), "z" ) );
+  assert!( charClassMatch( CharClassExpression::new( "0-9" ), "2" ) );
+  assert!( charClassMatch( CharClassExpression::new( "α-ω" ), "η" ) );
+  assert!( charClassMatch( CharClassExpression::new( "-" ), "-" ) );
+  assert!( charClassMatch( CharClassExpression::new( "a-" ), "-" ) );
+  assert!( charClassMatch( CharClassExpression::new( "-a" ), "-" ) );
+  assert!( charClassMatch( CharClassExpression::new( "a-zA-Z-" ), "-" ) );
+  assert!( charClassMatch( CharClassExpression::new( "aa-zA-Z-a" ), "-" ) );
+  assert!( charClassMatch( CharClassExpression::new( "a-zA-Z-" ), "z" ) );
+  assert!( charClassMatch( CharClassExpression::new( "aa-zA-Z-0" ), "0" ) );
+  assert!( charClassMatch( CharClassExpression::new( "a-cdefgh-k" ), "e" ) );
+  assert!( charClassMatch( CharClassExpression::new( "---" ), "-" ) );
+  assert!( charClassMatch( CharClassExpression::new( "a-a" ), "a" ) );
 }
 
 
+#[test]
+fn CharClassExpression_NoMatch() {
+  assert!( !charClassMatch( CharClassExpression::new( "a" ), "b" ) );
+  assert!( !charClassMatch( CharClassExpression::new( "-" ), "a" ) );
+  assert!( !charClassMatch( CharClassExpression::new( "z-a" ), "a" ) );
+  assert!( !charClassMatch( CharClassExpression::new( "z-a" ), "b" ) );
+  assert!( !charClassMatch( CharClassExpression::new( "a-z" ), "0" ) );
+  assert!( !charClassMatch( CharClassExpression::new( "a-z" ), "A" ) );
+}
