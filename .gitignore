@@ -28,6 +28,6 @@ pip-log.txt
 
 # custom
 play
-parser
 main
+test
 
