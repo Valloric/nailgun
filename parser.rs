@@ -197,9 +197,8 @@ impl Expression for NotExpression {
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
       Some( _ ) => None,
-      _ => Some(
-        ParseResult { parse_state: *parse_state,
-                      node: Node::predicate( NOT_EXPRESSION ) } )
+      _ => Some( ParseResult { parse_state: *parse_state,
+                               node: Node::predicate( NOT_EXPRESSION ) } )
     }
   }
 }
