@@ -47,12 +47,12 @@ mod tests {
     let expr = LiteralExpression::new( "foo" );
     match expr.apply( &ToParseState( "foobar" ) ) {
       Some( ParseResult{ nodes: ref nodes,
-      parse_state: mut parse_state } ) => {
+                         parse_state: mut parse_state } ) => {
         assert_eq!( *nodes.get( 0 ).unwrap(),
-        Node { name: LITERAL_EXPRESSION,
-        start: 0,
-        end: 3,
-        contents: Text( ~"foo" ) } );
+                    Node { name: LITERAL_EXPRESSION,
+                           start: 0,
+                           end: 3,
+                           contents: Text( ~"foo" ) } );
         assert_eq!( parse_state.next(), Some( ( 3, 'b' ) ) );
       }
       _ => fail!( "No match!" )
@@ -63,7 +63,7 @@ mod tests {
   #[test]
   fn LiteralExpression_NoMatch() {
     let expr = LiteralExpression::new( "zoo" );
-    assert!( expr.apply( &ToParseState( "foobar" ) ).is_none() )
-      assert!( expr.apply( &ToParseState( "" ) ).is_none() )
+    assert!( expr.apply( &ToParseState( "foobar" ) ).is_none() );
+    assert!( expr.apply( &ToParseState( "" ) ).is_none() );
   }
 }
