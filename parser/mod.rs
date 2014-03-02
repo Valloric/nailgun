@@ -17,7 +17,7 @@ mod dot;
 mod test_utils;
 
 
-#[deriving(Eq)]
+#[deriving(Show, Eq)]
 enum NodeContents {
   Text( ~str ),
   Children( ~[ ~Node ] ),
@@ -25,14 +25,13 @@ enum NodeContents {
 }
 
 
-#[deriving(Eq)]
+#[deriving(Show, Eq)]
 struct Node {
   name: &'static str,
   start: uint,
   end: uint,
   contents: NodeContents
 }
-
 
 impl Node {
   fn matchedText( &self ) -> ~str {
