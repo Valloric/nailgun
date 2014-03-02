@@ -45,8 +45,20 @@ impl Node {
 type ParseState<'a> = Enumerate< Chars<'a> >;
 
 struct ParseResult<'a> {
-  node: Node,
+  nodes: ~[ Node ],
   parse_state: ParseState<'a>
+}
+
+
+impl<'a> ParseResult<'a> {
+  fn oneNode<'a>( node: Node, parse_state: ParseState<'a> ) -> ParseResult<'a> {
+    ParseResult { nodes: ~[ node ], parse_state: parse_state }
+  }
+
+  fn manyNodes<'a>( nodes: ~[ Node ], parse_state: ParseState<'a> )
+      -> ParseResult<'a> {
+    ParseResult { nodes: nodes, parse_state: parse_state }
+  }
 }
 
 
@@ -76,13 +88,12 @@ impl Expression for LiteralExpression {
       indices_and_chars.iter().map( | &( _, ch ) | ch ).collect();
 
     if self.text == chars {
-      Some( ParseResult { parse_state: MoveForward( parse_state.clone(),
-                                                    self.text.len() ),
-                          node: Node {
-                            name: LITERAL_EXPRESSION,
-                            start: indices_and_chars.head().unwrap().val0(),
-                            end: indices_and_chars.last().unwrap().val0() + 1,
-                            contents: Text( self.text.to_owned() ) } } )
+      Some( ParseResult::oneNode(
+          Node { name: LITERAL_EXPRESSION,
+                 start: indices_and_chars.head().unwrap().val0(),
+                 end: indices_and_chars.last().unwrap().val0() + 1,
+                 contents: Text( self.text.to_owned() ) },
+          MoveForward( parse_state.clone(), self.text.len() ) ) )
     } else {
       None
     }
@@ -96,12 +107,11 @@ impl Expression for DotExpression {
     let mut new_parse_state = parse_state.clone();
     match new_parse_state.next() {
       Some( ( index, character ) ) => Some(
-        ParseResult { parse_state: new_parse_state,
-                      node: Node {
-                        name: DOT_EXPRESSION,
-                        start: index,
-                        end: index + 1,
-                        contents: Text( from_char( character ) ) } } ),
+        ParseResult::oneNode( Node { name: DOT_EXPRESSION,
+                                     start: index,
+                                     end: index + 1,
+                                     contents: Text( from_char( character ) ) },
+                              new_parse_state ) ),
       _ => None
     }
   }
@@ -166,14 +176,13 @@ impl Expression for CharClassExpression {
       Option< ParseResult<'a> > {
     let mut new_parse_state = parse_state.clone();
     match new_parse_state.next() {
-      Some( ( index, ch ) ) if self.matches( ch ) => {
-        Some( ParseResult { parse_state: new_parse_state,
-                            node: Node {
-                               name: CHAR_CLASS_EXPRESSION,
-                               start: index,
-                               end: index + 1,
-                               contents: Text( from_char( ch ) ) } } )
-      }
+      Some( ( index, ch ) ) if self.matches( ch ) =>
+        Some( ParseResult::oneNode(
+            Node { name: CHAR_CLASS_EXPRESSION,
+                   start: index,
+                   end: index + 1,
+                   contents: Text( from_char( ch ) ) },
+            new_parse_state ) ),
       _ => None
     }
   }
@@ -197,8 +206,9 @@ impl Expression for NotExpression {
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
       Some( _ ) => None,
-      _ => Some( ParseResult { parse_state: *parse_state,
-                               node: Node::predicate( NOT_EXPRESSION ) } )
+      _ => Some(
+        ParseResult::oneNode( Node::predicate( NOT_EXPRESSION ),
+                              *parse_state ) )
     }
   }
 }
