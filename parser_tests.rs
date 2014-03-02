@@ -12,7 +12,7 @@ fn ToParseState<'a>( text: &'a str ) -> ParseState<'a> {
 fn LiteralExpression_Match() {
   let expr = LiteralExpression::new( "foo" );
   match expr.apply( &ToParseState( "foobar" ) ) {
-    Some( ParseResult{ node: Some( ref node ),
+    Some( ParseResult{ node: ref node,
                        parse_state: mut parse_state } ) => {
       assert_eq!( *node,
                   Node { name: LITERAL_EXPRESSION,
@@ -37,7 +37,7 @@ fn LiteralExpression_NoMatch() {
 #[test]
 fn DotExpression_Match_InputOneChar() {
   match DotExpression.apply( &ToParseState( "x" ) ) {
-    Some( ParseResult{ node: Some( ref node ),
+    Some( ParseResult{ node: ref node,
                        parse_state: mut parse_state } ) => {
       assert_eq!( *node,
                   Node { name: DOT_EXPRESSION,
@@ -54,7 +54,7 @@ fn DotExpression_Match_InputOneChar() {
 #[test]
 fn DotExpression_Match_InputOneWideChar() {
   match DotExpression.apply( &ToParseState( "葉" ) ) {
-    Some( ParseResult{ node: Some( ref node ),
+    Some( ParseResult{ node: ref node,
                        parse_state: mut parse_state } ) => {
       assert_eq!( *node,
                   Node { name: DOT_EXPRESSION,
@@ -71,7 +71,7 @@ fn DotExpression_Match_InputOneWideChar() {
 #[test]
 fn DotExpression_Match_InputSeveralChars() {
   match DotExpression.apply( &ToParseState( "xb" ) ) {
-    Some( ParseResult{ node: Some( ref node ),
+    Some( ParseResult{ node: ref node,
                        parse_state: mut parse_state } ) => {
       assert_eq!( *node,
                   Node { name: DOT_EXPRESSION,
@@ -93,7 +93,7 @@ fn DotExpression_NoMatch() {
 
 fn charClassMatch( char_class: CharClassExpression, input: &str ) -> bool {
   match char_class.apply( &ToParseState( input ) ) {
-    Some( ParseResult{ node: Some( ref node ),
+    Some( ParseResult{ node: ref node,
                        parse_state: mut parse_state } ) => {
       assert_eq!( *node,
                   Node { name: CHAR_CLASS_EXPRESSION,
@@ -145,7 +145,7 @@ fn CharClassExpression_NoMatch() {
 fn NotExpression_Match_WithLiteral() {
   match NotExpression::new( ~LiteralExpression::new( "foo" ) ).apply(
       &ToParseState( "zoo" ) ) {
-    Some( ParseResult{ node: Some( ref node ),
+    Some( ParseResult{ node: ref node,
                        parse_state: mut parse_state } ) => {
       assert_eq!( *node, Node::predicate( NOT_EXPRESSION ) );
       assert_eq!( parse_state.next(), Some( ( 0, 'z' ) ) );
@@ -162,7 +162,7 @@ fn NotExpression_Match_WithLiteral() {
 fn NotExpression_Match_WithCharClass() {
   match NotExpression::new( ~CharClassExpression::new( "a-z" ) ).apply(
       &ToParseState( "0" ) ) {
-    Some( ParseResult{ node: Some( ref node ),
+    Some( ParseResult{ node: ref node,
                        parse_state: mut parse_state } ) => {
       assert_eq!( *node, Node::predicate( NOT_EXPRESSION ) );
       assert_eq!( parse_state.next(), Some( ( 0, '0' ) ) );

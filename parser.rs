@@ -45,7 +45,7 @@ impl Node {
 type ParseState<'a> = Enumerate< Chars<'a> >;
 
 struct ParseResult<'a> {
-  node: Option< Node >,
+  node: Node,
   parse_state: ParseState<'a>
 }
 
@@ -78,11 +78,11 @@ impl Expression for LiteralExpression {
     if self.text == chars {
       Some( ParseResult { parse_state: MoveForward( parse_state.clone(),
                                                     self.text.len() ),
-                          node: Some( Node {
+                          node: Node {
                             name: LITERAL_EXPRESSION,
                             start: indices_and_chars.head().unwrap().val0(),
                             end: indices_and_chars.last().unwrap().val0() + 1,
-                            contents: Text( self.text.to_owned() ) } ) } )
+                            contents: Text( self.text.to_owned() ) } } )
     } else {
       None
     }
@@ -97,11 +97,11 @@ impl Expression for DotExpression {
     match new_parse_state.next() {
       Some( ( index, character ) ) => Some(
         ParseResult { parse_state: new_parse_state,
-                      node: Some( Node {
+                      node: Node {
                         name: DOT_EXPRESSION,
                         start: index,
                         end: index + 1,
-                        contents: Text( from_char( character ) ) } ) } ),
+                        contents: Text( from_char( character ) ) } } ),
       _ => None
     }
   }
@@ -168,11 +168,11 @@ impl Expression for CharClassExpression {
     match new_parse_state.next() {
       Some( ( index, ch ) ) if self.matches( ch ) => {
         Some( ParseResult { parse_state: new_parse_state,
-                            node: Some( Node {
+                            node: Node {
                                name: CHAR_CLASS_EXPRESSION,
                                start: index,
                                end: index + 1,
-                               contents: Text( from_char( ch ) ) } ) } )
+                               contents: Text( from_char( ch ) ) } } )
       }
       _ => None
     }
@@ -199,7 +199,7 @@ impl Expression for NotExpression {
       Some( _ ) => None,
       _ => Some(
         ParseResult { parse_state: *parse_state,
-                      node: Some( Node::predicate( NOT_EXPRESSION ) ) } )
+                      node: Node::predicate( NOT_EXPRESSION ) } )
     }
   }
 }
