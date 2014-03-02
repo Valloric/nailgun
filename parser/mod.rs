@@ -5,6 +5,7 @@ use parser::literal::LITERAL_EXPRESSION;
 
 mod literal;
 mod not;
+mod and;
 mod char_class;
 mod dot;
 mod test_utils;

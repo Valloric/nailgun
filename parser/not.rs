@@ -46,9 +46,6 @@ mod tests {
       }
       _ => fail!( "No match." )
     }
-
-    assert!( NotExpression::new( ~CharClassExpression::new( "a-z" ) )
-            .apply( &ToParseState( "0" ) ).is_some() )
   }
 
 
