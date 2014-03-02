@@ -6,11 +6,13 @@ use std::iter::Enumerate;
 static LITERAL_EXPRESSION : &'static str = "LiteralExpression";
 static DOT_EXPRESSION : &'static str = "DotExpression";
 static CHAR_CLASS_EXPRESSION : &'static str = "CharClassExpression";
+static NOT_EXPRESSION : &'static str = "NotExpression";
 
 #[deriving(Eq)]
 enum NodeContents {
   Text( ~str ),
-  Children( ~[ ~Node ] )
+  Children( ~[ ~Node ] ),
+  Empty
 }
 
 
@@ -26,11 +28,16 @@ struct Node {
 impl Node {
   fn matchedText( &self ) -> ~str {
     match self.contents {
+      Empty => ~"",
       Text( ref x ) => x.to_owned(),
 
       // TODO: recurse through children and collect all text
       Children( _ ) => ~"foo"
     }
+  }
+
+  fn predicate( name: &'static str ) -> Node {
+    Node { name: name, start: 0, end: 0, contents: Empty }
   }
 }
 
@@ -50,6 +57,13 @@ trait Expression {
 
 struct LiteralExpression {
   text: &'static str
+}
+
+
+impl LiteralExpression {
+  fn new( text: &'static str ) -> LiteralExpression {
+    LiteralExpression { text: text }
+  }
 }
 
 
@@ -90,14 +104,6 @@ impl Expression for DotExpression {
                         contents: Text( from_char( character ) ) } ) } ),
       _ => None
     }
-  }
-}
-
-
-struct NotExpression;
-impl Expression for NotExpression {
-  fn apply<'a>( &self, parse_state: &ParseState<'a> ) -> Option< ParseResult<'a> > {
-    None
   }
 }
 
@@ -162,13 +168,38 @@ impl Expression for CharClassExpression {
     match new_parse_state.next() {
       Some( ( index, ch ) ) if self.matches( ch ) => {
         Some( ParseResult { parse_state: new_parse_state,
-                      node: Some( Node {
-                        name: CHAR_CLASS_EXPRESSION,
-                        start: index,
-                        end: index + 1,
-                        contents: Text( from_char( ch ) ) } ) } )
+                            node: Some( Node {
+                               name: CHAR_CLASS_EXPRESSION,
+                               start: index,
+                               end: index + 1,
+                               contents: Text( from_char( ch ) ) } ) } )
       }
       _ => None
+    }
+  }
+}
+
+
+struct NotExpression {
+  expr: ~Expression
+}
+
+
+impl NotExpression {
+  fn new( expr: ~Expression ) -> NotExpression {
+    NotExpression { expr: expr }
+  }
+}
+
+
+impl Expression for NotExpression {
+  fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
+      Option< ParseResult<'a> > {
+    match self.expr.apply( parse_state ) {
+      Some( _ ) => None,
+      _ => Some(
+        ParseResult { parse_state: *parse_state,
+                      node: Some( Node::predicate( NOT_EXPRESSION ) ) } )
     }
   }
 }

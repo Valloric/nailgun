@@ -1,6 +1,6 @@
 use super::{ ParseState, LiteralExpression, LITERAL_EXPRESSION, DotExpression,
 DOT_EXPRESSION, Text, ParseResult, Node, Expression, CHAR_CLASS_EXPRESSION,
-CharClassExpression };
+CharClassExpression, NotExpression, NOT_EXPRESSION };
 
 
 fn ToParseState<'a>( text: &'a str ) -> ParseState<'a> {
@@ -10,7 +10,7 @@ fn ToParseState<'a>( text: &'a str ) -> ParseState<'a> {
 
 #[test]
 fn LiteralExpression_Match() {
-  let expr = LiteralExpression { text: "foo" };
+  let expr = LiteralExpression::new( "foo" );
   match expr.apply( &ToParseState( "foobar" ) ) {
     Some( ParseResult{ node: Some( ref node ),
                        parse_state: mut parse_state } ) => {
@@ -28,7 +28,7 @@ fn LiteralExpression_Match() {
 
 #[test]
 fn LiteralExpression_NoMatch() {
-  let expr = LiteralExpression { text: "zoo" };
+  let expr = LiteralExpression::new( "zoo" );
   assert!( expr.apply( &ToParseState( "foobar" ) ).is_none() )
   assert!( expr.apply( &ToParseState( "" ) ).is_none() )
 }
@@ -138,4 +138,44 @@ fn CharClassExpression_NoMatch() {
   assert!( !charClassMatch( CharClassExpression::new( "z-a" ), "b" ) );
   assert!( !charClassMatch( CharClassExpression::new( "a-z" ), "0" ) );
   assert!( !charClassMatch( CharClassExpression::new( "a-z" ), "A" ) );
+}
+
+
+#[test]
+fn NotExpression_Match_WithLiteral() {
+  match NotExpression::new( ~LiteralExpression::new( "foo" ) ).apply(
+      &ToParseState( "zoo" ) ) {
+    Some( ParseResult{ node: Some( ref node ),
+                       parse_state: mut parse_state } ) => {
+      assert_eq!( *node, Node::predicate( NOT_EXPRESSION ) );
+      assert_eq!( parse_state.next(), Some( ( 0, 'z' ) ) );
+    }
+    _ => fail!( "No match." )
+  }
+
+  assert!( NotExpression::new( ~CharClassExpression::new( "a-z" ) )
+           .apply( &ToParseState( "0" ) ).is_some() )
+}
+
+
+#[test]
+fn NotExpression_Match_WithCharClass() {
+  match NotExpression::new( ~CharClassExpression::new( "a-z" ) ).apply(
+      &ToParseState( "0" ) ) {
+    Some( ParseResult{ node: Some( ref node ),
+                       parse_state: mut parse_state } ) => {
+      assert_eq!( *node, Node::predicate( NOT_EXPRESSION ) );
+      assert_eq!( parse_state.next(), Some( ( 0, '0' ) ) );
+    }
+    _ => fail!( "No match." )
+  }
+}
+
+
+#[test]
+fn NotExpression_NoMatch() {
+  assert!( NotExpression::new( ~CharClassExpression::new( "a-z" ) ).apply(
+      &ToParseState( "b" ) ).is_none() )
+  assert!( NotExpression::new( ~LiteralExpression::new( "x" ) ).apply(
+      &ToParseState( "x" ) ).is_none() )
 }
