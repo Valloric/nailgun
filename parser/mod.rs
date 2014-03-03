@@ -14,6 +14,7 @@ mod dot;
 // mod parens;
 // mod or;
 // mod sequence;
+mod helpers;
 mod test_utils;
 
 
