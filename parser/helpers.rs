@@ -21,6 +21,10 @@ static NEWLINE_U8: u8 = '\n' as u8;
 static SLASH_U8: u8 = '\\' as u8;
 
 
+// See:
+//   http://en.wikipedia.org/wiki/Escape_sequences_in_C
+//   http://en.cppreference.com/w/cpp/language/escape
+// No question mark escape supported because there are no trigraphs in PEG.
 pub fn unescape( input: &[u8] ) -> ~[u8] {
   let mut final_bytes: ~[u8] = ~[];
   let mut index = 0;
