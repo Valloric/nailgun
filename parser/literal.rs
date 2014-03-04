@@ -1,4 +1,4 @@
-use super::{Expression, Node, Text, MoveForward, ParseState, ParseResult};
+use super::{Expression, Node, Data, MoveForward, ParseState, ParseResult};
 
 pub static LITERAL_EXPRESSION : &'static str = "LiteralExpression";
 
@@ -27,7 +27,7 @@ impl Expression for LiteralExpression {
           Node { name: LITERAL_EXPRESSION,
                  start: indices_and_chars.head().unwrap().val0(),
                  end: indices_and_chars.last().unwrap().val0() + 1,
-                 contents: Text( self.text.to_owned() ) },
+                 contents: Data( self.text.to_owned() ) },
           MoveForward( parse_state.clone(), self.text.len() ) ) )
     } else {
       None
@@ -38,7 +38,7 @@ impl Expression for LiteralExpression {
 
 #[cfg(test)]
 mod tests {
-  use parser::{Node, Text, ParseResult, Expression};
+  use parser::{Node, Data, ParseResult, Expression};
   use parser::test_utils::ToParseState;
   use super::{LITERAL_EXPRESSION, LiteralExpression};
 
@@ -52,7 +52,7 @@ mod tests {
                     Node { name: LITERAL_EXPRESSION,
                            start: 0,
                            end: 3,
-                           contents: Text( ~"foo" ) } );
+                           contents: Data( ~"foo" ) } );
         assert_eq!( parse_state.next(), Some( ( 3, 'b' ) ) );
       }
       _ => fail!( "No match!" )

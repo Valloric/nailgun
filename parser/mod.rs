@@ -20,7 +20,7 @@ mod test_utils;
 
 #[deriving(Show, Eq)]
 enum NodeContents {
-  Text( ~str ),
+  Data( ~str ),
   Children( ~[ ~Node ] ),
   Empty
 }
@@ -35,10 +35,10 @@ struct Node {
 }
 
 impl Node {
-  fn matchedText( &self ) -> ~str {
+  fn matchedData( &self ) -> ~str {
     match self.contents {
       Empty => ~"",
-      Text( ref x ) => x.to_owned(),
+      Data( ref x ) => x.to_owned(),
 
       // TODO: recurse through children and collect all text
       Children( _ ) => ~"foo"
@@ -87,6 +87,6 @@ pub fn parseString( input: &str ) -> Node {
   Node { name: LITERAL_EXPRESSION,
          start: 0,
          end: 3,
-         contents: Text( input.to_owned() ) }
+         contents: Data( input.to_owned() ) }
 }
 

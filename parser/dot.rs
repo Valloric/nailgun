@@ -1,5 +1,5 @@
 use std::str::from_char;
-use super::{Expression, Text, Node, ParseState, ParseResult};
+use super::{Expression, Data, Node, ParseState, ParseResult};
 
 static DOT_EXPRESSION : &'static str = "DotExpression";
 
@@ -12,7 +12,7 @@ impl Expression for DotExpression {
         ParseResult::oneNode( Node { name: DOT_EXPRESSION,
                                      start: index,
                                      end: index + 1,
-                                     contents: Text( from_char( character ) ) },
+                                     contents: Data( from_char( character ) ) },
                               new_parse_state ) ),
       _ => None
     }
@@ -23,7 +23,7 @@ impl Expression for DotExpression {
 mod tests {
   use parser::test_utils::ToParseState;
   use super::{DotExpression, DOT_EXPRESSION};
-  use parser::{Node, Text, ParseResult, Expression};
+  use parser::{Node, Data, ParseResult, Expression};
 
   #[test]
   fn DotExpression_Match_InputOneChar() {
@@ -34,7 +34,7 @@ mod tests {
                     Node { name: DOT_EXPRESSION,
                           start: 0,
                           end: 1,
-                          contents: Text( ~"x" ) } );
+                          contents: Data( ~"x" ) } );
         assert_eq!( parse_state.next(), None );
       }
       _ => fail!( "No match!" )
@@ -51,7 +51,7 @@ mod tests {
                     Node { name: DOT_EXPRESSION,
                           start: 0,
                           end: 1,
-                          contents: Text( ~"葉" ) } );
+                          contents: Data( ~"葉" ) } );
         assert_eq!( parse_state.next(), None );
       }
       _ => fail!( "No match!" )
@@ -68,7 +68,7 @@ mod tests {
                     Node { name: DOT_EXPRESSION,
                           start: 0,
                           end: 1,
-                          contents: Text( ~"x" ) } );
+                          contents: Data( ~"x" ) } );
         assert_eq!( parse_state.next(), Some( ( 1, 'b' ) ) );
       }
       _ => fail!( "No match!" )

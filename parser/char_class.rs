@@ -1,5 +1,5 @@
 use std::str::from_char;
-use super::{Expression, Node, ParseState, ParseResult, Text};
+use super::{Expression, Node, ParseState, ParseResult, Data};
 
 static CHAR_CLASS_EXPRESSION : &'static str = "CharClassExpression";
 
@@ -66,7 +66,7 @@ impl Expression for CharClassExpression {
             Node { name: CHAR_CLASS_EXPRESSION,
                    start: index,
                    end: index + 1,
-                   contents: Text( from_char( ch ) ) },
+                   contents: Data( from_char( ch ) ) },
             new_parse_state ) ),
       _ => None
     }
@@ -76,7 +76,7 @@ impl Expression for CharClassExpression {
 
 #[cfg(test)]
 mod tests {
-  use parser::{Node, Text, ParseResult, Expression};
+  use parser::{Node, Data, ParseResult, Expression};
   use parser::test_utils::ToParseState;
   use super::{CHAR_CLASS_EXPRESSION, CharClassExpression};
 
@@ -88,7 +88,7 @@ mod tests {
                     Node { name: CHAR_CLASS_EXPRESSION,
                           start: 0,
                           end: 1,
-                          contents: Text( input.to_owned() ) } );
+                          contents: Data( input.to_owned() ) } );
         assert_eq!( parse_state.next(), None );
         true
       }
