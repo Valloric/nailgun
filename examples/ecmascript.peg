@@ -1,0 +1,920 @@
+# EcmaScript
+# From: https://github.com/ermine/kombain/blob/db7acb2c5d387bb251f6a6e5067e27e4f116195d/ecmascript/ecmascript.peg
+# License: 3-BSD
+
+grammar <- (inputElementDiv / inputElementRegExp)* # eof
+# grammar <- inputElementDiv*
+eof <- !.
+
+### A.1 Lexical Grammar
+
+sourceCharacter <-
+   # any Unicode code unit
+   .
+
+inputElementDiv <-
+   whiteSpace
+ / lineTerminator
+ / comment
+ / token
+ / divPunctuator
+
+inputElementRegExp <-
+   whiteSpace
+ / lineTerminator
+ / comment
+ / token
+ / regularExpressionLiteral
+
+whiteSpace <-
+   unicode_TAB
+/  unicode_VT
+ / unicode_FF
+ / unicode_SP
+ / unicode_NBSP
+ / unicode_BOM
+ / unicode_USP
+
+lineTerminator <-
+   unicode_LF
+ / unicode_CR
+ / unicode_LS
+ / unicode_PS
+
+lineTerminatorSequence <-
+   unicode_LF / unicode_CR !unicode_LF / unicode_LS / unicode_PS
+ / unicode_CR unicode_LF
+
+comment <-
+   multiLineComment
+ / singleLineComment
+
+multiLineComment <-
+   "/*" multiLineCommentChar* "*/"
+
+multiLineCommentChar <-
+   multiLineNotAsteriskChar
+ / "*" postAsteriskCommentChars
+
+postAsteriskCommentChars <-
+   multiLineNotForwardSlashCharOrAsteriskChar multiLineCommentChar*
+ / "*" postAsteriskCommentChars?
+
+multiLineNotAsteriskChar <-
+   !"*" sourceCharacter
+
+multiLineNotForwardSlashCharOrAsteriskChar <-
+   ![/*] sourceCharacter
+
+singleLineComment <-
+   "//" singleLineCommentChar*
+
+singleLineCommentChar <-
+   !lineTerminator sourceCharacter
+
+token <-
+   identifierName
+ / punctuator
+/  numericLiteral
+/  stringLiteral
+
+identifier <-
+   !reserverdWord identifierName
+
+identifierName <-
+   identifierStart identifierPart*
+
+identifierStart <-
+   unicodeLetter
+ / "$"
+ / "_"
+ / "\\" unicodeEscapeSequence
+
+identifierPart <-
+   identifierStart
+ / unicodeCombiningMark
+ / unicodeDigit
+ / unicodeConnectorPunctuation
+ / unicode_ZWNJ
+ / unicode_ZWJ
+
+unicodeLetter <-
+   # any character in the Unicode categories "Uppercase letter(Lu)",
+   # "Lowercase letter (Ll)", "Titlecase letter (Lt)", "Modifier letter (Lm)",
+   # "Other letter (Lo)", or "Letter number (Nl)"
+   [a-zA-Z]
+
+unicodeCombiningMark <-
+   # any character in the Unicode categories "Non-spacing mark (Mn)", or
+   # "Combining spacing mark(Mc)"
+      [\x0300] # more characters
+
+unicodeDigit <-
+   # any character in the Unicode category "Decimal number (Nd)"
+   [0-9]
+
+unicodeConnectorPunctuation <-
+   # any character in the Unicode category "Connector punctuation (Pc)"
+   [\x005F\x203F\x2040\x2054\xFE33\xFE34\xFE4D\xFE4E\xFE4F\xFF3F]
+
+reserverdWord <-
+   keyword
+ / futureReserverdWord
+ / nullLiteral
+ / booleanLiteral
+
+keyword <-
+   "break" / "case" / "catch" / "continue" / "debugger" / "default" / "delete"
+ / "do" / "else" / "finally" / "for" / "function" / "if" / "instanceof" / "in"
+ / "new" / "return" / "switch" / "this" / "throw" / "try" / "typeof" / "var"
+ / "void" / "while" / "with"
+
+futureReserverdWord <-
+   "class" / "const" / "enum" / "export" / "extends" / "import" / "super"
+ # strict
+ / "implements" / "interface" / "yield" / "let" / "package" / "private"
+ / "protected" / "public" / "static"
+
+punctuator <-
+   "{"   / "}"    / "("   / ")"   / "["   / "]"
+ / "."   / ";"    / ","   / "<="   / "<"   / ">="
+ / ">"  / "="   / "!="  / "===" / "!=="
+ / "+"   / "-"    / "*"   / "%"   / "++"  / "--"
+ / "<<"  / ">>>"  / ">>" / "&"   / "|"   / "^"
+ / "!"   / "~"    / "&&"  / "||"  / "?"   / ":"
+ / "=="   / "+="   / "-="  / "*="  / "%="  / "<<="
+ / ">>=" / ">>>=" / "&="  / "|="  / "^="
+
+divPunctuator <-
+ "/=" / "/"
+
+literal <-
+   nullLiteral
+ / booleanLiteral
+ / numericLiteral
+ / stringLiteral
+ / regularExpressionLiteral
+
+nullLiteral <-
+   "null"
+
+booleanLiteral <-
+   "true" / "false"
+
+numericLiteral <-
+   decimalLiteral
+ / hexIntegerLiteral
+
+decimalLiteral <-
+   decimalIntegerLiteral "." decimalDigit* exponentPart?
+ / "." decimalDigit+ exponentPart?
+ / decimalIntegerLiteral exponentPart?
+
+decimalIntegerLiteral <-
+   "0"
+ / nonZeroDigit decimalDigit*
+
+decimalDigit <-
+   [0-9]
+
+nonZeroDigit <-
+   [1-9]
+
+exponentPart <-
+   exponentIndicator signedInteger
+
+exponentIndicator <-
+   [eE]
+
+signedInteger <-
+   decimalDigit+
+ / "+" decimalDigit+
+ / "-" decimalDigit+
+
+hexIntegerLiteral <-
+   "0x" hexDigit+
+ / "0X" hexDigit+
+
+hexDigit <-
+   [0123456789abcdefABCDEF]
+
+stringLiteral <-
+   ["] doubleStringCharacters? ["]
+ / ['] singleStringCharacters? [']
+
+doubleStringCharacters <-
+   doubleStringCharacter doubleStringCharacters?
+
+singleStringCharacters <-
+   singleStringCharacter singleStringCharacters?
+
+doubleStringCharacter <-
+   !(["\\] /lineTerminator) sourceCharacter
+ / "\\" escapeSequence
+ / lineContinuation
+
+singleStringCharacter <-
+   !(['\\] / lineTerminator) sourceCharacter
+ / "\\" escapeSequence
+ / lineContinuation
+
+lineContinuation <-
+   "\\" lineTerminatorSequence
+
+escapeSequence <-
+   characterEscapeSequence
+ / "0" !decimalDigit
+ / hexEscapeSequence
+ / unicodeEscapeSequence
+
+characterEscapeSequence <-
+   singleEscapeCharacter
+ / nonEscapeCharacter
+
+singleEscapeCharacter <-
+   ['"\\bfnrtv]
+
+nonEscapeCharacter <-
+   !(escapeCharacter / lineTerminator) sourceCharacter
+
+escapeCharacter <-
+   singleEscapeCharacter
+ / decimalDigit
+ / "x"
+ / "u"
+
+hexEscapeSequence <-
+   "x" hexDigit hexDigit
+
+unicodeEscapeSequence <-
+   "u" hexDigit hexDigit hexDigit hexDigit
+
+regularExpressionLiteral <-
+   "/" regularExpressionBody "/" regularExpressionFlags
+
+regularExpressionBody <-
+   regularExpressionFirstChar regularExpressionChar*
+
+regularExpressionFirstChar <-
+   [*\\/\[] regularExpressionNonTerminator
+ / regularExpressionBackslashSequence
+ / regularExpressionClass
+
+regularExpressionChar <-
+   ![\\/\[] regularExpressionNonTerminator
+ / regularExpressionBackslashSequence
+ / regularExpressionClass
+
+regularExpressionBackslashSequence <-
+   "\\" regularExpressionNonTerminator
+
+regularExpressionNonTerminator <-
+   !lineTerminator sourceCharacter
+
+regularExpressionClass <-
+   "[" regularExpressionClassChars "]"
+
+regularExpressionClassChars <-
+   regularExpressionClassChars regularExpressionClassChar
+ / # [empty]
+
+regularExpressionClassChar <-
+   ![\]\\] regularExpressionNonTerminator
+ / regularExpressionBackslashSequence
+
+regularExpressionFlags <-
+   regularExpressionFlags identifierPart
+ / # [empty]
+
+### A.2 Number Conversions
+
+stringNumericLiteral <-
+   strWhiteSpace?
+ / strWhiteSpace? strNumericLiteral strWhiteSpace?
+
+strWhiteSpace <-
+   strWhiteSpaceChar strWhiteSpace?
+
+strWhiteSpaceChar <-
+   whiteSpace
+ / lineTerminator
+
+strNumericLiteral <-
+   strDecimalLiteral
+ / hexIntegerLiteral
+
+strDecimalLiteral <-
+   strUnsignedDecimalLiteral
+ / "+" strUnsignedDecimalLiteral
+ / "-" strUnsignedDecimalLiteral
+
+strUnsignedDecimalLiteral <-
+   infinity
+ / decimalDigit+ "." decimalDigit* exponentPart?
+ / "." decimalDigit+ exponentPart?
+ / decimalDigit+ exponentPart?
+
+decimalDigit <-
+   [0123456789]
+
+exponentPart <-
+   exponentIndicator signedInteger
+
+exponentIndicator <-
+   [eE]
+
+signedInteger <-
+   decimalDigit+
+ / "+" decimalDigit+
+ / "-" decimalDigit+
+
+hexIntegerLiteral <-
+   "0x" hexDigit
+ / "0X" hexDigit
+ / hexIntegerLiteral hexDigit
+
+hexDigit <-
+   [0123456789abcdefABCDEF]
+
+### A.3 Expressions
+
+primaryExpression <-
+   "this"
+ / identifier
+ / literal
+ / arrayLiteral
+ / ObjectLiteral
+ / "(" expression ")"
+
+arrayLiteral <-
+   "[" elision? "]"
+ / "[" elementList "]"
+ / "[" elementList "," elision? "]"
+
+elementList <-
+   elision? assignmentExpression
+ / elementList "," elision? assignmentExpression
+
+elision <-
+   ","
+ / elision ","
+
+ObjectLiteral <-
+   "{" "}"
+ / "{" propertyNameAndValueList "}"
+ / "{" propertyNameAndValueList "," "}"
+
+propertyNameAndValueList <-
+   propertyAssignment
+ / propertyNameAndValueList "," propertyAssignment
+
+propertyAssignment <-
+   propertyName ":" assignmentExpression
+ / "get" propertyName "(" ")" "{" functionBody "}"
+ / "set" propertyName "(" propertySetParameterList ")" "{" functionBody "}"
+
+propertyName <-
+   identifierName
+ / stringLiteral
+ / numericLiteral
+
+propertySetParameterList <-
+   identifier
+
+memberExpression <-
+   primaryExpression
+ / functionExpression
+ / memberExpression "[" expression "]"
+ / memberExpression "." identifierName
+ / "new" memberExpression arguments
+
+newExpression <-
+   memberExpression
+ / "new" newExpression
+
+callExpression <-
+   memberExpression arguments
+ / callExpression arguments
+ / callExpression "[" expression "]"
+ / callExpression "." identifierName
+
+arguments <-
+   "()"
+ / "(" argumentList ")"
+
+argumentList <-
+   assignmentExpression
+ / argumentList "," assignmentExpression
+
+leftHandSideExpression <-
+   newExpression
+ / callExpression
+
+postfixExpression <-
+   leftHandSideExpression
+ / leftHandSideExpression !lineTerminator "++"
+ / leftHandSideExpression !lineTerminator "--"
+
+unaryExpression <-
+   postfixExpression
+ / "delete" unaryExpression
+ / "void" unaryExpression
+ / "typeof" unaryExpression
+ / "++" unaryExpression
+ / "--" unaryExpression
+ / "+" unaryExpression
+ / "-" unaryExpression
+ / "~" unaryExpression
+ / "!\\" unaryExpression
+
+MultiplicativeExpression <-
+   unaryExpression
+ / multiplicativeExpression "*" unaryExpression
+ / multiplicativeExpression "/" unaryExpression
+ / multiplicativeExpression "%" unaryExpression
+
+additiveExpression <-
+   multiplicativeExpression
+ / additiveExpression "+" multiplicativeExpression
+ / additiveExpression "-" multiplicativeExpression
+
+shiftExpression <-
+   additiveExpression
+ / shiftExpression "<<" additiveExpression
+ / shiftExpression ">>" additiveExpression
+ / shiftExpression ">>>" additiveExpression
+
+relationalExpression <-
+   shiftExpression
+ / relationalExpression "<" shiftExpression
+ / relationalExpression ">" shiftExpression
+ / relationalExpression "<=" shiftExpression
+ / relationalExpression ">=" shiftExpression
+ / relationalExpression "instanceof" shiftExpression
+ / relationalExpression "in" shiftExpression
+
+relationalExpressionNoIn <-
+   shiftExpression
+ / relationalExpressionNoIn "<" shiftExpression
+ / relationalExpressionNoIn ">" shiftExpression
+ / relationalExpressionNoIn "<=" shiftExpression
+ / relationalExpressionNoIn ">=" shiftExpression
+ / relationalExpressionNoIn "instanceof" shiftExpression
+
+equalityExpression <-
+   relationalExpression
+ / equalityExpression "==" relationalExpression
+ / equalityExpression "!=" relationalExpression
+ / equalityExpression "===" relationalExpression
+ / equalityExpression "!==" relationalExpression
+
+equalityExpressionNoIn <-
+   relationalExpressionNoIn
+ / equalityExpressionNoIn "==" relationalExpressionNoIn
+ / equalityExpressionNoIn "!=" relationalExpressionNoIn
+ / equalityExpressionNoIn "===" relationalExpressionNoIn
+ / equalityExpressionNoIn "!==" relationalExpressionNoIn
+
+bitwiseANDExpression <-
+   equalityExpression
+ / bitwiseANDExpression "&" equalityExpression
+
+bitwiseANDExpressionNoIn <-
+   equalityExpressionNoIn
+ / bitwiseANDExpressionNoIn "&" equalityExpressionNoIn
+
+bitwiseXORExpression <-
+   bitwiseANDExpression
+ / bitwiseXORExpression "^" bitwiseANDExpression
+
+bitwiseXORExpressionNoIn <-
+   bitwiseANDExpressionNoIn
+ / bitwiseXORExpressionNoIn "^" bitwiseANDExpressionNoIn
+
+bitwiseORExpression <-
+   bitwiseXORExpression
+ / bitwiseORExpression "|" bitwiseXORExpression
+
+bitwiseORExpressionNoIn <-
+   bitwiseXORExpressionNoIn
+ / bitwiseORExpressionNoIn "|" bitwiseXORExpressionNoIn
+
+logicalANDExpression <-
+   bitwiseORExpression
+ / logicalANDExpression "&&" bitwiseORExpression
+
+logicalANDExpressionNoIn <-
+   bitwiseORExpressionNoIn
+ / logicalANDExpressionNoIn "&&" bitwiseORExpressionNoIn
+
+
+logicalORExpression <-
+   logicalANDExpression
+ / logicalORExpression "||" logicalANDExpression
+
+logicalORExpressionNoIn <-
+   logicalANDExpressionNoIn
+ / logicalORExpressionNoIn "||" logicalANDExpressionNoIn
+
+conditionalExpression <-
+   logicalORExpression
+ / logicalORExpression "?" assignmentExpression ":" assignmentExpression
+
+conditionalExpressionNoIn <-
+   logicalORExpressionNoIn
+ / logicalORExpressionNoIn "?" assignmentExpression ":" assignmentExpressionNoIn
+
+assignmentExpression <-
+   conditionalExpression
+ / leftHandSideExpression "=" assignmentExpression
+ / leftHandSideExpression assignmentOperator assignmentExpression
+
+assignmentExpressionNoIn <-
+   conditionalExpressionNoIn
+ / leftHandSideExpression "=" assignmentExpressionNoIn
+ / leftHandSideExpression assignmentOperator assignmentExpressionNoIn
+
+assignmentOperator <-
+   "*=" / "/=" / "%=" / "+=" / "-=" / "<<=" / ">>=" / ">>>=" / "&=" / "^=" / "|="
+
+expression <-
+   assignmentExpression
+ / expression "," assignmentExpression
+
+expressionNoIn <-
+   assignmentExpressionNoIn
+ / expressionNoIn "," assignmentExpressionNoIn
+
+### A.4 Statements
+
+Statement <-
+   block
+ / variableStatement
+ / emptyStatement
+ / expressionStatement
+ / IfStatement
+ / IterationStatement
+ / continueStatement
+ / breakStatement
+ / returnStatement
+ / WithStatement
+ / labelledStatement
+ / switchStatement
+ / ThrowStatement
+ / TryStatement
+ / DebuggerStatement
+
+block <-
+   "{" statementList? "}"
+
+statementList <-
+   statement
+ / statementList statement
+
+VariableStatement <-
+   "var" variableDeclarationList ";"
+
+VariableDeclarationList <-
+   variableDeclaration
+ / variableDeclarationList "," variableDeclaration
+
+VariableDeclarationListNoIn <-
+   variableDeclarationNoIn
+ / variableDeclarationListNoIn "," variableDeclarationNoIn
+
+variableDeclaration <-
+   identifier initialiser?
+
+VariableDeclarationNoIn <-
+   identifier initialiserNoIn?
+
+Initialiser <-
+   "=" assignmentExpression
+
+InitialiserNoIn <-
+   "=" assignmentExpressionNoIn
+
+emptyStatement <-
+   ";"
+
+expressionStatement <-
+   !("{" / "function") expression ";"
+
+ifStatement <-
+   "if" "(" expression ")" statement "else" statement
+ / "if" "(" expression ")" statement
+
+iterationStatement <-
+   "do" statement "while" "(" expression ");"
+ / "while" "(" expression ")" statement
+ / "for" "(" expressionNoIn? ";" expression? ";" expression? ")" statement
+ / "for" "(" "var" variableDeclarationListNoIn ";" expression? ";" expression? ")" statement
+ / "for" "(" leftHandSideExpression "in" expression ")" statement
+ / "for" "(" "var" variableDeclarationNoIn "in" expression ")" statement
+
+continueStatement <-
+   "continue" ";"
+ / "continue" !lineTerminator identifier ";"
+
+BreakStatement <-
+   "break" ";"
+ / "break" !lineTerminator identifier ";"
+
+ReturnStatement <-
+   "return" ";"
+ / "return" !lineTerminator expression ";"
+
+WithStatement <-
+   "with" "(" expression ")" statement
+
+SwitchStatement <-
+   "switch" "(" expression ")" caseBlock
+
+CaseBlock <-
+   "{" caseClauses? "}"
+ / "{" caseClauses? DefaultClause caseClauses? "}"
+
+CaseClauses <-
+   caseClause
+ / caseClauses caseClause
+
+CaseClause <-
+   "case" expression ":" statementList?
+
+DefaultClause <-
+   "default" ":" statementList?
+
+LabelledStatement <-
+   identifier ":" statement
+
+ThrowStatement <-
+   "throw" !lineTerminator expression ";"
+
+TryStatement <-
+   "try" block catch
+ / "try" block finally
+ / "try" block catch finally
+
+catch <-
+   "catch" "(" identifier ")" block
+
+finally <-
+   "finally" block
+
+debuggerStatement <-
+   "debugger" ";"
+
+### A.5 Functions and Programs
+
+functionDeclaration <-
+   "function" identifier "(" formalParameterList? ")" "{" functionBody "}"
+
+functionExpression <-
+   "function" identifier? "(" formalParameterList? ")" "{" functionBody "}"
+
+formalParameterList <-
+   identifier
+ / formalParameterList "," identifier
+
+functionBody <-
+   sourceElements?
+
+program <-
+   sourceElements?
+
+sourceElements <-
+   sourceElement
+ / sourceElements sourceElement
+
+sourceElement <-
+   statement
+ / functionDeclaration
+
+### A.6 Universal Resource Identifier character classes
+
+uri <-
+   uriCharacters?
+
+uriCharacters <-
+   uriCharacter uriCharacters?
+
+uriCharacter <-
+   uriReserved
+ / uriUnescaped
+ / uriEscaped
+
+uriReserved <-
+   [;/?:@&=+$,]
+
+uriUnescaped <-
+   uriAlpha
+ / decimalDigit
+ / uriMark
+
+uriEscaped <-
+   "%" hexDigit hexDigit
+
+uriAlpha <-
+   [a-zA-Z]
+
+uriMark <-
+   [\-_.!~*'()]
+
+### A.7 Regular Expressions
+
+pattern <-
+   disjunction
+
+disjunction <-
+   alternative
+ / alternative "|" disjunction
+
+alternative <-
+   alternative term
+ / # [empty]
+
+term <-
+   assertion
+ / atom
+ / atom quantifier
+
+assertion <-
+   "^"
+ / "$"
+ / "\\" "b"
+ / "\\" "B"
+ / "(" "?" "=" disjunction ")"
+ / "(" "?" "!" disjunction ")"
+
+quantifier <-
+   quantifierPrefix
+ / quantifierPrefix "?"
+
+quantifierPrefix <-
+   "*"
+ / "+"
+ / "?"
+ / "{" decimalDigit+ "}"
+ / "{" decimalDigit+ "," "}"
+ / "{" decimalDigit+ "," decimalDigit+ "}"
+
+atom <-
+   patternCharacter
+ / "."
+ / "\\" atomEscape
+ / characterClass
+ / "(" disjunction ")"
+ / "(" "?" ":" disjunction ")"
+
+patternCharacter <-
+   ![^$\\.*+?()\[\]{}|] sourceCharacter
+
+atomEscape <-
+   decimalEscape
+ / characterEscape
+ / characterClassEscape
+
+characterEscape <-
+   controlEscape
+ / "c" controlLetter
+ / hexEscapeSequence
+ / unicodeEscapeSequence
+ / identityEscape
+
+controlEscape <-
+   [fnrtv]
+
+lControlLetter <-
+   [a-zA-Z]
+
+identityEscape <-
+   !identifierPart sourceCharacter
+ / unicode_ZWJ
+ / unicode_ZWNJ
+
+decimalEscape <-
+   decimalIntegerLiteral !decimalDigit
+
+characterClassEscape <-
+   [dDsSwW]
+
+characterClass <-
+   "[" !"^" classRanges "]"
+ / "[" "^" classRanges "]"
+
+classRanges <-
+   nonemptyClassRanges
+ / # [empty]
+
+nonemptyClassRanges <-
+   classAtom
+ / classAtom nonemptyClassRangesNoDash
+ / classAtom "─" classAtom classRanges
+
+nonemptyClassRangesNoDash <-
+   classAtom
+ / classAtomNoDash nonemptyClassRangesNoDash
+ / classAtomNoDash "─" classAtom classRanges
+
+classAtom <-
+   "-"
+ / classAtomNoDash
+
+classAtomNoDash <-
+   ![\\\]\-] sourceCharacter
+ / "\\" classEscape
+
+classEscape <-
+   decimalEscape
+ / "b"
+ / characterEscape
+ / characterClassEscape
+
+### A.8 JSON
+
+### A.8.1 JSON Lexical Grammar
+
+jSONWhiteSpace <-
+   unicode_TAB
+ / unicode_CR
+ / unicode_LF
+ / unicode_SP
+
+jSONString <-
+   ["] jSONStringCharacters? ["]
+
+jSONStringCharacters <-
+   jSONStringCharacter jSONStringCharacters?
+
+jSONStringCharacter <-
+   !(["\\] / [\x0000-\x001F]) sourceCharacter
+ / "\\" jSONEscapeSequence
+
+jSONEscapeSequence <-
+   jSONEscapeCharacter
+ / unicodeEscapeSequence
+
+jSONEscapeCharacter <-
+   ["/\\bfnrt]
+
+jSONNumber <-
+   "-"? decimalIntegerLiteral jSONFraction? exponentPart?
+
+jSONFraction <-
+   "." decimalDigit+
+
+jSONNullLiteral <-
+   nullLiteral
+
+jSONBooleanLiteral <-
+   booleanLiteral
+
+### A.8.2 JSON Syntactic Grammar
+
+jSONText <-
+   jSONValue
+
+jSONValue <-
+   jSONNullLiteral
+ / jSONBooleanLiteral
+ / jSONObject
+ / jSONArray
+ / jSONString
+ / jSONNumber
+
+jSONObject <-
+   "{" "}"
+ / "{" jSONMemberList "}"
+
+jSONMember <-
+   jSONString ":" jSONValue
+
+jSONMemberList <-
+   jSONMember
+ / jSONMemberList "," jSONMember
+
+jSONArray <-
+   "[" "]"
+ / "[" jSONElementList "]"
+
+jSONElementList <-
+   jSONValue
+ / jSONElementList "," jSONValue
+
+
+
+# Temporary (Unicode characters)
+
+unicode_TAB <- [\x0009]
+unicode_VT <- [\x000B]
+unicode_FF <- [\x000C]
+unicode_SP <- [\x0020]
+unicode_NBSP <- [\x00A0]
+unicode_BOM <- [\xFEFF]
+unicode_ZWJ <- [\x200D]
+unicode_ZWNJ <- [\x200C]
+unicode_USP <- [\x0020] ## Category "Zs"
+unicode_LF <- [\x000A]
+unicode_CR <-[\x000D]
+unicode_LS <- [\x2028]
+unicode_PS <- [\x2029]
