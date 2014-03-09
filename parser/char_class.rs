@@ -1,6 +1,6 @@
 use parser::unicode::{bytesFollowing, readCodepoint};
 use parser::unescape::unescape;
-use super::{Expression, Node, ParseState, ParseResult, Data};
+use super::{Expression, ParseState, ParseResult};
 
 static CHAR_CLASS_EXPRESSION : &'static str = "CharClassExpression";
 
@@ -90,15 +90,8 @@ impl CharClassExpression {
     match readCodepoint( parse_state.input ) {
       Some( ch ) if self.matches( ch as u32 ) => {
         let num_following = bytesFollowing( parse_state.input[ 0 ] ).unwrap();
-        let new_offset = parse_state.offset + num_following + 1;
-
-        // TODO: extract into function
-        Some( ParseResult::oneNode(
-            Node { name: CHAR_CLASS_EXPRESSION,
-                   start: parse_state.offset,
-                   end: new_offset,
-                   contents: Data( parse_state.sliceTo( new_offset ) ) },
-            parse_state.advanceTo( new_offset ) ) )
+        parse_state.nameAndOffsetToResult(
+          CHAR_CLASS_EXPRESSION, parse_state.offset + num_following + 1 )
       }
       _ => None
     }
@@ -109,13 +102,8 @@ impl CharClassExpression {
       Option< ParseResult<'a> > {
     match parse_state.input.get( 0 ) {
       Some( byte ) if self.matches( *byte as u32 ) => {
-        let new_offset = parse_state.offset + 1;
-        Some( ParseResult::oneNode(
-            Node { name: CHAR_CLASS_EXPRESSION,
-                   start: parse_state.offset,
-                   end: new_offset,
-                   contents: Data( parse_state.sliceTo( new_offset ) ) },
-            parse_state.advanceTo( new_offset ) ) )
+        parse_state.nameAndOffsetToResult(
+          CHAR_CLASS_EXPRESSION, parse_state.offset + 1 )
       }
       _ => None
     }

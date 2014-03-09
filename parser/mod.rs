@@ -70,6 +70,16 @@ impl<'a> ParseState<'a> {
   fn sliceTo( &self, new_offset: uint ) -> &'a [u8] {
     self.input.slice_to( new_offset - self.offset )
   }
+
+  fn nameAndOffsetToResult( &self, node_name: &'static str, new_offset: uint )
+      -> Option< ParseResult<'a> > {
+    Some( ParseResult::oneNode(
+        Node { name: node_name,
+               start: self.offset,
+               end: new_offset,
+               contents: Data( self.sliceTo( new_offset ) ) },
+        self.advanceTo( new_offset ) ) )
+  }
 }
 
 struct ParseResult<'a> {

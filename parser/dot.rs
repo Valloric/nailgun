@@ -1,4 +1,4 @@
-use super::{Expression, Data, Node, ParseState, ParseResult};
+use super::{Expression, ParseState, ParseResult};
 use parser::unicode::{bytesFollowing, readCodepoint};
 
 static DOT_EXPRESSION : &'static str = "DotExpression";
@@ -9,28 +9,15 @@ impl Expression for DotExpression {
     match readCodepoint( parse_state.input ) {
       Some( ch ) => {
         let num_following = bytesFollowing( parse_state.input[ 0 ] ).unwrap();
-        let new_offset = parse_state.offset + num_following + 1;
-
-        return Some( ParseResult::oneNode(
-            Node { name: DOT_EXPRESSION,
-                   start: parse_state.offset,
-                   end: new_offset,
-                   contents: Data( parse_state.sliceTo( new_offset ) ) },
-            parse_state.advanceTo( new_offset ) ) )
+        return parse_state.nameAndOffsetToResult(
+          DOT_EXPRESSION, parse_state.offset + num_following + 1 )
       }
       _ => ()
     }
 
     match parse_state.input.get( 0 ) {
-      Some( _ ) => {
-        let new_offset = parse_state.offset + 1;
-        Some( ParseResult::oneNode(
-            Node { name: DOT_EXPRESSION,
-                   start: parse_state.offset,
-                   end: new_offset,
-                   contents: Data( parse_state.sliceTo( new_offset ) ) },
-            parse_state.advanceTo( new_offset ) ) )
-      }
+      Some( _ ) => parse_state.nameAndOffsetToResult( DOT_EXPRESSION,
+                                                      parse_state.offset + 1 ),
       _ => None
     }
   }

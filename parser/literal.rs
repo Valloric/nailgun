@@ -1,4 +1,4 @@
-use super::{Expression, Node, Data, ParseState, ParseResult};
+use super::{Expression, ParseState, ParseResult};
 
 pub static LITERAL_EXPRESSION : &'static str = "LiteralExpression";
 
@@ -22,13 +22,8 @@ impl Expression for LiteralExpression {
       return None;
     }
 
-    let new_offset = parse_state.offset + self.text.len();
-    Some( ParseResult::oneNode(
-        Node { name: LITERAL_EXPRESSION,
-               start: parse_state.offset,
-               end: new_offset,
-               contents: Data( parse_state.sliceTo( new_offset ) ) },
-        parse_state.advanceTo( new_offset ) ) )
+    parse_state.nameAndOffsetToResult(
+          LITERAL_EXPRESSION, parse_state.offset + self.text.len() )
   }
 }
 
