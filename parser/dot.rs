@@ -1,19 +1,36 @@
-use std::str::from_char;
 use super::{Expression, Data, Node, ParseState, ParseResult};
+use parser::unicode::{bytesFollowing, readCodepoint};
 
 static DOT_EXPRESSION : &'static str = "DotExpression";
 
 pub struct DotExpression;
 impl Expression for DotExpression {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) -> Option< ParseResult<'a> > {
-    let mut new_parse_state = parse_state.clone();
-    match new_parse_state.next() {
-      Some( ( index, character ) ) => Some(
-        ParseResult::oneNode( Node { name: DOT_EXPRESSION,
-                                     start: index,
-                                     end: index + 1,
-                                     contents: Data( from_char( character ) ) },
-                              new_parse_state ) ),
+    match readCodepoint( parse_state.input ) {
+      Some( ch ) => {
+        let num_following = bytesFollowing( parse_state.input[ 0 ] ).unwrap();
+        let new_offset = parse_state.offset + num_following + 1;
+
+        return Some( ParseResult::oneNode(
+            Node { name: DOT_EXPRESSION,
+                   start: parse_state.offset,
+                   end: new_offset,
+                   contents: Data( parse_state.sliceTo( new_offset ) ) },
+            parse_state.advanceTo( new_offset ) ) )
+      }
+      _ => ()
+    }
+
+    match parse_state.input.get( 0 ) {
+      Some( _ ) => {
+        let new_offset = parse_state.offset + 1;
+        Some( ParseResult::oneNode(
+            Node { name: DOT_EXPRESSION,
+                   start: parse_state.offset,
+                   end: new_offset,
+                   contents: Data( parse_state.sliceTo( new_offset ) ) },
+            parse_state.advanceTo( new_offset ) ) )
+      }
       _ => None
     }
   }
@@ -23,19 +40,20 @@ impl Expression for DotExpression {
 mod tests {
   use parser::test_utils::ToParseState;
   use super::{DotExpression, DOT_EXPRESSION};
-  use parser::{Node, Data, ParseResult, Expression};
+  use parser::{Node, Data, ParseResult, ParseState, Expression};
 
   #[test]
   fn DotExpression_Match_InputOneChar() {
-    match DotExpression.apply( &ToParseState( "x" ) ) {
-      Some( ParseResult{ nodes: ref nodes,
-                        parse_state: mut parse_state } ) => {
+    static input: &'static [u8] = bytes!( "x" );
+    match DotExpression.apply( &ToParseState( input ) ) {
+      Some( ParseResult{ nodes: nodes,
+                         parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ).unwrap(),
                     Node { name: DOT_EXPRESSION,
                           start: 0,
                           end: 1,
-                          contents: Data( ~"x" ) } );
-        assert_eq!( parse_state.next(), None );
+                          contents: Data( input ) } );
+        assert_eq!( parse_state, ParseState{ input: &[], offset: 1 } );
       }
       _ => fail!( "No match!" )
     };
@@ -44,15 +62,16 @@ mod tests {
 
   #[test]
   fn DotExpression_Match_InputOneWideChar() {
-    match DotExpression.apply( &ToParseState( "葉" ) ) {
-      Some( ParseResult{ nodes: ref nodes,
-                        parse_state: mut parse_state } ) => {
+    static input: &'static [u8] = bytes!( "葉" );
+    match DotExpression.apply( &ToParseState( input ) ) {
+      Some( ParseResult{ nodes: nodes,
+                        parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ).unwrap(),
                     Node { name: DOT_EXPRESSION,
-                          start: 0,
-                          end: 1,
-                          contents: Data( ~"葉" ) } );
-        assert_eq!( parse_state.next(), None );
+                           start: 0,
+                           end: 3,
+                           contents: Data( input ) } );
+        assert_eq!( parse_state, ParseState{ input: &[], offset: 3 } );
       }
       _ => fail!( "No match!" )
     };
@@ -61,15 +80,17 @@ mod tests {
 
   #[test]
   fn DotExpression_Match_InputSeveralChars() {
-    match DotExpression.apply( &ToParseState( "xb" ) ) {
-      Some( ParseResult{ nodes: ref nodes,
-                        parse_state: mut parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ).unwrap(),
-                    Node { name: DOT_EXPRESSION,
-                          start: 0,
-                          end: 1,
-                          contents: Data( ~"x" ) } );
-        assert_eq!( parse_state.next(), Some( ( 1, 'b' ) ) );
+    static input: &'static [u8] = bytes!( "xb" );
+    match DotExpression.apply( &ToParseState( input ) ) {
+      Some( ParseResult{ nodes: nodes,
+                        parse_state: parse_state } ) => {
+        assert!( *nodes.get( 0 ).unwrap() ==
+                 Node { name: DOT_EXPRESSION,
+                        start: 0,
+                        end: 1,
+                        contents: Data( bytes!( "x" ) ) } );
+        assert_eq!( parse_state, ParseState{ input: bytes!( "b" ),
+                                             offset: 1 } );
       }
       _ => fail!( "No match!" )
     };
@@ -78,6 +99,6 @@ mod tests {
 
   #[test]
   fn DotExpression_NoMatch() {
-    assert!( DotExpression.apply( &ToParseState( "" ) ).is_none() )
+    assert!( DotExpression.apply( &ToParseState( bytes!( "" ) ) ).is_none() )
   }
 }

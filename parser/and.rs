@@ -37,12 +37,15 @@ mod tests {
 
   #[test]
   fn AndExpression_Match_WithLiteral() {
-    match AndExpression::new( ~LiteralExpression::new( "foo" ) ).apply(
-        &ToParseState( "foo" ) ) {
-      Some( ParseResult{ nodes: ref nodes,
-                        parse_state: mut parse_state } ) => {
+    static input: &'static [u8] = bytes!( "foo" );
+    static literal: &'static [u8] = bytes!( "foo" );
+    let orig_state = ToParseState( input );
+    match AndExpression::new( ~LiteralExpression::new( literal ) ).apply(
+        &orig_state ) {
+      Some( ParseResult{ nodes: nodes,
+                        parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ).unwrap(), Node::predicate( AND_EXPRESSION ) );
-        assert_eq!( parse_state.next(), Some( ( 0, 'f' ) ) );
+        assert_eq!( parse_state, orig_state );
       }
       _ => fail!( "No match." )
     }
@@ -51,12 +54,14 @@ mod tests {
 
   #[test]
   fn AndExpression_Match_WithCharClass() {
-    match AndExpression::new( ~CharClassExpression::new( "a-z" ) ).apply(
-        &ToParseState( "c" ) ) {
-      Some( ParseResult{ nodes: ref nodes,
-                        parse_state: mut parse_state } ) => {
+    static input: &'static [u8] = bytes!( "c" );
+    let orig_state = ToParseState( input );
+    match AndExpression::new(
+      ~CharClassExpression::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
+      Some( ParseResult{ nodes: nodes,
+                        parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ).unwrap(), Node::predicate( AND_EXPRESSION ) );
-        assert_eq!( parse_state.next(), Some( ( 0, 'c' ) ) );
+        assert_eq!( parse_state, orig_state );
       }
       _ => fail!( "No match." )
     }
@@ -65,10 +70,13 @@ mod tests {
 
   #[test]
   fn AndExpression_NoMatch() {
-    assert!( AndExpression::new( ~CharClassExpression::new( "a-z" ) ).apply(
-        &ToParseState( "0" ) ).is_none() )
-    assert!( AndExpression::new( ~LiteralExpression::new( "x" ) ).apply(
-        &ToParseState( "y" ) ).is_none() )
+    assert!( AndExpression::new(
+        ~CharClassExpression::new( bytes!( "a-z" ) ) ).apply(
+        &ToParseState( bytes!( "0" ) ) ).is_none() )
+
+    static literal: &'static [u8] = bytes!( "x" );
+    assert!( AndExpression::new( ~LiteralExpression::new( literal ) ).apply(
+        &ToParseState( bytes!( "y" ) ) ).is_none() )
   }
 }
 

@@ -61,6 +61,11 @@ pub fn unescape( input: &[u8] ) -> ~[u8] {
   return final_bytes;
 }
 
+// TODO: move to somewhere more generic
+pub fn bytes( input: &'static str ) -> ~[u8] {
+  input.to_owned().into_bytes()
+}
+
 
 fn isOctal( byte: u8 ) -> bool {
   char::is_digit_radix( byte as char, 8 )
@@ -147,8 +152,7 @@ fn addEscapedByte( mut input: ~[u8], byte: u8 ) -> ~[u8] {
 
 #[cfg(test)]
 mod tests {
-  use super::unescape;
-  use parser::test_utils::bytes;
+  use super::{unescape, bytes};
 
   #[test]
   fn unescape_Nothing() {

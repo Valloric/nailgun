@@ -1,35 +1,20 @@
 use std::char;
 
 // More details: http://en.wikipedia.org/wiki/UTF-8#Description
-static UTF8_1BYTE_FOLLOWING: u8 = 0b11000000;
-static UTF8_2BYTE_FOLLOWING: u8 = 0b11100000;
-static UTF8_3BYTE_FOLLOWING: u8 = 0b11110000;
+pub static UTF8_1BYTE_FOLLOWING: u8 = 0b11000000;
+pub static UTF8_2BYTE_FOLLOWING: u8 = 0b11100000;
+pub static UTF8_3BYTE_FOLLOWING: u8 = 0b11110000;
 
 pub fn readCodepoint( input: &[u8] ) -> Option< char > {
-  fn bytesFollowing( byte: u8 ) -> Option< uint > {
-    if byte & 0b11100000 == UTF8_1BYTE_FOLLOWING {
-      return Some( 1 );
-    }
-    if byte & 0b11110000 == UTF8_2BYTE_FOLLOWING {
-      return Some( 2 );
-    }
-    if byte & 0b11111000 == UTF8_3BYTE_FOLLOWING {
-      return Some( 3 );
-    }
-    return None;
-  }
-
-  fn isAscii( byte: u8 ) -> bool {
-    return byte & 0b10000000 == 0;
-  }
-
   fn isContinuationByte( byte: u8 ) -> bool {
     byte & 0b11000000 == 0b10000000
   }
 
   fn codepointBitsFromLeadingByte( byte: u8 ) -> u32 {
     let good_bits =
-      if byte & 0b11100000 == UTF8_1BYTE_FOLLOWING {
+      if isAscii( byte ) {
+        byte
+      } else if byte & 0b11100000 == UTF8_1BYTE_FOLLOWING {
         byte & 0b00011111
       } else if byte & 0b11110000 == UTF8_2BYTE_FOLLOWING {
         byte & 0b00001111
@@ -44,10 +29,6 @@ pub fn readCodepoint( input: &[u8] ) -> Option< char > {
   }
 
   match input.get( 0 ) {
-    Some( first_byte ) if isAscii( *first_byte ) => {
-      char::from_u32( *first_byte as u32 )
-    }
-
     Some( first_byte ) => {
       match bytesFollowing( *first_byte ) {
         Some( num_following ) => {
@@ -69,6 +50,26 @@ pub fn readCodepoint( input: &[u8] ) -> Option< char > {
     }
     _ => None
   }
+}
+
+
+pub fn bytesFollowing( byte: u8 ) -> Option< uint > {
+  if isAscii( byte ) {
+    Some( 0 )
+  } else if byte & 0b11100000 == UTF8_1BYTE_FOLLOWING {
+    Some( 1 )
+  } else if byte & 0b11110000 == UTF8_2BYTE_FOLLOWING {
+    Some( 2 )
+  } else if byte & 0b11111000 == UTF8_3BYTE_FOLLOWING {
+    Some( 3 )
+  } else {
+    None
+  }
+}
+
+
+pub fn isAscii( byte: u8 ) -> bool {
+  return byte & 0b10000000 == 0;
 }
 
 
