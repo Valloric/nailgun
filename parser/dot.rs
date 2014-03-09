@@ -23,6 +23,7 @@ impl Expression for DotExpression {
   }
 }
 
+
 #[cfg(test)]
 mod tests {
   use parser::test_utils::ToParseState;
@@ -37,9 +38,9 @@ mod tests {
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ).unwrap(),
                     Node { name: DOT_EXPRESSION,
-                          start: 0,
-                          end: 1,
-                          contents: Data( input ) } );
+                           start: 0,
+                           end: 1,
+                           contents: Data( input ) } );
         assert_eq!( parse_state, ParseState{ input: &[], offset: 1 } );
       }
       _ => fail!( "No match!" )
@@ -52,7 +53,7 @@ mod tests {
     static input: &'static [u8] = bytes!( "葉" );
     match DotExpression.apply( &ToParseState( input ) ) {
       Some( ParseResult{ nodes: nodes,
-                        parse_state: parse_state } ) => {
+                         parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ).unwrap(),
                     Node { name: DOT_EXPRESSION,
                            start: 0,
@@ -70,7 +71,7 @@ mod tests {
     static input: &'static [u8] = bytes!( "xb" );
     match DotExpression.apply( &ToParseState( input ) ) {
       Some( ParseResult{ nodes: nodes,
-                        parse_state: parse_state } ) => {
+                         parse_state: parse_state } ) => {
         assert!( *nodes.get( 0 ).unwrap() ==
                  Node { name: DOT_EXPRESSION,
                         start: 0,
