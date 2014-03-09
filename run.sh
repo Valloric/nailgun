@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rustc -o main main.rs && ./main
+rustc -o /tmp/main main.rs && /tmp/main

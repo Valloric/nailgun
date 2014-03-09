@@ -1,4 +1,4 @@
 #!/bin/bash
 
-rustc --test -o test main.rs && ./test
+rustc --test -o /tmp/test main.rs && /tmp/test
 
