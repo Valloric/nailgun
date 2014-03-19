@@ -1,4 +1,4 @@
-pub static LITERAL_EXPRESSION : &'static str = "LiteralExpression";
+use parser::literal::LITERAL_EXPRESSION;
 
 mod literal;
 mod not;
