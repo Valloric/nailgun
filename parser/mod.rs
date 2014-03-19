@@ -5,7 +5,7 @@ mod not;
 mod and;
 mod char_class;
 mod dot;
-// mod option;
+mod option;
 // mod star;
 // mod plus;
 // mod parens;
