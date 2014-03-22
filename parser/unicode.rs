@@ -73,6 +73,7 @@ pub fn isAscii( byte: u8 ) -> bool {
 }
 
 
+// TODO: delete? Not used anymore, but might be useful in the future.
 pub fn charToUtf8( input: char ) -> Vec<u8> {
   let utf8chars: &mut [u8] = [0, ..4];
   let num_written = input.encode_utf8( utf8chars );
@@ -86,7 +87,7 @@ pub fn charToUtf8( input: char ) -> Vec<u8> {
 
 #[cfg(test)]
 mod tests {
-  use super::{readCodepoint, charToUtf8, UTF8_1BYTE_FOLLOWING};
+  use super::{readCodepoint, UTF8_1BYTE_FOLLOWING};
 
   #[test]
   fn readCodepoint_Roundtrip_SimpleAscii() {
@@ -103,19 +104,19 @@ mod tests {
   #[test]
   fn readCodepoint_Roundtrip_NonAscii() {
     // 2 UTF-8 bytes
-    assert_eq!( '¢', readCodepoint( charToUtf8( '¢' ).as_slice() ).unwrap() );
+    assert_eq!( '¢', readCodepoint( "¢".as_bytes() ).unwrap() );
 
     // 3 UTF-8 bytes
-    assert_eq!( '€', readCodepoint( charToUtf8( '€' ).as_slice() ).unwrap() );
+    assert_eq!( '€', readCodepoint( "€".as_bytes() ).unwrap() );
 
     // 4 UTF-8 bytes
-    assert_eq!( '𤭢', readCodepoint( charToUtf8( '𤭢' ).as_slice() ).unwrap() );
+    assert_eq!( '𤭢', readCodepoint( "𤭢".as_bytes() ).unwrap() );
 
     // Some extras
-    assert_eq!( 'Ć', readCodepoint( charToUtf8( 'Ć' ).as_slice() ).unwrap() );
-    assert_eq!( 'Ө', readCodepoint( charToUtf8( 'Ө' ).as_slice() ).unwrap() );
-    assert_eq!( '自', readCodepoint( charToUtf8( '自' ).as_slice() ).unwrap() );
-    assert_eq!( '由', readCodepoint( charToUtf8( '由' ).as_slice() ).unwrap() );
+    assert_eq!( 'Ć', readCodepoint( "Ć".as_bytes() ).unwrap() );
+    assert_eq!( 'Ө', readCodepoint( "Ө".as_bytes() ).unwrap() );
+    assert_eq!( '自', readCodepoint( "自".as_bytes() ).unwrap() );
+    assert_eq!( '由', readCodepoint( "由".as_bytes() ).unwrap() );
   }
 
 
