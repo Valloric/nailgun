@@ -25,8 +25,8 @@ static SLASH_U8: u8 = '\\' as u8;
 //   http://en.wikipedia.org/wiki/Escape_sequences_in_C
 //   http://en.cppreference.com/w/cpp/language/escape
 // No question mark escape supported because there are no trigraphs in PEG.
-pub fn unescape( input: &[u8] ) -> ~[u8] {
-  let mut final_bytes: ~[u8] = ~[];
+pub fn unescape( input: &[u8] ) -> Vec<u8> {
+  let mut final_bytes = Vec::new();
   let mut index = 0;
   loop {
     // TODO: support \u12345678, not just \u1234
@@ -62,8 +62,8 @@ pub fn unescape( input: &[u8] ) -> ~[u8] {
 }
 
 // TODO: move to somewhere more generic
-pub fn bytes( input: &'static str ) -> ~[u8] {
-  input.to_owned().into_bytes()
+pub fn vecBytes( input: &'static str ) -> Vec<u8> {
+  Vec::from_slice( input.as_bytes() )
 }
 
 
@@ -77,7 +77,7 @@ fn isHex( byte: u8 ) -> bool {
 }
 
 
-fn addFourBytesAsCodepoint( mut input: ~[u8], bytes: [u8, ..4] ) -> ~[u8] {
+fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8, ..4] ) -> Vec<u8> {
   match u32::parse_bytes( bytes, 16 ) {
     Some( x ) => match from_u32( x ) {
       Some( character ) => {
@@ -99,7 +99,7 @@ fn addFourBytesAsCodepoint( mut input: ~[u8], bytes: [u8, ..4] ) -> ~[u8] {
 }
 
 
-fn addTwoBytesAsHex( mut input: ~[u8], bytes: [u8, ..2] ) -> ~[u8] {
+fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8, ..2] ) -> Vec<u8> {
   match u8::parse_bytes( bytes, 16 ) {
     Some( byte ) => input.push( byte ),
     _ => fail!( "Invalid hex escape sequence: \\\\x{}{}",
@@ -110,7 +110,7 @@ fn addTwoBytesAsHex( mut input: ~[u8], bytes: [u8, ..2] ) -> ~[u8] {
 }
 
 
-fn addThreeBytesAsOctal( mut input: ~[u8], bytes: [u8, ..3] ) -> ~[u8] {
+fn addThreeBytesAsOctal( mut input: Vec<u8>, bytes: [u8, ..3] ) -> Vec<u8> {
   match u8::parse_bytes( bytes, 8 ) {
     Some( byte ) => input.push( byte ),
     _ => fail!( "Invalid octal escape sequence: \\\\{}{}{}",
@@ -123,7 +123,7 @@ fn addThreeBytesAsOctal( mut input: ~[u8], bytes: [u8, ..3] ) -> ~[u8] {
 
 
 
-fn addEscapedByte( mut input: ~[u8], byte: u8 ) -> ~[u8] {
+fn addEscapedByte( mut input: Vec<u8>, byte: u8 ) -> Vec<u8> {
   let unescaped_char = match byte {
     A_U8            => Some( '\x07' as u8 ),
     B_U8            => Some( '\x08' as u8 ),
@@ -152,72 +152,72 @@ fn addEscapedByte( mut input: ~[u8], byte: u8 ) -> ~[u8] {
 
 #[cfg(test)]
 mod tests {
-  use super::{unescape, bytes};
+  use super::{unescape, vecBytes};
 
   #[test]
   fn unescape_Nothing() {
-    assert_eq!( unescape( bytes( "foobar" ) ), bytes( "foobar" ) );
-    assert_eq!( unescape( bytes( "123" )    ), bytes( "123" )    );
-    assert_eq!( unescape( bytes( "葉" )     ), bytes( "葉" )     );
-    assert_eq!( unescape( bytes( "a葉8" )   ), bytes( "a葉8" )   );
+    assert_eq!( unescape( bytes!( "foobar" ) ), vecBytes( "foobar" ) );
+    assert_eq!( unescape( bytes!( "123" )    ), vecBytes( "123" )    );
+    assert_eq!( unescape( bytes!( "葉" )     ), vecBytes( "葉" )     );
+    assert_eq!( unescape( bytes!( "a葉8" )   ), vecBytes( "a葉8" )   );
   }
 
   #[test]
   fn unescape_LooksLikeEscapeButNot() {
-    assert_eq!( unescape( bytes( "\\z" ) ), bytes( "\\z" ) );
-    assert_eq!( unescape( bytes( "a\\zg" ) ), bytes( "a\\zg" ) );
+    assert_eq!( unescape( bytes!( "\\z" ) ), vecBytes( "\\z" ) );
+    assert_eq!( unescape( bytes!( "a\\zg" ) ), vecBytes( "a\\zg" ) );
   }
 
   #[test]
   fn unescape_SingleCharEscapeCodes() {
-    assert_eq!( unescape( bytes( "\\a" )  ), bytes( "\x07" ) );
-    assert_eq!( unescape( bytes( "\\b" )  ), bytes( "\x08" ) );
-    assert_eq!( unescape( bytes( "\\f" )  ), bytes( "\x0c" ) );
-    assert_eq!( unescape( bytes( "\\n" )  ), bytes( "\n" )   );
-    assert_eq!( unescape( bytes( "\\r" )  ), bytes( "\r" )   );
-    assert_eq!( unescape( bytes( "\\t" )  ), bytes( "\t" )   );
-    assert_eq!( unescape( bytes( "\\v" )  ), bytes( "\x0b" ) );
-    assert_eq!( unescape( bytes( "\\0" )  ), bytes( "\0" )   );
-    assert_eq!( unescape( bytes( "\\'" )  ), bytes( "\'" )   );
-    assert_eq!( unescape( bytes( "\\\"" ) ), bytes( "\"" )   );
-    assert_eq!( unescape( bytes( "\\\\" ) ), bytes( "\\" )   );
+    assert_eq!( unescape( bytes!( "\\a" )  ), vecBytes( "\x07" ) );
+    assert_eq!( unescape( bytes!( "\\b" )  ), vecBytes( "\x08" ) );
+    assert_eq!( unescape( bytes!( "\\f" )  ), vecBytes( "\x0c" ) );
+    assert_eq!( unescape( bytes!( "\\n" )  ), vecBytes( "\n" )   );
+    assert_eq!( unescape( bytes!( "\\r" )  ), vecBytes( "\r" )   );
+    assert_eq!( unescape( bytes!( "\\t" )  ), vecBytes( "\t" )   );
+    assert_eq!( unescape( bytes!( "\\v" )  ), vecBytes( "\x0b" ) );
+    assert_eq!( unescape( bytes!( "\\0" )  ), vecBytes( "\0" )   );
+    assert_eq!( unescape( bytes!( "\\'" )  ), vecBytes( "\'" )   );
+    assert_eq!( unescape( bytes!( "\\\"" ) ), vecBytes( "\"" )   );
+    assert_eq!( unescape( bytes!( "\\\\" ) ), vecBytes( "\\" )   );
   }
 
   #[test]
   fn unescape_MultipleSingleCharEscapeCodes() {
-    assert_eq!( unescape( bytes( "\\r\\n" ) ), bytes( "\r\n" ) );
-    assert_eq!( unescape( bytes( "\\\\\\\\" ) ), bytes( "\\\\" ) );
+    assert_eq!( unescape( bytes!( "\\r\\n" ) ), vecBytes( "\r\n" ) );
+    assert_eq!( unescape( bytes!( "\\\\\\\\" ) ), vecBytes( "\\\\" ) );
   }
 
   #[test]
   fn unescape_HexEscape() {
-    assert_eq!( unescape( bytes( "\\x4E" ) ), bytes( "N" ) );
-    assert_eq!( unescape( bytes( "\\x4e" ) ), bytes( "N" ) );
-    assert_eq!( unescape( bytes( "\\x00\\x01" ) ), ~[0, 1] );
+    assert_eq!( unescape( bytes!( "\\x4E" ) ), vecBytes( "N" ) );
+    assert_eq!( unescape( bytes!( "\\x4e" ) ), vecBytes( "N" ) );
+    assert_eq!( unescape( bytes!( "\\x00\\x01" ) ), vec!( 0, 1 ) );
   }
 
   #[test]
   fn unescape_HexEscape_Bad() {
-    assert_eq!( unescape( bytes( "\\x" ) ), bytes( "\\x" ) );
-    assert_eq!( unescape( bytes( "\\xgg" ) ), bytes( "\\xgg" ) );
+    assert_eq!( unescape( bytes!( "\\x" ) ), vecBytes( "\\x" ) );
+    assert_eq!( unescape( bytes!( "\\xgg" ) ), vecBytes( "\\xgg" ) );
   }
 
   #[test]
   fn unescape_UnicodeEscape() {
-    assert_eq!( unescape( bytes( "\\u0106" ) ), bytes( "Ć" ) );
-    assert_eq!( unescape( bytes( "\\u0106\\u04E8" ) ), bytes( "ĆӨ" ) );
-    assert_eq!( unescape( bytes( "\\u81EA\\u7531" ) ), bytes( "自由" ) );
+    assert_eq!( unescape( bytes!( "\\u0106" ) ), vecBytes( "Ć" ) );
+    assert_eq!( unescape( bytes!( "\\u0106\\u04E8" ) ), vecBytes( "ĆӨ" ) );
+    assert_eq!( unescape( bytes!( "\\u81EA\\u7531" ) ), vecBytes( "自由" ) );
   }
 
   #[test]
   fn unescape_UnicodeEscape_Bad() {
-    assert_eq!( unescape( bytes( "\\u" ) ), bytes( "\\u" ) );
-    assert_eq!( unescape( bytes( "\\u01x" ) ), bytes( "\\u01x" ) );
+    assert_eq!( unescape( bytes!( "\\u" ) ), vecBytes( "\\u" ) );
+    assert_eq!( unescape( bytes!( "\\u01x" ) ), vecBytes( "\\u01x" ) );
   }
 
   #[test]
   fn unescape_OctalEscape() {
-    assert_eq!( unescape( bytes( "\\001" ) ), ~[1] );
-    assert_eq!( unescape( bytes( "\\157" ) ), ~[111] );
+    assert_eq!( unescape( bytes!( "\\001" ) ), vec!( 1 ) );
+    assert_eq!( unescape( bytes!( "\\157" ) ), vec!( 111 ) );
   }
 }

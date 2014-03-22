@@ -19,7 +19,7 @@ mod test_utils;
 #[deriving(Show, Eq)]
 enum NodeContents<'a> {
   Data( &'a [u8] ),
-  Children( ~[ Node<'a> ] ),
+  Children( Vec<Node<'a>> ),
   Empty
 }
 
@@ -33,7 +33,7 @@ struct Node<'a> {
 }
 
 impl<'a> Node<'a> {
-  // fn matchedData( &self ) -> ~[u8] {
+  // fn matchedData( &self ) -> Vec<u8> {
   //   match self.contents {
   //     Empty => ~"",
   //     Data( ref x ) => x.to_owned(),
@@ -83,7 +83,7 @@ impl<'a> ParseState<'a> {
 }
 
 struct ParseResult<'a> {
-  nodes: ~[ Node<'a> ],
+  nodes: Vec< Node<'a> >,
   parse_state: ParseState<'a>
 }
 
@@ -91,10 +91,10 @@ struct ParseResult<'a> {
 impl<'a> ParseResult<'a> {
   fn oneNode<'a>( node: Node<'a>, parse_state: ParseState<'a> )
       -> ParseResult<'a> {
-    ParseResult { nodes: ~[ node ], parse_state: parse_state }
+    ParseResult { nodes: vec!( node ), parse_state: parse_state }
   }
 
-  fn manyNodes<'a>( nodes: ~[ Node<'a> ], parse_state: ParseState<'a> )
+  fn manyNodes<'a>( nodes: Vec< Node<'a> >, parse_state: ParseState<'a> )
       -> ParseResult<'a> {
     ParseResult { nodes: nodes, parse_state: parse_state }
   }

@@ -4,9 +4,9 @@ use super::{Expression, ParseState, ParseResult};
 
 static CHAR_CLASS_EXPRESSION : &'static str = "CharClassExpression";
 
-fn toU32Vector( input: &[u8] ) -> ~[u32] {
+fn toU32Vector( input: &[u8] ) -> Vec<u32> {
   let mut i = 0;
-  let mut out_vec: ~[u32] = ~[];
+  let mut out_vec = Vec::<u32>::new();
   loop {
     match input.get( i ) {
       Some( byte ) => {
@@ -34,11 +34,11 @@ fn toU32Vector( input: &[u8] ) -> ~[u32] {
 pub struct CharClassExpression {
   // All the single chars in the char class.
   // May be unicode codepoints or binary octets stored as codepoints.
-  single_chars: ~[ u32 ],
+  single_chars: Vec<u32>,
 
   // Sequence of [from, to] (inclusive bounds) char ranges.
   // May be unicode codepoints or binary octets stored as codepoints.
-  ranges: ~[ ( u32, u32 ) ]
+  ranges: Vec<( u32, u32 )>
 }
 
 
@@ -55,21 +55,21 @@ impl CharClassExpression {
       }
     }
 
-    let chars: ~[u32] = toU32Vector( unescape( contents ) );
-    let mut char_class = CharClassExpression { single_chars: ~[],
-                                               ranges: ~[] };
+    let chars = toU32Vector( unescape( contents ).as_slice() );
+    let mut char_class = CharClassExpression { single_chars: Vec::new(),
+                                               ranges: Vec::new() };
     let mut index = 0;
     loop {
-      match rangeAtIndex( index, chars ) {
+      match rangeAtIndex( index, chars.as_slice() ) {
         Some( range ) => {
           char_class.ranges.push( range );
           index += 3;
         }
         _ => {
-          match chars.get( index ) {
-            Some( character ) => char_class.single_chars.push( *character ),
-            _ => break
-          };
+          if index >= chars.len() {
+            break
+          }
+          char_class.single_chars.push( *chars.get( index ) );
           index += 1;
         }
       };
@@ -141,7 +141,7 @@ mod tests {
       Some( ParseResult { nodes: nodes,
                           parse_state: parse_state } ) => {
         let bytes_read = bytesRead( input );
-        assert_eq!( *nodes.get( 0 ).unwrap(),
+        assert_eq!( *nodes.get( 0 ),
                     Node { name: CHAR_CLASS_EXPRESSION,
                            start: 0,
                            end: bytes_read,

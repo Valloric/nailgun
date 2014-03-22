@@ -44,7 +44,7 @@ mod tests {
          &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ).unwrap(), Node::predicate( NOT_EXPRESSION ) );
+        assert_eq!( *nodes.get( 0 ), Node::predicate( NOT_EXPRESSION ) );
         assert_eq!( parse_state, orig_state );
       }
       _ => fail!( "No match." )
@@ -62,7 +62,7 @@ mod tests {
       ~CharClassExpression::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                         parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ).unwrap(), Node::predicate( NOT_EXPRESSION ) );
+        assert_eq!( *nodes.get( 0 ), Node::predicate( NOT_EXPRESSION ) );
         assert_eq!( parse_state, orig_state );
       }
       _ => fail!( "No match." )

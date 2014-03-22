@@ -41,7 +41,7 @@ mod tests {
     match expr.apply( &ToParseState( bytes!( "foobar" ) ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ).unwrap(),
+        assert_eq!( *nodes.get( 0 ),
                     Node { name: LITERAL_EXPRESSION,
                            start: 0,
                            end: 3,

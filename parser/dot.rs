@@ -36,7 +36,7 @@ mod tests {
     match DotExpression.apply( &ToParseState( input ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ).unwrap(),
+        assert_eq!( *nodes.get( 0 ),
                     Node { name: DOT_EXPRESSION,
                            start: 0,
                            end: 1,
@@ -54,7 +54,7 @@ mod tests {
     match DotExpression.apply( &ToParseState( input ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ).unwrap(),
+        assert_eq!( *nodes.get( 0 ),
                     Node { name: DOT_EXPRESSION,
                            start: 0,
                            end: 3,
@@ -69,14 +69,15 @@ mod tests {
   #[test]
   fn DotExpression_Match_InputSeveralChars() {
     static input: &'static [u8] = bytes!( "xb" );
+    static consumed: &'static [u8] = bytes!( "x" );
     match DotExpression.apply( &ToParseState( input ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert!( *nodes.get( 0 ).unwrap() ==
+        assert!( *nodes.get( 0 ) ==
                  Node { name: DOT_EXPRESSION,
                         start: 0,
                         end: 1,
-                        contents: Data( bytes!( "x" ) ) } );
+                        contents: Data( consumed ) } );
         assert_eq!( parse_state, ParseState{ input: bytes!( "b" ),
                                              offset: 1 } );
       }
