@@ -51,7 +51,7 @@ mod tests {
   }
 
   #[test]
-  fn OptionExpression_NoMatch() {
+  fn OptionExpression_Match_Empty() {
     byte_var!(input = "y");
     byte_var!(literal = "x");
     let orig_state = ToParseState( input );
