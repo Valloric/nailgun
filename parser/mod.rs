@@ -49,10 +49,6 @@ impl<'a> Node<'a> {
 
   // TODO: methods in_order/pre_order/post_order that yield
   // iterators for walking the node tree structure
-
-  fn predicate( name: &'static str ) -> Node {
-    Node { name: name, start: 0, end: 0, contents: Empty }
-  }
 }
 
 
@@ -101,6 +97,10 @@ impl<'a> ParseResult<'a> {
   fn manyNodes<'a>( nodes: Vec< Node<'a> >, parse_state: ParseState<'a> )
       -> ParseResult<'a> {
     ParseResult { nodes: nodes, parse_state: parse_state }
+  }
+
+  fn fromParseState<'a>( parse_state: ParseState<'a> ) -> ParseResult<'a> {
+    ParseResult { nodes: vec!(), parse_state: parse_state }
   }
 }
 

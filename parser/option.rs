@@ -1,6 +1,4 @@
-use super::{Expression, Node, ParseState, ParseResult};
-
-static OPTION_EXPRESSION : &'static str = "OptionExpression";
+use super::{Expression, ParseState, ParseResult};
 
 pub struct OptionExpression {
   expr: ~Expression
@@ -19,8 +17,7 @@ impl Expression for OptionExpression {
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
       result @ Some( _ ) => result,
-      _ => Some( ParseResult::oneNode(
-          Node::predicate( OPTION_EXPRESSION ), *parse_state ) )
+      _ => Some( ParseResult::fromParseState( *parse_state ) )
     }
   }
 }
@@ -31,7 +28,7 @@ mod tests {
   use parser::{Node, ParseResult, Expression, Data};
   use parser::literal::{LiteralExpression, LITERAL_EXPRESSION};
   use parser::test_utils::ToParseState;
-  use super::{OptionExpression, OPTION_EXPRESSION};
+  use super::{OptionExpression};
 
   #[test]
   fn OptionExpression_Match_WithLiteral() {
@@ -62,8 +59,7 @@ mod tests {
         &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ),
-                    Node::predicate( OPTION_EXPRESSION ) );
+        assert!( nodes.is_empty() );
         assert_eq!( parse_state, orig_state );
       }
       _ => fail!( "No match." )

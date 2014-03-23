@@ -1,6 +1,4 @@
-use super::{Expression, Node, ParseState, ParseResult};
-
-static NOT_EXPRESSION : &'static str = "NotExpression";
+use super::{Expression, ParseState, ParseResult};
 
 pub struct NotExpression {
   expr: ~Expression
@@ -19,9 +17,7 @@ impl Expression for NotExpression {
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
       Some( _ ) => None,
-      _ => Some(
-        ParseResult::oneNode( Node::predicate( NOT_EXPRESSION ),
-                              *parse_state ) )
+      _ => Some( ParseResult::fromParseState( *parse_state ) )
     }
   }
 }
@@ -29,11 +25,11 @@ impl Expression for NotExpression {
 
 #[cfg(test)]
 mod tests {
-  use parser::{Node, ParseResult, Expression};
+  use parser::{ParseResult, Expression};
   use parser::literal::LiteralExpression;
   use parser::char_class::CharClassExpression;
   use parser::test_utils::ToParseState;
-  use super::{NOT_EXPRESSION, NotExpression};
+  use super::NotExpression;
 
   #[test]
   fn NotExpression_Match_WithLiteral() {
@@ -44,7 +40,7 @@ mod tests {
          &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ), Node::predicate( NOT_EXPRESSION ) );
+        assert!( nodes.is_empty() );
         assert_eq!( parse_state, orig_state );
       }
       _ => fail!( "No match." )
@@ -62,7 +58,7 @@ mod tests {
       ~CharClassExpression::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                         parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ), Node::predicate( NOT_EXPRESSION ) );
+        assert!( nodes.is_empty() );
         assert_eq!( parse_state, orig_state );
       }
       _ => fail!( "No match." )

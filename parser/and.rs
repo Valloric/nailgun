@@ -1,6 +1,4 @@
-use super::{Expression, Node, ParseState, ParseResult};
-
-static AND_EXPRESSION : &'static str = "AndExpression";
+use super::{Expression, ParseState, ParseResult};
 
 pub struct AndExpression {
   expr: ~Expression
@@ -18,9 +16,7 @@ impl Expression for AndExpression {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
-      Some( _ ) => Some(
-        ParseResult::oneNode( Node::predicate( AND_EXPRESSION ),
-                              *parse_state ) ),
+      Some( _ ) => Some( ParseResult::fromParseState( *parse_state ) ),
       _ => None
     }
   }
@@ -29,11 +25,11 @@ impl Expression for AndExpression {
 
 #[cfg(test)]
 mod tests {
-  use parser::{Node, ParseResult, Expression};
+  use parser::{ParseResult, Expression};
   use parser::literal::LiteralExpression;
   use parser::char_class::CharClassExpression;
   use parser::test_utils::ToParseState;
-  use super::{AND_EXPRESSION, AndExpression};
+  use super::AndExpression;
 
   #[test]
   fn AndExpression_Match_WithLiteral() {
@@ -44,8 +40,7 @@ mod tests {
         &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ),
-                    Node::predicate( AND_EXPRESSION ) );
+        assert!( nodes.is_empty() );
         assert_eq!( parse_state, orig_state );
       }
       _ => fail!( "No match." )
@@ -61,8 +56,7 @@ mod tests {
       ~CharClassExpression::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ),
-                    Node::predicate( AND_EXPRESSION ) );
+        assert!( nodes.is_empty() );
         assert_eq!( parse_state, orig_state );
       }
       _ => fail!( "No match." )
