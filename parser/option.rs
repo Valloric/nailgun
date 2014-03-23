@@ -35,8 +35,8 @@ mod tests {
 
   #[test]
   fn OptionExpression_Match_WithLiteral() {
-    static input: &'static [u8] = bytes!( "foo" );
-    static literal: &'static [u8] = bytes!( "foo" );
+    byte_var!(input = "foo");
+    byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
     match OptionExpression::new( ~LiteralExpression::new( literal ) ).apply(
         &orig_state ) {
@@ -55,8 +55,8 @@ mod tests {
 
   #[test]
   fn OptionExpression_NoMatch() {
-    static input: &'static [u8] = bytes!( "y" );
-    static literal: &'static [u8] = bytes!( "x" );
+    byte_var!(input = "y");
+    byte_var!(literal = "x");
     let orig_state = ToParseState( input );
     match OptionExpression::new( ~LiteralExpression::new( literal ) ).apply(
         &orig_state ) {

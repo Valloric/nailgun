@@ -36,7 +36,7 @@ mod tests {
 
   #[test]
   fn LiteralExpression_Match() {
-    static literal: &'static [u8] = bytes!( "foo" );
+    byte_var!(literal = "foo");
     let expr = LiteralExpression::new( literal );
     match expr.apply( &ToParseState( bytes!( "foobar" ) ) ) {
       Some( ParseResult{ nodes: nodes,
@@ -56,7 +56,7 @@ mod tests {
 
   #[test]
   fn LiteralExpression_NoMatch() {
-    static literal: &'static [u8] = bytes!( "zoo" );
+    byte_var!(literal = "zoo");
     let expr = LiteralExpression::new( literal );
     assert!( expr.apply( &ToParseState( bytes!( "foobar" ) ) ).is_none() );
     assert!( expr.apply( &ToParseState( bytes!( "" ) ) ).is_none() );

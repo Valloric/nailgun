@@ -37,8 +37,8 @@ mod tests {
 
   #[test]
   fn AndExpression_Match_WithLiteral() {
-    static input: &'static [u8] = bytes!( "foo" );
-    static literal: &'static [u8] = bytes!( "foo" );
+    byte_var!(input = "foo");
+    byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
     match AndExpression::new( ~LiteralExpression::new( literal ) ).apply(
         &orig_state ) {
@@ -55,7 +55,7 @@ mod tests {
 
   #[test]
   fn AndExpression_Match_WithCharClass() {
-    static input: &'static [u8] = bytes!( "c" );
+    byte_var!(input = "c");
     let orig_state = ToParseState( input );
     match AndExpression::new(
       ~CharClassExpression::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
@@ -76,7 +76,7 @@ mod tests {
         ~CharClassExpression::new( bytes!( "a-z" ) ) ).apply(
         &ToParseState( bytes!( "0" ) ) ).is_none() )
 
-    static literal: &'static [u8] = bytes!( "x" );
+    byte_var!(literal = "x");
     assert!( AndExpression::new( ~LiteralExpression::new( literal ) ).apply(
         &ToParseState( bytes!( "y" ) ) ).is_none() )
   }

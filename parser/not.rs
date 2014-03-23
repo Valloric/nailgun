@@ -37,8 +37,8 @@ mod tests {
 
   #[test]
   fn NotExpression_Match_WithLiteral() {
-    static input: &'static [u8] = bytes!( "zoo" );
-    static literal: &'static [u8] = bytes!( "foo" );
+    byte_var!(input = "zoo");
+    byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
     match NotExpression::new( ~LiteralExpression::new( literal ) ).apply(
          &orig_state ) {
@@ -56,7 +56,7 @@ mod tests {
   fn NotExpression_Match_WithCharClass() {
     // TODO: macro for creating parse state? (auto-create static var)
     // similar code in and.rs
-    static input: &'static [u8] = bytes!( "0" );
+    byte_var!(input = "0");
     let orig_state = ToParseState( input );
     match NotExpression::new(
       ~CharClassExpression::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
@@ -76,7 +76,7 @@ mod tests {
         ~CharClassExpression::new( bytes!( "a-z" ) ) ).apply(
         &ToParseState( bytes!( "b" ) ) ).is_none() )
 
-    static literal: &'static [u8] = bytes!( "x" );
+    byte_var!(literal = "x");
     assert!( NotExpression::new( ~LiteralExpression::new( literal ) ).apply(
         &ToParseState( bytes!( "x" ) ) ).is_none() )
   }

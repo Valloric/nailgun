@@ -1,3 +1,4 @@
+#[feature(macro_rules)];
 
 // TODO: Remove these before releasing!
 #[allow(dead_code)]

@@ -32,7 +32,7 @@ mod tests {
 
   #[test]
   fn DotExpression_Match_InputOneChar() {
-    static input: &'static [u8] = bytes!( "x" );
+    byte_var!(input = "x");
     match DotExpression.apply( &ToParseState( input ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -50,7 +50,7 @@ mod tests {
 
   #[test]
   fn DotExpression_Match_InputOneWideChar() {
-    static input: &'static [u8] = bytes!( "葉" );
+    byte_var!(input = "葉");
     match DotExpression.apply( &ToParseState( input ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -68,8 +68,8 @@ mod tests {
 
   #[test]
   fn DotExpression_Match_InputSeveralChars() {
-    static input: &'static [u8] = bytes!( "xb" );
-    static consumed: &'static [u8] = bytes!( "x" );
+    byte_var!(input = "xb");
+    byte_var!(consumed = "x");
     match DotExpression.apply( &ToParseState( input ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
