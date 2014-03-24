@@ -1,18 +1,18 @@
 use super::{Expression, ParseState, ParseResult};
 
-pub struct StarExpression {
-  expr: ~Expression
+pub struct StarExpression<'a> {
+  expr: &'a Expression
 }
 
 
-impl StarExpression {
-  pub fn new( expr: ~Expression ) -> StarExpression {
+impl<'a> StarExpression<'a> {
+  pub fn new<'a>( expr: &'a Expression ) -> StarExpression<'a> {
     StarExpression { expr: expr }
   }
 }
 
 
-impl Expression for StarExpression {
+impl<'a> Expression for StarExpression<'a> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     let mut final_result = ParseResult::fromParseState( *parse_state );
@@ -42,7 +42,7 @@ mod tests {
     byte_var!(input = "aaa");
     byte_var!(literal = "a");
     let orig_state = ToParseState( input );
-    match StarExpression::new( ~LiteralExpression::new( literal ) ).apply(
+    match StarExpression::new( &LiteralExpression::new( literal ) ).apply(
         &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -71,7 +71,7 @@ mod tests {
     byte_var!(input = "abb");
     byte_var!(literal = "a");
     let orig_state = ToParseState( input );
-    match StarExpression::new( ~LiteralExpression::new( literal ) ).apply(
+    match StarExpression::new( &LiteralExpression::new( literal ) ).apply(
         &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -92,7 +92,7 @@ mod tests {
     byte_var!(input = "y");
     byte_var!(literal = "x");
     let orig_state = ToParseState( input );
-    match StarExpression::new( ~LiteralExpression::new( literal ) ).apply(
+    match StarExpression::new( &LiteralExpression::new( literal ) ).apply(
         &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {

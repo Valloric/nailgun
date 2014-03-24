@@ -1,18 +1,18 @@
 use super::{Expression, ParseState, ParseResult};
 
-pub struct OptionExpression {
-  expr: ~Expression
+pub struct OptionExpression<'a> {
+  expr: &'a Expression
 }
 
 
-impl OptionExpression {
-  pub fn new( expr: ~Expression ) -> OptionExpression {
+impl<'a> OptionExpression<'a> {
+  pub fn new( expr: &'a Expression ) -> OptionExpression<'a> {
     OptionExpression { expr: expr }
   }
 }
 
 
-impl Expression for OptionExpression {
+impl<'a> Expression for OptionExpression<'a> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
@@ -35,7 +35,7 @@ mod tests {
     byte_var!(input = "foo");
     byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
-    match OptionExpression::new( ~LiteralExpression::new( literal ) ).apply(
+    match OptionExpression::new( &LiteralExpression::new( literal ) ).apply(
         &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -55,7 +55,7 @@ mod tests {
     byte_var!(input = "y");
     byte_var!(literal = "x");
     let orig_state = ToParseState( input );
-    match OptionExpression::new( ~LiteralExpression::new( literal ) ).apply(
+    match OptionExpression::new( &LiteralExpression::new( literal ) ).apply(
         &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {

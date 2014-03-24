@@ -1,18 +1,18 @@
 use super::{Expression, ParseState, ParseResult};
 
-pub struct NotExpression {
-  expr: ~Expression
+pub struct NotExpression<'a> {
+  expr: &'a Expression
 }
 
 
-impl NotExpression {
-  pub fn new( expr: ~Expression ) -> NotExpression {
+impl<'a> NotExpression<'a> {
+  pub fn new<'a>( expr: &'a Expression ) -> NotExpression<'a> {
     NotExpression { expr: expr }
   }
 }
 
 
-impl Expression for NotExpression {
+impl<'a> Expression for NotExpression<'a> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
@@ -36,7 +36,7 @@ mod tests {
     byte_var!(input = "zoo");
     byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
-    match NotExpression::new( ~LiteralExpression::new( literal ) ).apply(
+    match NotExpression::new( &LiteralExpression::new( literal ) ).apply(
          &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -55,7 +55,7 @@ mod tests {
     byte_var!(input = "0");
     let orig_state = ToParseState( input );
     match NotExpression::new(
-      ~CharClassExpression::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
+      &CharClassExpression::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                         parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -69,11 +69,11 @@ mod tests {
   #[test]
   fn NotExpression_NoMatch() {
     assert!( NotExpression::new(
-        ~CharClassExpression::new( bytes!( "a-z" ) ) ).apply(
+        &CharClassExpression::new( bytes!( "a-z" ) ) ).apply(
         &ToParseState( bytes!( "b" ) ) ).is_none() )
 
     byte_var!(literal = "x");
-    assert!( NotExpression::new( ~LiteralExpression::new( literal ) ).apply(
+    assert!( NotExpression::new( &LiteralExpression::new( literal ) ).apply(
         &ToParseState( bytes!( "x" ) ) ).is_none() )
   }
 }

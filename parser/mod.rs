@@ -12,7 +12,6 @@ mod dot;
 mod option;
 mod star;
 mod plus;
-// mod parens;
 // mod or;
 // mod sequence;
 mod unicode;
