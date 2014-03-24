@@ -1,31 +1,38 @@
 use super::{Expression, ParseState, ParseResult};
 
-pub struct StarExpression {
+pub struct PlusExpression {
   expr: ~Expression
 }
 
 
-impl StarExpression {
-  pub fn new( expr: ~Expression ) -> StarExpression {
-    StarExpression { expr: expr }
+impl PlusExpression {
+  pub fn new( expr: ~Expression ) -> PlusExpression {
+    PlusExpression { expr: expr }
   }
 }
 
 
-impl Expression for StarExpression {
+impl Expression for PlusExpression {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     let mut final_result = ParseResult::fromParseState( *parse_state );
+    let mut num_matches = 0;
     loop {
       match self.expr.apply( &final_result.parse_state ) {
         Some( result ) => {
           final_result.parse_state = result.parse_state;
           final_result.nodes.push_all_move( result.nodes );
+          num_matches += 1;
         }
         _ => break
       }
     }
-    Some( final_result )
+
+    if num_matches > 0 {
+      Some( final_result )
+    } else {
+      None
+    }
   }
 }
 
@@ -35,14 +42,14 @@ mod tests {
   use parser::{Node, ParseResult, Expression, Data};
   use parser::literal::{LiteralExpression, LITERAL_EXPRESSION};
   use parser::test_utils::ToParseState;
-  use super::{StarExpression};
+  use super::{PlusExpression};
 
   #[test]
-  fn StarExpression_Match() {
+  fn PlusExpression_Match() {
     byte_var!(input = "aaa");
     byte_var!(literal = "a");
     let orig_state = ToParseState( input );
-    match StarExpression::new( ~LiteralExpression::new( literal ) ).apply(
+    match PlusExpression::new( ~LiteralExpression::new( literal ) ).apply(
         &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -67,11 +74,11 @@ mod tests {
     }
   }
 
-  fn StarExpression_Match_JustOne() {
+  fn PlusExpression_Match_JustOne() {
     byte_var!(input = "abb");
     byte_var!(literal = "a");
     let orig_state = ToParseState( input );
-    match StarExpression::new( ~LiteralExpression::new( literal ) ).apply(
+    match PlusExpression::new( ~LiteralExpression::new( literal ) ).apply(
         &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -88,18 +95,15 @@ mod tests {
 
 
   #[test]
-  fn StarExpression_Match_Empty() {
+  fn PlusExpression_NoMatch() {
     byte_var!(input = "y");
     byte_var!(literal = "x");
     let orig_state = ToParseState( input );
-    match StarExpression::new( ~LiteralExpression::new( literal ) ).apply(
+    match PlusExpression::new( ~LiteralExpression::new( literal ) ).apply(
         &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
-        assert!( nodes.is_empty() );
-        assert_eq!( parse_state, orig_state );
-      }
-      _ => fail!( "No match." )
+      None => (),
+      _ => fail!( "Should not match." ),
     }
   }
 }
+

@@ -11,7 +11,7 @@ mod char_class;
 mod dot;
 mod option;
 mod star;
-// mod plus;
+mod plus;
 // mod parens;
 // mod or;
 // mod sequence;
