@@ -67,6 +67,7 @@ mod tests {
     }
   }
 
+  #[test]
   fn StarExpression_Match_JustOne() {
     byte_var!(input = "abb");
     byte_var!(literal = "a");

@@ -6,25 +6,23 @@ static CHAR_CLASS_EXPRESSION : &'static str = "CharClassExpression";
 
 fn toU32Vector( input: &[u8] ) -> Vec<u32> {
   let mut i = 0;
-  let mut out_vec = Vec::<u32>::new();
+  let mut out_vec : Vec<u32> = vec!();
   loop {
     match input.get( i ) {
-      Some( byte ) => {
-        match bytesFollowing( *byte ) {
-          Some( num_following ) => {
-            if num_following > 0 {
-              match readCodepoint( input.slice_from( i ) ) {
-                Some( ch ) => {
-                  out_vec.push( ch as u32 );
-                  i += num_following + 1
-                }
-                _ => { out_vec.push( *byte as u32 ); i += 1 }
+      Some( byte ) => match bytesFollowing( *byte ) {
+        Some( num_following ) => {
+          if num_following > 0 {
+            match readCodepoint( input.slice_from( i ) ) {
+              Some( ch ) => {
+                out_vec.push( ch as u32 );
+                i += num_following + 1
               }
-            } else { out_vec.push( *byte as u32 ); i += 1 }
-          }
-          _ => { out_vec.push( *byte as u32 ); i += 1 }
+              _ => { out_vec.push( *byte as u32 ); i += 1 }
+            };
+          } else { out_vec.push( *byte as u32 ); i += 1 }
         }
-      }
+        _ => { out_vec.push( *byte as u32 ); i += 1 }
+      },
       _ => return out_vec
     }
   }

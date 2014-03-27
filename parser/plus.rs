@@ -74,6 +74,7 @@ mod tests {
     }
   }
 
+  #[test]
   fn PlusExpression_Match_JustOne() {
     byte_var!(input = "abb");
     byte_var!(literal = "a");

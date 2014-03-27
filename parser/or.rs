@@ -56,7 +56,6 @@ mod tests {
     }
   }
 
-
   #[test]
   fn OrExpression_Match_SecondExpr() {
     byte_var!(input = "a");
