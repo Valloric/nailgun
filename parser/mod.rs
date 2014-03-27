@@ -13,7 +13,7 @@ mod option;
 mod star;
 mod plus;
 mod or;
-// mod sequence;
+mod sequence;
 mod unicode;
 mod unescape;
 mod test_utils;

@@ -108,6 +108,7 @@ mod tests {
     byte_var!(literal1 = "b");
     byte_var!(literal2 = "c");
     let orig_state = ToParseState( input );
+
     assert!( OrExpression::new(
       &[&LiteralExpression::new( literal1 ) as &Expression,
         &LiteralExpression::new( literal2 ) as &Expression] ).apply(
