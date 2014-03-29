@@ -35,6 +35,8 @@ mod plus;
 mod or;
 #[macro_escape]
 mod sequence;
+#[macro_escape]
+mod wrap;
 mod unicode;
 mod unescape;
 
@@ -126,8 +128,11 @@ impl<'a> ParseResult<'a> {
 
 
 pub trait Expression {
-  fn apply<'a>( &self, parse_state: &ParseState<'a> ) -> Option< ParseResult<'a> >;
+  fn apply<'a>( &self, parse_state: &ParseState<'a> )
+      -> Option< ParseResult<'a> >;
 }
+
+type Rule = fn<'a>( &ParseState<'a> ) -> Option< ParseResult<'a> >;
 
 
 // TODO: We should pass around the lifetime of 'input' to other functions and
