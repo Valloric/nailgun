@@ -1,18 +1,18 @@
 use super::{Expression, ParseState, ParseResult};
 
-pub struct AndExpression<'a> {
+pub struct And<'a> {
   expr: &'a Expression
 }
 
 
-impl<'a> AndExpression<'a> {
-  pub fn new( expr: &'a Expression ) -> AndExpression<'a> {
-    AndExpression { expr: expr }
+impl<'a> And<'a> {
+  pub fn new( expr: &'a Expression ) -> And<'a> {
+    And { expr: expr }
   }
 }
 
 
-impl<'a> Expression for AndExpression<'a> {
+impl<'a> Expression for And<'a> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
@@ -26,17 +26,17 @@ impl<'a> Expression for AndExpression<'a> {
 #[cfg(test)]
 mod tests {
   use base::{ParseResult, Expression};
-  use base::literal::LiteralExpression;
-  use base::char_class::CharClassExpression;
+  use base::literal::Literal;
+  use base::char_class::CharClass;
   use base::test_utils::ToParseState;
-  use super::AndExpression;
+  use super::And;
 
   #[test]
-  fn AndExpression_Match_WithLiteral() {
+  fn And_Match_WithLiteral() {
     byte_var!(input = "foo");
     byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
-    match AndExpression::new( &LiteralExpression::new( literal ) ).apply(
+    match And::new( &Literal::new( literal ) ).apply(
         &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -49,11 +49,11 @@ mod tests {
 
 
   #[test]
-  fn AndExpression_Match_WithCharClass() {
+  fn And_Match_WithCharClass() {
     byte_var!(input = "c");
     let orig_state = ToParseState( input );
-    match AndExpression::new(
-      &CharClassExpression::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
+    match And::new(
+      &CharClass::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -65,13 +65,13 @@ mod tests {
 
 
   #[test]
-  fn AndExpression_NoMatch() {
-    assert!( AndExpression::new(
-        &CharClassExpression::new( bytes!( "a-z" ) ) ).apply(
+  fn And_NoMatch() {
+    assert!( And::new(
+        &CharClass::new( bytes!( "a-z" ) ) ).apply(
         &ToParseState( bytes!( "0" ) ) ).is_none() )
 
     byte_var!(literal = "x");
-    assert!( AndExpression::new( &LiteralExpression::new( literal ) ).apply(
+    assert!( And::new( &Literal::new( literal ) ).apply(
         &ToParseState( bytes!( "y" ) ) ).is_none() )
   }
 }

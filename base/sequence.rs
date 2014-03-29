@@ -1,18 +1,18 @@
 use super::{Expression, ParseState, ParseResult};
 
-pub struct SequenceExpression<'a> {
+pub struct Sequence<'a> {
   exprs: &'a [&'a Expression]
 }
 
 
-impl<'a> SequenceExpression<'a> {
-  pub fn new<'a>( exprs: &'a [&Expression] ) -> SequenceExpression<'a> {
-    SequenceExpression { exprs: exprs }
+impl<'a> Sequence<'a> {
+  pub fn new<'a>( exprs: &'a [&Expression] ) -> Sequence<'a> {
+    Sequence { exprs: exprs }
   }
 }
 
 
-impl<'a> Expression for SequenceExpression<'a> {
+impl<'a> Expression for Sequence<'a> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     let mut final_result = ParseResult::fromParseState( *parse_state );
@@ -33,19 +33,19 @@ impl<'a> Expression for SequenceExpression<'a> {
 #[cfg(test)]
 mod tests {
   use base::{Node, ParseResult, Expression, Data};
-  use base::literal::{LiteralExpression, LITERAL_EXPRESSION};
+  use base::literal::{Literal, LITERAL_EXPRESSION};
   use base::test_utils::ToParseState;
-  use super::{SequenceExpression};
+  use super::{Sequence};
 
   #[test]
-  fn SequenceExpression_Match() {
+  fn Sequence_Match() {
     byte_var!(input = "ab");
     byte_var!(literal1 = "a");
     byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
-    match SequenceExpression::new(
-      &[&LiteralExpression::new( literal1 ) as &Expression,
-        &LiteralExpression::new( literal2 ) as &Expression] ).apply(
+    match Sequence::new(
+      &[&Literal::new( literal1 ) as &Expression,
+        &Literal::new( literal2 ) as &Expression] ).apply(
           &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -66,15 +66,15 @@ mod tests {
   }
 
   #[test]
-  fn SequenceExpression_NoMatch() {
+  fn Sequence_NoMatch() {
     byte_var!(input = "aa");
     byte_var!(literal1 = "a");
     byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
 
-    assert!( SequenceExpression::new(
-      &[&LiteralExpression::new( literal1 ) as &Expression,
-        &LiteralExpression::new( literal2 ) as &Expression] ).apply(
+    assert!( Sequence::new(
+      &[&Literal::new( literal1 ) as &Expression,
+        &Literal::new( literal2 ) as &Expression] ).apply(
           &orig_state ).is_none() )
   }
 }

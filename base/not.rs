@@ -1,18 +1,18 @@
 use super::{Expression, ParseState, ParseResult};
 
-pub struct NotExpression<'a> {
+pub struct NotEx<'a> {
   expr: &'a Expression
 }
 
 
-impl<'a> NotExpression<'a> {
-  pub fn new<'a>( expr: &'a Expression ) -> NotExpression<'a> {
-    NotExpression { expr: expr }
+impl<'a> NotEx<'a> {
+  pub fn new<'a>( expr: &'a Expression ) -> NotEx<'a> {
+    NotEx { expr: expr }
   }
 }
 
 
-impl<'a> Expression for NotExpression<'a> {
+impl<'a> Expression for NotEx<'a> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
@@ -26,17 +26,17 @@ impl<'a> Expression for NotExpression<'a> {
 #[cfg(test)]
 mod tests {
   use base::{ParseResult, Expression};
-  use base::literal::LiteralExpression;
-  use base::char_class::CharClassExpression;
+  use base::literal::Literal;
+  use base::char_class::CharClass;
   use base::test_utils::ToParseState;
-  use super::NotExpression;
+  use super::NotEx;
 
   #[test]
-  fn NotExpression_Match_WithLiteral() {
+  fn NotEx_Match_WithLiteral() {
     byte_var!(input = "zoo");
     byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
-    match NotExpression::new( &LiteralExpression::new( literal ) ).apply(
+    match NotEx::new( &Literal::new( literal ) ).apply(
          &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -49,13 +49,13 @@ mod tests {
 
 
   #[test]
-  fn NotExpression_Match_WithCharClass() {
+  fn NotEx_Match_WithCharClass() {
     // TODO: macro for creating parse state? (auto-create static var)
     // similar code in and.rs
     byte_var!(input = "0");
     let orig_state = ToParseState( input );
-    match NotExpression::new(
-      &CharClassExpression::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
+    match NotEx::new(
+      &CharClass::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                         parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -67,13 +67,13 @@ mod tests {
 
 
   #[test]
-  fn NotExpression_NoMatch() {
-    assert!( NotExpression::new(
-        &CharClassExpression::new( bytes!( "a-z" ) ) ).apply(
+  fn NotEx_NoMatch() {
+    assert!( NotEx::new(
+        &CharClass::new( bytes!( "a-z" ) ) ).apply(
         &ToParseState( bytes!( "b" ) ) ).is_none() )
 
     byte_var!(literal = "x");
-    assert!( NotExpression::new( &LiteralExpression::new( literal ) ).apply(
+    assert!( NotEx::new( &Literal::new( literal ) ).apply(
         &ToParseState( bytes!( "x" ) ) ).is_none() )
   }
 }

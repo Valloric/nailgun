@@ -1,6 +1,6 @@
 #[feature(macro_rules)];
 
-use base::{ParseState, ParseResult, NotExpression, DotExpression, Expression};
+use base::{ParseState, ParseResult, NotEx, Dot, Expression};
 
 // macro_escape makes macros from annotated module visible in the "super"
 // module... and thus in the children of the "super" module as well.
@@ -18,7 +18,7 @@ macro_rules! rule(
   );
 )
 
-rule!( EndOfFile <- NotExpression::new( &DotExpression ) )
+rule!( EndOfFile <- NotEx::new( &Dot ) )
 
 #[cfg(test)]
 mod tests {

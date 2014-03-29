@@ -1,18 +1,18 @@
 use super::{Expression, ParseState, ParseResult};
 
-pub struct OrExpression<'a> {
+pub struct Or<'a> {
   exprs: &'a [&'a Expression]
 }
 
 
-impl<'a> OrExpression<'a> {
-  pub fn new<'a>( exprs: &'a [&Expression] ) -> OrExpression<'a> {
-    OrExpression { exprs: exprs }
+impl<'a> Or<'a> {
+  pub fn new<'a>( exprs: &'a [&Expression] ) -> Or<'a> {
+    Or { exprs: exprs }
   }
 }
 
 
-impl<'a> Expression for OrExpression<'a> {
+impl<'a> Expression for Or<'a> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     for expr in self.exprs.iter() {
@@ -29,19 +29,19 @@ impl<'a> Expression for OrExpression<'a> {
 #[cfg(test)]
 mod tests {
   use base::{Node, ParseResult, Expression, Data};
-  use base::literal::{LiteralExpression, LITERAL_EXPRESSION};
+  use base::literal::{Literal, LITERAL_EXPRESSION};
   use base::test_utils::ToParseState;
-  use super::{OrExpression};
+  use super::{Or};
 
   #[test]
-  fn OrExpression_Match_FirstExpr() {
+  fn Or_Match_FirstExpr() {
     byte_var!(input = "a");
     byte_var!(literal1 = "a");
     byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
-    match OrExpression::new(
-      &[&LiteralExpression::new( literal1 ) as &Expression,
-        &LiteralExpression::new( literal2 ) as &Expression] ).apply(
+    match Or::new(
+      &[&Literal::new( literal1 ) as &Expression,
+        &Literal::new( literal2 ) as &Expression] ).apply(
           &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -57,14 +57,14 @@ mod tests {
   }
 
   #[test]
-  fn OrExpression_Match_SecondExpr() {
+  fn Or_Match_SecondExpr() {
     byte_var!(input = "a");
     byte_var!(literal1 = "b");
     byte_var!(literal2 = "a");
     let orig_state = ToParseState( input );
-    match OrExpression::new(
-      &[&LiteralExpression::new( literal1 ) as &Expression,
-        &LiteralExpression::new( literal2 ) as &Expression] ).apply(
+    match Or::new(
+      &[&Literal::new( literal1 ) as &Expression,
+        &Literal::new( literal2 ) as &Expression] ).apply(
           &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -80,14 +80,14 @@ mod tests {
   }
 
   #[test]
-  fn OrExpression_Match_FirstExprIfBoth() {
+  fn Or_Match_FirstExprIfBoth() {
     byte_var!(input = "a");
     byte_var!(literal1 = "a");
     byte_var!(literal2 = "a");
     let orig_state = ToParseState( input );
-    match OrExpression::new(
-      &[&LiteralExpression::new( literal1 ) as &Expression,
-        &LiteralExpression::new( literal2 ) as &Expression] ).apply(
+    match Or::new(
+      &[&Literal::new( literal1 ) as &Expression,
+        &Literal::new( literal2 ) as &Expression] ).apply(
           &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -103,15 +103,15 @@ mod tests {
   }
 
   #[test]
-  fn OrExpression_NoMatch() {
+  fn Or_NoMatch() {
     byte_var!(input = "a");
     byte_var!(literal1 = "b");
     byte_var!(literal2 = "c");
     let orig_state = ToParseState( input );
 
-    assert!( OrExpression::new(
-      &[&LiteralExpression::new( literal1 ) as &Expression,
-        &LiteralExpression::new( literal2 ) as &Expression] ).apply(
+    assert!( Or::new(
+      &[&Literal::new( literal1 ) as &Expression,
+        &Literal::new( literal2 ) as &Expression] ).apply(
           &orig_state ).is_none() )
   }
 }

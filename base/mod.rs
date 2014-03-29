@@ -1,15 +1,15 @@
 #[cfg(not(test))]
 use base::literal::LITERAL_EXPRESSION;
 
-pub use self::not::NotExpression;
-pub use self::and::AndExpression;
-pub use self::char_class::CharClassExpression;
-pub use self::dot::DotExpression;
-pub use self::option::OptionExpression;
-pub use self::star::StarExpression;
-pub use self::plus::PlusExpression;
-pub use self::or::OrExpression;
-pub use self::sequence::SequenceExpression;
+pub use self::not::NotEx;
+pub use self::and::And;
+pub use self::char_class::CharClass;
+pub use self::dot::Dot;
+pub use self::option::OptionEx;
+pub use self::star::Star;
+pub use self::plus::Plus;
+pub use self::or::Or;
+pub use self::sequence::Sequence;
 
 mod literal;
 mod not;

@@ -1,10 +1,10 @@
 use super::{Expression, ParseState, ParseResult};
 use base::unicode::{bytesFollowing, readCodepoint};
 
-static DOT_EXPRESSION : &'static str = "DotExpression";
+static DOT_EXPRESSION : &'static str = "Dot";
 
-pub struct DotExpression;
-impl Expression for DotExpression {
+pub struct Dot;
+impl Expression for Dot {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) -> Option< ParseResult<'a> > {
     match readCodepoint( parse_state.input ) {
       Some( _ ) => {
@@ -27,13 +27,13 @@ impl Expression for DotExpression {
 #[cfg(test)]
 mod tests {
   use base::test_utils::ToParseState;
-  use super::{DotExpression, DOT_EXPRESSION};
+  use super::{Dot, DOT_EXPRESSION};
   use base::{Node, Data, ParseResult, ParseState, Expression};
 
   #[test]
-  fn DotExpression_Match_InputOneChar() {
+  fn Dot_Match_InputOneChar() {
     byte_var!(input = "x");
-    match DotExpression.apply( &ToParseState( input ) ) {
+    match Dot.apply( &ToParseState( input ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -49,9 +49,9 @@ mod tests {
 
 
   #[test]
-  fn DotExpression_Match_InputOneWideChar() {
+  fn Dot_Match_InputOneWideChar() {
     byte_var!(input = "葉");
-    match DotExpression.apply( &ToParseState( input ) ) {
+    match Dot.apply( &ToParseState( input ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -67,10 +67,10 @@ mod tests {
 
 
   #[test]
-  fn DotExpression_Match_InputSeveralChars() {
+  fn Dot_Match_InputSeveralChars() {
     byte_var!(input = "xb");
     byte_var!(consumed = "x");
-    match DotExpression.apply( &ToParseState( input ) ) {
+    match Dot.apply( &ToParseState( input ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( *nodes.get( 0 ) ==
@@ -87,7 +87,7 @@ mod tests {
 
 
   #[test]
-  fn DotExpression_NoMatch() {
-    assert!( DotExpression.apply( &ToParseState( bytes!( "" ) ) ).is_none() )
+  fn Dot_NoMatch() {
+    assert!( Dot.apply( &ToParseState( bytes!( "" ) ) ).is_none() )
   }
 }

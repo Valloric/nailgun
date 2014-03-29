@@ -1,18 +1,18 @@
 use super::{Expression, ParseState, ParseResult};
 
-pub struct OptionExpression<'a> {
+pub struct OptionEx<'a> {
   expr: &'a Expression
 }
 
 
-impl<'a> OptionExpression<'a> {
-  pub fn new( expr: &'a Expression ) -> OptionExpression<'a> {
-    OptionExpression { expr: expr }
+impl<'a> OptionEx<'a> {
+  pub fn new( expr: &'a Expression ) -> OptionEx<'a> {
+    OptionEx { expr: expr }
   }
 }
 
 
-impl<'a> Expression for OptionExpression<'a> {
+impl<'a> Expression for OptionEx<'a> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
@@ -26,16 +26,16 @@ impl<'a> Expression for OptionExpression<'a> {
 #[cfg(test)]
 mod tests {
   use base::{Node, ParseResult, Expression, Data};
-  use base::literal::{LiteralExpression, LITERAL_EXPRESSION};
+  use base::literal::{Literal, LITERAL_EXPRESSION};
   use base::test_utils::ToParseState;
-  use super::{OptionExpression};
+  use super::{OptionEx};
 
   #[test]
-  fn OptionExpression_Match_WithLiteral() {
+  fn OptionEx_Match_WithLiteral() {
     byte_var!(input = "foo");
     byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
-    match OptionExpression::new( &LiteralExpression::new( literal ) ).apply(
+    match OptionEx::new( &Literal::new( literal ) ).apply(
         &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -51,11 +51,11 @@ mod tests {
   }
 
   #[test]
-  fn OptionExpression_Match_Empty() {
+  fn OptionEx_Match_Empty() {
     byte_var!(input = "y");
     byte_var!(literal = "x");
     let orig_state = ToParseState( input );
-    match OptionExpression::new( &LiteralExpression::new( literal ) ).apply(
+    match OptionEx::new( &Literal::new( literal ) ).apply(
         &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
