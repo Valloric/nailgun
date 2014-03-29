@@ -12,14 +12,22 @@ pub use self::or::Or;
 pub use self::sequence::Sequence;
 
 mod literal;
+#[macro_escape]
 mod not;
+#[macro_escape]
 mod and;
+#[macro_escape]
 mod char_class;
 mod dot;
+#[macro_escape]
 mod option;
+#[macro_escape]
 mod star;
+#[macro_escape]
 mod plus;
+#[macro_escape]
 mod or;
+#[macro_escape]
 mod sequence;
 mod unicode;
 mod unescape;

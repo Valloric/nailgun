@@ -6,6 +6,8 @@ use base::{ParseState, ParseResult, NotEx, Dot, Expression};
 // module... and thus in the children of the "super" module as well.
 #[macro_escape]
 mod macros;
+
+#[macro_escape]
 mod base;
 
 macro_rules! rule(
@@ -18,7 +20,7 @@ macro_rules! rule(
   );
 )
 
-rule!( EndOfFile <- NotEx::new( &Dot ) )
+rule!( EndOfFile <- not!( &Dot ) )
 
 #[cfg(test)]
 mod tests {

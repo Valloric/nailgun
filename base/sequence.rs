@@ -1,5 +1,7 @@
 use super::{Expression, ParseState, ParseResult};
 
+macro_rules! seq( ( $( $ex:expr ),* ) => ( Sequence::new( &[ $( $ex ),* ] ) ); )
+
 pub struct Sequence<'a> {
   exprs: &'a [&'a Expression]
 }
@@ -43,9 +45,9 @@ mod tests {
     byte_var!(literal1 = "a");
     byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
-    match Sequence::new(
-      &[&Literal::new( literal1 ) as &Expression,
-        &Literal::new( literal2 ) as &Expression] ).apply(
+    match seq!(
+      &Literal::new( literal1 ) as &Expression,
+      &Literal::new( literal2 ) as &Expression ).apply(
           &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -72,9 +74,9 @@ mod tests {
     byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
 
-    assert!( Sequence::new(
-      &[&Literal::new( literal1 ) as &Expression,
-        &Literal::new( literal2 ) as &Expression] ).apply(
+    assert!( seq!(
+      &Literal::new( literal1 ) as &Expression,
+      &Literal::new( literal2 ) as &Expression ).apply(
           &orig_state ).is_none() )
   }
 }

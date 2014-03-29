@@ -1,5 +1,7 @@
 use super::{Expression, ParseState, ParseResult};
 
+macro_rules! star( ( $ex:expr ) => ( Star::new( $ex ) ); )
+
 pub struct Star<'a> {
   expr: &'a Expression
 }
@@ -42,8 +44,7 @@ mod tests {
     byte_var!(input = "aaa");
     byte_var!(literal = "a");
     let orig_state = ToParseState( input );
-    match Star::new( &Literal::new( literal ) ).apply(
-        &orig_state ) {
+    match star!( &Literal::new( literal ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -72,8 +73,7 @@ mod tests {
     byte_var!(input = "abb");
     byte_var!(literal = "a");
     let orig_state = ToParseState( input );
-    match Star::new( &Literal::new( literal ) ).apply(
-        &orig_state ) {
+    match star!( &Literal::new( literal ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -93,8 +93,7 @@ mod tests {
     byte_var!(input = "y");
     byte_var!(literal = "x");
     let orig_state = ToParseState( input );
-    match Star::new( &Literal::new( literal ) ).apply(
-        &orig_state ) {
+    match star!( &Literal::new( literal ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );

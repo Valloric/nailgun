@@ -1,5 +1,7 @@
 use super::{Expression, ParseState, ParseResult};
 
+macro_rules! and( ( $ex:expr ) => ( And::new( $ex ) ); )
+
 pub struct And<'a> {
   expr: &'a Expression
 }
@@ -36,8 +38,7 @@ mod tests {
     byte_var!(input = "foo");
     byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
-    match And::new( &Literal::new( literal ) ).apply(
-        &orig_state ) {
+    match and!( &Literal::new( literal ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -52,8 +53,7 @@ mod tests {
   fn And_Match_WithCharClass() {
     byte_var!(input = "c");
     let orig_state = ToParseState( input );
-    match And::new(
-      &CharClass::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
+    match and!( &CharClass::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -66,12 +66,11 @@ mod tests {
 
   #[test]
   fn And_NoMatch() {
-    assert!( And::new(
-        &CharClass::new( bytes!( "a-z" ) ) ).apply(
+    assert!( and!( &CharClass::new( bytes!( "a-z" ) ) ).apply(
         &ToParseState( bytes!( "0" ) ) ).is_none() )
 
     byte_var!(literal = "x");
-    assert!( And::new( &Literal::new( literal ) ).apply(
+    assert!( and!( &Literal::new( literal ) ).apply(
         &ToParseState( bytes!( "y" ) ) ).is_none() )
   }
 }

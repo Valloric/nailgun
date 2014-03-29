@@ -1,5 +1,7 @@
 use super::{Expression, ParseState, ParseResult};
 
+macro_rules! not( ( $ex:expr ) => ( NotEx::new($ex) ); )
+
 pub struct NotEx<'a> {
   expr: &'a Expression
 }
@@ -36,8 +38,7 @@ mod tests {
     byte_var!(input = "zoo");
     byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
-    match NotEx::new( &Literal::new( literal ) ).apply(
-         &orig_state ) {
+    match not!( &Literal::new( literal ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -54,8 +55,7 @@ mod tests {
     // similar code in and.rs
     byte_var!(input = "0");
     let orig_state = ToParseState( input );
-    match NotEx::new(
-      &CharClass::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
+    match not!( &CharClass::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                         parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -68,12 +68,11 @@ mod tests {
 
   #[test]
   fn NotEx_NoMatch() {
-    assert!( NotEx::new(
-        &CharClass::new( bytes!( "a-z" ) ) ).apply(
+    assert!( not!( &CharClass::new( bytes!( "a-z" ) ) ).apply(
         &ToParseState( bytes!( "b" ) ) ).is_none() )
 
     byte_var!(literal = "x");
-    assert!( NotEx::new( &Literal::new( literal ) ).apply(
+    assert!( not!( &Literal::new( literal ) ).apply(
         &ToParseState( bytes!( "x" ) ) ).is_none() )
   }
 }
