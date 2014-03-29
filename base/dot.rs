@@ -7,7 +7,7 @@ pub struct DotExpression;
 impl Expression for DotExpression {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) -> Option< ParseResult<'a> > {
     match readCodepoint( parse_state.input ) {
-      Some( ch ) => {
+      Some( _ ) => {
         let num_following = bytesFollowing( parse_state.input[ 0 ] ).unwrap();
         return parse_state.nameAndOffsetToResult(
           DOT_EXPRESSION, parse_state.offset + num_following + 1 )

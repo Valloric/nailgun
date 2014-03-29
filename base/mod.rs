@@ -1,4 +1,15 @@
+#[cfg(not(test))]
 use base::literal::LITERAL_EXPRESSION;
+
+pub use self::not::NotExpression;
+pub use self::and::AndExpression;
+pub use self::char_class::CharClassExpression;
+pub use self::dot::DotExpression;
+pub use self::option::OptionExpression;
+pub use self::star::StarExpression;
+pub use self::plus::PlusExpression;
+pub use self::or::OrExpression;
+pub use self::sequence::SequenceExpression;
 
 // macro_escape makes macros from annotated module visible in the "super"
 // module... and thus in the children of the "super" module as well.
@@ -20,7 +31,7 @@ mod test_utils;
 
 
 #[deriving(Show, Eq)]
-enum NodeContents<'a> {
+pub enum NodeContents<'a> {
   Data( &'a [u8] ),
   Children( Vec<Node<'a>> ),
   Empty
@@ -28,7 +39,7 @@ enum NodeContents<'a> {
 
 
 #[deriving(Show, Eq)]
-struct Node<'a> {
+pub struct Node<'a> {
   name: &'static str,
   start: uint,
   end: uint,
@@ -52,7 +63,7 @@ impl<'a> Node<'a> {
 
 
 #[deriving(Show, Clone, Eq)]
-struct ParseState<'a> {
+pub struct ParseState<'a> {
   input: &'a [u8],  // Unconsumed input from "main" slice.
   offset: uint  // Offset of 'input' from start of "main" slice.
 }
@@ -81,7 +92,7 @@ impl<'a> ParseState<'a> {
   }
 }
 
-struct ParseResult<'a> {
+pub struct ParseResult<'a> {
   nodes: Vec< Node<'a> >,
   parse_state: ParseState<'a>
 }
@@ -93,10 +104,11 @@ impl<'a> ParseResult<'a> {
     ParseResult { nodes: vec!( node ), parse_state: parse_state }
   }
 
-  fn manyNodes<'a>( nodes: Vec< Node<'a> >, parse_state: ParseState<'a> )
-      -> ParseResult<'a> {
-    ParseResult { nodes: nodes, parse_state: parse_state }
-  }
+  // TODO: Needed?
+  // fn manyNodes<'a>( nodes: Vec< Node<'a> >, parse_state: ParseState<'a> )
+  //     -> ParseResult<'a> {
+  //   ParseResult { nodes: nodes, parse_state: parse_state }
+  // }
 
   fn fromParseState<'a>( parse_state: ParseState<'a> ) -> ParseResult<'a> {
     ParseResult { nodes: vec!(), parse_state: parse_state }
@@ -111,6 +123,7 @@ trait Expression {
 
 // TODO: We should pass around the lifetime of 'input' to other functions and
 // thus avoild allocating Data and stuff
+#[cfg(not(test))]
 pub fn parseBytes<'a>( input: &'a [u8] ) -> Node<'a> {
   Node { name: LITERAL_EXPRESSION,
          start: 0,

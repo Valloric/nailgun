@@ -17,7 +17,6 @@ static V_U8: u8 = 'v' as u8;
 static ZERO_U8: u8 = '0' as u8;
 static SINGLE_QUOTE_U8: u8 = '\'' as u8;
 static DOUBLE_QUOTE_U8: u8 = '"' as u8;
-static NEWLINE_U8: u8 = '\n' as u8;
 static SLASH_U8: u8 = '\\' as u8;
 
 

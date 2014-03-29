@@ -73,18 +73,6 @@ pub fn isAscii( byte: u8 ) -> bool {
 }
 
 
-// TODO: delete? Not used anymore, but might be useful in the future.
-pub fn charToUtf8( input: char ) -> Vec<u8> {
-  let utf8chars: &mut [u8] = [0, ..4];
-  let num_written = input.encode_utf8( utf8chars );
-  let mut out = Vec::new();
-  for i in range( 0, num_written ) {
-    out.push( *utf8chars.get( i ).unwrap() );
-  }
-  out
-}
-
-
 #[cfg(test)]
 mod tests {
   use super::{readCodepoint, UTF8_1BYTE_FOLLOWING};
