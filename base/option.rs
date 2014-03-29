@@ -37,7 +37,7 @@ mod tests {
     byte_var!(input = "foo");
     byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
-    match option!( &Literal::new( literal ) ).apply( &orig_state ) {
+    match option!( &lit!( literal ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -56,7 +56,7 @@ mod tests {
     byte_var!(input = "y");
     byte_var!(literal = "x");
     let orig_state = ToParseState( input );
-    match option!( &Literal::new( literal ) ).apply( &orig_state ) {
+    match option!( &lit!( literal ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );

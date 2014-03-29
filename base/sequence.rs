@@ -46,8 +46,8 @@ mod tests {
     byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
     match seq!(
-      &Literal::new( literal1 ) as &Expression,
-      &Literal::new( literal2 ) as &Expression ).apply(
+      &lit!( literal1 ) as &Expression,
+      &lit!( literal2 ) as &Expression ).apply(
           &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -75,8 +75,8 @@ mod tests {
     let orig_state = ToParseState( input );
 
     assert!( seq!(
-      &Literal::new( literal1 ) as &Expression,
-      &Literal::new( literal2 ) as &Expression ).apply(
+      &lit!( literal1 ) as &Expression,
+      &lit!( literal2 ) as &Expression ).apply(
           &orig_state ).is_none() )
   }
 }

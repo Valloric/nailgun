@@ -42,8 +42,8 @@ mod tests {
     byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
     match or!(
-      &Literal::new( literal1 ) as &Expression,
-      &Literal::new( literal2 ) as &Expression ).apply(
+      &lit!( literal1 ) as &Expression,
+      &lit!( literal2 ) as &Expression ).apply(
           &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -65,8 +65,8 @@ mod tests {
     byte_var!(literal2 = "a");
     let orig_state = ToParseState( input );
     match or!(
-      &Literal::new( literal1 ) as &Expression,
-      &Literal::new( literal2 ) as &Expression ).apply(
+      &lit!( literal1 ) as &Expression,
+      &lit!( literal2 ) as &Expression ).apply(
           &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -88,8 +88,8 @@ mod tests {
     byte_var!(literal2 = "a");
     let orig_state = ToParseState( input );
     match or!(
-      &Literal::new( literal1 ) as &Expression,
-      &Literal::new( literal2 ) as &Expression ).apply(
+      &lit!( literal1 ) as &Expression,
+      &lit!( literal2 ) as &Expression ).apply(
           &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -112,8 +112,8 @@ mod tests {
     let orig_state = ToParseState( input );
 
     assert!( or!(
-      &Literal::new( literal1 ) as &Expression,
-      &Literal::new( literal2 ) as &Expression ).apply(
+      &lit!( literal1 ) as &Expression,
+      &lit!( literal2 ) as &Expression ).apply(
           &orig_state ).is_none() )
   }
 }
