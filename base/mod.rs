@@ -4,6 +4,7 @@ use base::literal::LITERAL_EXPRESSION;
 pub use self::not::NotEx;
 pub use self::and::And;
 pub use self::char_class::CharClass;
+pub use self::literal::Literal;
 pub use self::dot::Dot;
 pub use self::option::OptionEx;
 pub use self::star::Star;

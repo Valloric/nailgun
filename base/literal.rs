@@ -38,7 +38,7 @@ mod tests {
 
   #[test]
   fn Literal_Match() {
-    byte_var!(literal = "foo");
+    byte_var!(literal = "foo")
     let expr = lit!( literal );
     match expr.apply( &ToParseState( bytes!( "foobar" ) ) ) {
       Some( ParseResult{ nodes: nodes,
