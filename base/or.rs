@@ -28,9 +28,9 @@ impl<'a> Expression for OrExpression<'a> {
 
 #[cfg(test)]
 mod tests {
-  use parser::{Node, ParseResult, Expression, Data};
-  use parser::literal::{LiteralExpression, LITERAL_EXPRESSION};
-  use parser::test_utils::ToParseState;
+  use base::{Node, ParseResult, Expression, Data};
+  use base::literal::{LiteralExpression, LITERAL_EXPRESSION};
+  use base::test_utils::ToParseState;
   use super::{OrExpression};
 
   #[test]

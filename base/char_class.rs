@@ -1,5 +1,5 @@
-use parser::unicode::{bytesFollowing, readCodepoint};
-use parser::unescape::unescape;
+use base::unicode::{bytesFollowing, readCodepoint};
+use base::unescape::unescape;
 use super::{Expression, ParseState, ParseResult};
 
 static CHAR_CLASS_EXPRESSION : &'static str = "CharClassExpression";
@@ -122,9 +122,9 @@ impl Expression for CharClassExpression {
 
 #[cfg(test)]
 mod tests {
-  use parser::{Node, Data, ParseResult, Expression, ParseState};
-  use parser::test_utils::ToParseState;
-  use parser::unicode::bytesFollowing;
+  use base::{Node, Data, ParseResult, Expression, ParseState};
+  use base::test_utils::ToParseState;
+  use base::unicode::bytesFollowing;
   use super::{CHAR_CLASS_EXPRESSION, CharClassExpression};
 
   fn charClassMatch( char_class: CharClassExpression, input: &[u8] ) -> bool {

@@ -1,5 +1,5 @@
 use super::{Expression, ParseState, ParseResult};
-use parser::unicode::{bytesFollowing, readCodepoint};
+use base::unicode::{bytesFollowing, readCodepoint};
 
 static DOT_EXPRESSION : &'static str = "DotExpression";
 
@@ -26,9 +26,9 @@ impl Expression for DotExpression {
 
 #[cfg(test)]
 mod tests {
-  use parser::test_utils::ToParseState;
+  use base::test_utils::ToParseState;
   use super::{DotExpression, DOT_EXPRESSION};
-  use parser::{Node, Data, ParseResult, ParseState, Expression};
+  use base::{Node, Data, ParseResult, ParseState, Expression};
 
   #[test]
   fn DotExpression_Match_InputOneChar() {

@@ -30,8 +30,8 @@ impl Expression for LiteralExpression {
 
 #[cfg(test)]
 mod tests {
-  use parser::{Node, Data, ParseResult, ParseState, Expression};
-  use parser::test_utils::ToParseState;
+  use base::{Node, Data, ParseResult, ParseState, Expression};
+  use base::test_utils::ToParseState;
   use super::{LITERAL_EXPRESSION, LiteralExpression};
 
   #[test]

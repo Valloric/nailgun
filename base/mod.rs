@@ -1,4 +1,4 @@
-use parser::literal::LITERAL_EXPRESSION;
+use base::literal::LITERAL_EXPRESSION;
 
 // macro_escape makes macros from annotated module visible in the "super"
 // module... and thus in the children of the "super" module as well.

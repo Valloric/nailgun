@@ -25,10 +25,10 @@ impl<'a> Expression for NotExpression<'a> {
 
 #[cfg(test)]
 mod tests {
-  use parser::{ParseResult, Expression};
-  use parser::literal::LiteralExpression;
-  use parser::char_class::CharClassExpression;
-  use parser::test_utils::ToParseState;
+  use base::{ParseResult, Expression};
+  use base::literal::LiteralExpression;
+  use base::char_class::CharClassExpression;
+  use base::test_utils::ToParseState;
   use super::NotExpression;
 
   #[test]
