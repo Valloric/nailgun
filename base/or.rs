@@ -1,6 +1,7 @@
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! or( ( $( $ex:expr ),* ) => ( Or::new( &[ $( $ex ),* ] ) ); )
+macro_rules! or( ( $( $ex:expr ),* ) => (
+    Or::new( &[ $( & $ex as &Expression ),* ] ) ); )
 
 pub struct Or<'a> {
   exprs: &'a [&'a Expression]
@@ -41,10 +42,7 @@ mod tests {
     byte_var!(literal1 = "a");
     byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
-    match or!(
-      &lit!( literal1 ) as &Expression,
-      &lit!( literal2 ) as &Expression ).apply(
-          &orig_state ) {
+    match or!( lit!( literal1 ), lit!( literal2 ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -64,10 +62,7 @@ mod tests {
     byte_var!(literal1 = "b");
     byte_var!(literal2 = "a");
     let orig_state = ToParseState( input );
-    match or!(
-      &lit!( literal1 ) as &Expression,
-      &lit!( literal2 ) as &Expression ).apply(
-          &orig_state ) {
+    match or!( lit!( literal1 ), lit!( literal2 ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -87,10 +82,7 @@ mod tests {
     byte_var!(literal1 = "a");
     byte_var!(literal2 = "a");
     let orig_state = ToParseState( input );
-    match or!(
-      &lit!( literal1 ) as &Expression,
-      &lit!( literal2 ) as &Expression ).apply(
-          &orig_state ) {
+    match or!( lit!( literal1 ), lit!( literal2 ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -111,10 +103,8 @@ mod tests {
     byte_var!(literal2 = "c");
     let orig_state = ToParseState( input );
 
-    assert!( or!(
-      &lit!( literal1 ) as &Expression,
-      &lit!( literal2 ) as &Expression ).apply(
-          &orig_state ).is_none() )
+    assert!( or!( lit!( literal1 ), lit!( literal2 ) ).apply(
+        &orig_state ).is_none() )
   }
 }
 

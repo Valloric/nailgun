@@ -1,6 +1,7 @@
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! seq( ( $( $ex:expr ),* ) => ( Sequence::new( &[ $( $ex ),* ] ) ); )
+macro_rules! seq( ( $( $ex:expr ),* ) => (
+    Sequence::new( &[ $( & $ex as &Expression ),* ] ) ); )
 
 pub struct Sequence<'a> {
   exprs: &'a [&'a Expression]
@@ -45,10 +46,7 @@ mod tests {
     byte_var!(literal1 = "a");
     byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
-    match seq!(
-      &lit!( literal1 ) as &Expression,
-      &lit!( literal2 ) as &Expression ).apply(
-          &orig_state ) {
+    match seq!( lit!( literal1 ), lit!( literal2 ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -74,9 +72,7 @@ mod tests {
     byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
 
-    assert!( seq!(
-      &lit!( literal1 ) as &Expression,
-      &lit!( literal2 ) as &Expression ).apply(
+    assert!( seq!( lit!( literal1 ), lit!( literal2 ) ).apply(
           &orig_state ).is_none() )
   }
 }
