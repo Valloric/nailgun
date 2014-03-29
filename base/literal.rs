@@ -1,5 +1,7 @@
 use super::{Expression, ParseState, ParseResult};
 
+macro_rules! lit( ( $ex:expr ) => ( Literal::new( $ex ) ); )
+
 pub static LITERAL_EXPRESSION : &'static str = "Literal";
 
 pub struct Literal {
@@ -37,7 +39,7 @@ mod tests {
   #[test]
   fn Literal_Match() {
     byte_var!(literal = "foo");
-    let expr = Literal::new( literal );
+    let expr = lit!( literal );
     match expr.apply( &ToParseState( bytes!( "foobar" ) ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -57,7 +59,7 @@ mod tests {
   #[test]
   fn Literal_NoMatch() {
     byte_var!(literal = "zoo");
-    let expr = Literal::new( literal );
+    let expr = lit!( literal );
     assert!( expr.apply( &ToParseState( bytes!( "foobar" ) ) ).is_none() );
     assert!( expr.apply( &ToParseState( bytes!( "" ) ) ).is_none() );
   }

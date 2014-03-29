@@ -11,6 +11,7 @@ pub use self::plus::Plus;
 pub use self::or::Or;
 pub use self::sequence::Sequence;
 
+#[macro_escape]
 mod literal;
 #[macro_escape]
 mod not;
