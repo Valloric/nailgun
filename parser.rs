@@ -22,6 +22,16 @@ macro_rules! rule(
 )
 
 
+rule!( LEFTARROW <- seq!( lit!( "<-" ), ex!( Spacing ) ) )
+rule!( SLASH <- seq!( lit!( "/" ), ex!( Spacing ) ) )
+rule!( NOT <- seq!( lit!( "!" ), ex!( Spacing ) ) )
+rule!( QUESTION <- seq!( lit!( "?" ), ex!( Spacing ) ) )
+rule!( STAR <- seq!( lit!( "*" ), ex!( Spacing ) ) )
+rule!( PLUS <- seq!( lit!( "+" ), ex!( Spacing ) ) )
+rule!( OPEN <- seq!( lit!( "(" ), ex!( Spacing ) ) )
+rule!( CLOSE <- seq!( lit!( ")" ), ex!( Spacing ) ) )
+rule!( DOT <- seq!( lit!( "." ), ex!( Spacing ) ) )
+rule!( Spacing <- star!( or!( ex!( Space ), ex!( Comment ) ) ) )
 rule!( Comment <- seq!( lit!( "#" ),
                         star!( seq!( not!( ex!( EndOfLine ) ), Dot ) ),
                         ex!( EndOfLine ) ) )
@@ -34,7 +44,7 @@ rule!( EndOfFile <- not!( Dot ) )
 mod tests {
   use base::test_utils::ToParseState;
   use base::{ParseResult};
-  use super::{EndOfFile, EndOfLine, Space, Comment};
+  use super::{EndOfFile, EndOfLine, Space, Comment, Spacing};
 
   macro_rules! consumes(
     (
@@ -65,10 +75,23 @@ mod tests {
   )
 
   #[test]
+  fn Spacing_Works() {
+    assert!( consumes!( Spacing, "  \t #g\n" ) );
+    assert!( consumes!( Spacing, "#a\n  #1\n" ) );
+
+    // Spacing DOES match here because at the top level, it is a star expression
+    // which can match consuming nothing.
+    assert!( matches!( Spacing, "" ) );
+    assert!( !consumes!( Spacing, "#" ) );
+    assert!( !consumes!( Spacing, "a" ) );
+  }
+
+  #[test]
   fn Comment_Works() {
     assert!( consumes!( Comment, "#\n" ) );
     assert!( consumes!( Comment, "# foo! \n" ) );
     assert!( !matches!( Comment, "\n" ) );
+    assert!( !matches!( Comment, "#" ) );
     assert!( !matches!( Comment, "a" ) );
   }
 
