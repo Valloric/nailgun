@@ -27,16 +27,14 @@ impl<'a> Expression for NotEx<'a> {
 
 #[cfg(test)]
 mod tests {
-  use base::{ParseResult, Expression};
+  use base::{ParseResult, Expression, ParseState};
   use base::literal::Literal;
   use base::char_class::CharClass;
-  use base::test_utils::ToParseState;
   use super::NotEx;
 
   #[test]
   fn NotEx_Match_WithLiteral() {
-    byte_var!(input = "zoo");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "zoo" );
     match not!( &lit!( "foo" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -50,10 +48,7 @@ mod tests {
 
   #[test]
   fn NotEx_Match_WithCharClass() {
-    // TODO: macro for creating parse state? (auto-create static var)
-    // similar code in and.rs
-    byte_var!(input = "0");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "0" );
     match not!( &CharClass::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                         parse_state: parse_state } ) => {
@@ -68,9 +63,9 @@ mod tests {
   #[test]
   fn NotEx_NoMatch() {
     assert!( not!( &CharClass::new( bytes!( "a-z" ) ) ).apply(
-        &ToParseState( bytes!( "b" ) ) ).is_none() )
+        &input_state!( "b" ) ).is_none() )
 
     assert!( not!( &lit!( "x" ) ).apply(
-        &ToParseState( bytes!( "x" ) ) ).is_none() )
+        &input_state!( "x" ) ).is_none() )
   }
 }

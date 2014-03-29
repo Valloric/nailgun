@@ -27,15 +27,13 @@ impl<'a> Expression for OptionEx<'a> {
 
 #[cfg(test)]
 mod tests {
-  use base::{Node, ParseResult, Expression, Data};
+  use base::{Node, ParseResult, Expression, Data, ParseState};
   use base::literal::{Literal, LITERAL_EXPRESSION};
-  use base::test_utils::ToParseState;
   use super::{OptionEx};
 
   #[test]
   fn OptionEx_Match_WithLiteral() {
-    byte_var!(input = "foo");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "foo" );
     match option!( &lit!( "foo" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -52,8 +50,7 @@ mod tests {
 
   #[test]
   fn OptionEx_Match_Empty() {
-    byte_var!(input = "y");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "y" );
     match option!( &lit!( "x" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {

@@ -27,16 +27,14 @@ impl<'a> Expression for And<'a> {
 
 #[cfg(test)]
 mod tests {
-  use base::{ParseResult, Expression};
+  use base::{ParseResult, Expression, ParseState};
   use base::literal::Literal;
   use base::char_class::CharClass;
-  use base::test_utils::ToParseState;
   use super::And;
 
   #[test]
   fn And_Match_WithLiteral() {
-    byte_var!(input = "foo");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "foo" );
     match and!( &lit!( "foo" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -50,8 +48,7 @@ mod tests {
 
   #[test]
   fn And_Match_WithCharClass() {
-    byte_var!(input = "c");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "c" );
     match and!( &CharClass::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -66,10 +63,10 @@ mod tests {
   #[test]
   fn And_NoMatch() {
     assert!( and!( &CharClass::new( bytes!( "a-z" ) ) ).apply(
-        &ToParseState( bytes!( "0" ) ) ).is_none() )
+        &input_state!( "0" ) ).is_none() )
 
     assert!( and!( &lit!( "x" ) ).apply(
-        &ToParseState( bytes!( "y" ) ) ).is_none() )
+        &input_state!( "y" ) ).is_none() )
   }
 }
 

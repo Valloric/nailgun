@@ -36,13 +36,12 @@ impl Expression for Literal {
 #[cfg(test)]
 mod tests {
   use base::{Node, Data, ParseResult, ParseState, Expression};
-  use base::test_utils::ToParseState;
   use super::{LITERAL_EXPRESSION, Literal};
 
   #[test]
   fn Literal_Match() {
     let expr = lit!( "foo" );
-    match expr.apply( &ToParseState( bytes!( "foobar" ) ) ) {
+    match expr.apply( &input_state!( "foobar" ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -61,7 +60,7 @@ mod tests {
   #[test]
   fn Literal_NoMatch() {
     let expr = lit!( "zoo" );
-    assert!( expr.apply( &ToParseState( bytes!( "foobar" ) ) ).is_none() );
-    assert!( expr.apply( &ToParseState( bytes!( "" ) ) ).is_none() );
+    assert!( expr.apply( &input_state!( "foobar" ) ).is_none() );
+    assert!( expr.apply( &input_state!( "" ) ).is_none() );
   }
 }

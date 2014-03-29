@@ -41,15 +41,13 @@ impl<'a> Expression for Plus<'a> {
 
 #[cfg(test)]
 mod tests {
-  use base::{Node, ParseResult, Expression, Data};
+  use base::{Node, ParseResult, ParseState, Expression, Data};
   use base::literal::{Literal, LITERAL_EXPRESSION};
-  use base::test_utils::ToParseState;
   use super::{Plus};
 
   #[test]
   fn Plus_Match() {
-    byte_var!(input = "aaa");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "aaa" );
     match plus!( &lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -76,8 +74,7 @@ mod tests {
 
   #[test]
   fn Plus_Match_JustOne() {
-    byte_var!(input = "abb");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "abb" );
     match plus!( &lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -95,8 +92,7 @@ mod tests {
 
   #[test]
   fn Plus_NoMatch() {
-    byte_var!(input = "y");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "y" );
     match plus!( &lit!( "x" ) ).apply( &orig_state ) {
       None => (),
       _ => fail!( "Should not match." ),

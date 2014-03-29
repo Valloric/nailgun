@@ -12,6 +12,10 @@ pub use self::plus::Plus;
 pub use self::or::Or;
 pub use self::sequence::Sequence;
 
+
+#[macro_escape]
+pub mod test_utils;
+
 #[macro_escape]
 mod literal;
 #[macro_escape]
@@ -33,7 +37,6 @@ mod or;
 mod sequence;
 mod unicode;
 mod unescape;
-pub mod test_utils;
 
 
 #[deriving(Show, Eq)]

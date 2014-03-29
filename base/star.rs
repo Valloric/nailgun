@@ -34,15 +34,13 @@ impl<'a> Expression for Star<'a> {
 
 #[cfg(test)]
 mod tests {
-  use base::{Node, ParseResult, Expression, Data};
+  use base::{Node, ParseResult, ParseState, Expression, Data};
   use base::literal::{Literal, LITERAL_EXPRESSION};
-  use base::test_utils::ToParseState;
   use super::{Star};
 
   #[test]
   fn Star_Match() {
-    byte_var!(input = "aaa");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "aaa" );
     match star!( &lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -69,8 +67,7 @@ mod tests {
 
   #[test]
   fn Star_Match_JustOne() {
-    byte_var!(input = "abb");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "abb" );
     match star!( &lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -88,8 +85,7 @@ mod tests {
 
   #[test]
   fn Star_Match_Empty() {
-    byte_var!(input = "y");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "y" );
     match star!( &lit!( "x" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {

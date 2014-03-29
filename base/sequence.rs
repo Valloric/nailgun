@@ -35,15 +35,13 @@ impl<'a> Expression for Sequence<'a> {
 
 #[cfg(test)]
 mod tests {
-  use base::{Node, ParseResult, Expression, Data};
+  use base::{Node, ParseResult, ParseState, Expression, Data};
   use base::literal::{Literal, LITERAL_EXPRESSION};
-  use base::test_utils::ToParseState;
   use super::{Sequence};
 
   #[test]
   fn Sequence_Match() {
-    byte_var!(input = "ab");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "ab" );
     match seq!( lit!( "a" ), lit!( "b" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -65,9 +63,7 @@ mod tests {
 
   #[test]
   fn Sequence_NoMatch() {
-    byte_var!(input = "aa");
-    let orig_state = ToParseState( input );
-
-    assert!( seq!( lit!( "a" ), lit!( "b" ) ).apply( &orig_state ).is_none() )
+    assert!( seq!( lit!( "a" ), lit!( "b" ) ).apply(
+        &input_state!( "aa" ) ).is_none() )
   }
 }

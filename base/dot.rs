@@ -26,21 +26,19 @@ impl Expression for Dot {
 
 #[cfg(test)]
 mod tests {
-  use base::test_utils::ToParseState;
   use super::{Dot, DOT_EXPRESSION};
   use base::{Node, Data, ParseResult, ParseState, Expression};
 
   #[test]
   fn Dot_Match_InputOneChar() {
-    byte_var!(input = "x");
-    match Dot.apply( &ToParseState( input ) ) {
+    match Dot.apply( &input_state!( "x" ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
                     Node { name: DOT_EXPRESSION,
                            start: 0,
                            end: 1,
-                           contents: Data( input ) } );
+                           contents: data!( "x" ) } );
         assert_eq!( parse_state, ParseState{ input: &[], offset: 1 } );
       }
       _ => fail!( "No match!" )
@@ -50,15 +48,14 @@ mod tests {
 
   #[test]
   fn Dot_Match_InputOneWideChar() {
-    byte_var!(input = "葉");
-    match Dot.apply( &ToParseState( input ) ) {
+    match Dot.apply( &input_state!( "葉" ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
                     Node { name: DOT_EXPRESSION,
                            start: 0,
                            end: 3,
-                           contents: Data( input ) } );
+                           contents: data!( "葉" ) } );
         assert_eq!( parse_state, ParseState{ input: &[], offset: 3 } );
       }
       _ => fail!( "No match!" )
@@ -68,16 +65,14 @@ mod tests {
 
   #[test]
   fn Dot_Match_InputSeveralChars() {
-    byte_var!(input = "xb");
-    byte_var!(consumed = "x");
-    match Dot.apply( &ToParseState( input ) ) {
+    match Dot.apply( &input_state!( "xb" ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( *nodes.get( 0 ) ==
                  Node { name: DOT_EXPRESSION,
                         start: 0,
                         end: 1,
-                        contents: Data( consumed ) } );
+                        contents: data!( "x" ) } );
         assert_eq!( parse_state, ParseState{ input: bytes!( "b" ),
                                              offset: 1 } );
       }
@@ -88,6 +83,6 @@ mod tests {
 
   #[test]
   fn Dot_NoMatch() {
-    assert!( Dot.apply( &ToParseState( bytes!( "" ) ) ).is_none() )
+    assert!( Dot.apply( &input_state!( "" ) ).is_none() )
   }
 }

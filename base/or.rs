@@ -31,15 +31,13 @@ impl<'a> Expression for Or<'a> {
 
 #[cfg(test)]
 mod tests {
-  use base::{Node, ParseResult, Expression, Data};
+  use base::{Node, ParseState, ParseResult, Expression, Data};
   use base::literal::{Literal, LITERAL_EXPRESSION};
-  use base::test_utils::ToParseState;
   use super::{Or};
 
   #[test]
   fn Or_Match_FirstExpr() {
-    byte_var!(input = "a");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "a" );
     match or!( lit!( "a" ), lit!( "b" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -56,8 +54,7 @@ mod tests {
 
   #[test]
   fn Or_Match_SecondExpr() {
-    byte_var!(input = "a");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "a" );
     match or!( lit!( "b" ), lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -74,8 +71,7 @@ mod tests {
 
   #[test]
   fn Or_Match_FirstExprIfBoth() {
-    byte_var!(input = "a");
-    let orig_state = ToParseState( input );
+    let orig_state = input_state!( "a" );
     match or!( lit!( "a" ), lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -92,10 +88,8 @@ mod tests {
 
   #[test]
   fn Or_NoMatch() {
-    byte_var!(input = "a");
-    let orig_state = ToParseState( input );
-
-    assert!( or!( lit!( "b" ), lit!( "c" ) ).apply( &orig_state ).is_none() )
+    assert!( or!( lit!( "b" ), lit!( "c" ) ).apply(
+        &input_state!( "a" ) ).is_none() )
   }
 }
 
