@@ -11,6 +11,7 @@ pub use self::star::Star;
 pub use self::plus::Plus;
 pub use self::or::Or;
 pub use self::sequence::Sequence;
+pub use self::wrap::WrapEx;
 
 
 #[macro_escape]
