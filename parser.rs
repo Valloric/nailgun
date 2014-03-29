@@ -8,10 +8,17 @@ use base::{ParseState, ParseResult, NotExpression, DotExpression, Expression};
 mod macros;
 mod base;
 
-fn EndOfFile<'a>( parse_state: &ParseState<'a> ) -> Option< ParseResult<'a> > {
-  NotExpression::new( &DotExpression ).apply( parse_state )
-}
+macro_rules! rule(
+  (
+    $name:ident <- $body:expr
+  ) => (
+    fn $name<'a>( parse_state: &ParseState<'a> ) -> Option< ParseResult<'a> > {
+      $body.apply( parse_state )
+    }
+  );
+)
 
+rule!( EndOfFile <- NotExpression::new( &DotExpression ) )
 
 #[cfg(test)]
 mod tests {
