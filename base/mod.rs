@@ -11,10 +11,6 @@ pub use self::plus::PlusExpression;
 pub use self::or::OrExpression;
 pub use self::sequence::SequenceExpression;
 
-// macro_escape makes macros from annotated module visible in the "super"
-// module... and thus in the children of the "super" module as well.
-#[macro_escape]
-mod macros;
 mod literal;
 mod not;
 mod and;
@@ -27,7 +23,7 @@ mod or;
 mod sequence;
 mod unicode;
 mod unescape;
-mod test_utils;
+pub mod test_utils;
 
 
 #[deriving(Show, Eq)]
@@ -116,7 +112,7 @@ impl<'a> ParseResult<'a> {
 }
 
 
-trait Expression {
+pub trait Expression {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) -> Option< ParseResult<'a> >;
 }
 
