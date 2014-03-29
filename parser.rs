@@ -20,11 +20,7 @@ macro_rules! rule(
   );
 )
 
-byte_var!( RN = "\r\n" )
-byte_var!( R = "\r" )
-byte_var!( N = "\n" )
-
-rule!( EndOfLine <- or!( lit!( RN ), lit!( N ), lit!( R ) ) )
+rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
 rule!( EndOfFile <- not!( &Dot ) )
 
 

@@ -39,17 +39,15 @@ mod tests {
   #[test]
   fn Or_Match_FirstExpr() {
     byte_var!(input = "a");
-    byte_var!(literal1 = "a");
-    byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
-    match or!( lit!( literal1 ), lit!( literal2 ) ).apply( &orig_state ) {
+    match or!( lit!( "a" ), lit!( "b" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
                     Node { name: LITERAL_EXPRESSION,
                            start: 0,
                            end: 1,
-                           contents: Data( literal1 ) } );
+                           contents: data!( "a" ) } );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }
       _ => fail!( "No match." )
@@ -59,17 +57,15 @@ mod tests {
   #[test]
   fn Or_Match_SecondExpr() {
     byte_var!(input = "a");
-    byte_var!(literal1 = "b");
-    byte_var!(literal2 = "a");
     let orig_state = ToParseState( input );
-    match or!( lit!( literal1 ), lit!( literal2 ) ).apply( &orig_state ) {
+    match or!( lit!( "b" ), lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
                     Node { name: LITERAL_EXPRESSION,
                            start: 0,
                            end: 1,
-                           contents: Data( literal2 ) } );
+                           contents: data!( "a" ) } );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }
       _ => fail!( "No match." )
@@ -79,17 +75,15 @@ mod tests {
   #[test]
   fn Or_Match_FirstExprIfBoth() {
     byte_var!(input = "a");
-    byte_var!(literal1 = "a");
-    byte_var!(literal2 = "a");
     let orig_state = ToParseState( input );
-    match or!( lit!( literal1 ), lit!( literal2 ) ).apply( &orig_state ) {
+    match or!( lit!( "a" ), lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
                     Node { name: LITERAL_EXPRESSION,
                            start: 0,
                            end: 1,
-                           contents: Data( literal1 ) } );
+                           contents: data!( "a" ) } );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }
       _ => fail!( "No match." )
@@ -99,12 +93,9 @@ mod tests {
   #[test]
   fn Or_NoMatch() {
     byte_var!(input = "a");
-    byte_var!(literal1 = "b");
-    byte_var!(literal2 = "c");
     let orig_state = ToParseState( input );
 
-    assert!( or!( lit!( literal1 ), lit!( literal2 ) ).apply(
-        &orig_state ).is_none() )
+    assert!( or!( lit!( "b" ), lit!( "c" ) ).apply( &orig_state ).is_none() )
   }
 }
 

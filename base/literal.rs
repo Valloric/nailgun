@@ -1,6 +1,9 @@
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! lit( ( $ex:expr ) => ( Literal::new( $ex ) ); )
+macro_rules! lit( ( $ex:expr ) => ( {
+      byte_var!( input = $ex )
+      Literal::new( input )
+    } ) )
 
 pub static LITERAL_EXPRESSION : &'static str = "Literal";
 
@@ -38,8 +41,7 @@ mod tests {
 
   #[test]
   fn Literal_Match() {
-    byte_var!(literal = "foo")
-    let expr = lit!( literal );
+    let expr = lit!( "foo" );
     match expr.apply( &ToParseState( bytes!( "foobar" ) ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -47,7 +49,7 @@ mod tests {
                     Node { name: LITERAL_EXPRESSION,
                            start: 0,
                            end: 3,
-                           contents: Data( literal ) } );
+                           contents: data!( "foo" ) } );
         assert_eq!( parse_state, ParseState{ input: bytes!( "bar" ),
                                              offset: 3 } );
       }
@@ -58,8 +60,7 @@ mod tests {
 
   #[test]
   fn Literal_NoMatch() {
-    byte_var!(literal = "zoo");
-    let expr = lit!( literal );
+    let expr = lit!( "zoo" );
     assert!( expr.apply( &ToParseState( bytes!( "foobar" ) ) ).is_none() );
     assert!( expr.apply( &ToParseState( bytes!( "" ) ) ).is_none() );
   }

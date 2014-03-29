@@ -35,16 +35,15 @@ mod tests {
   #[test]
   fn OptionEx_Match_WithLiteral() {
     byte_var!(input = "foo");
-    byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
-    match option!( &lit!( literal ) ).apply( &orig_state ) {
+    match option!( &lit!( "foo" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
                     Node { name: LITERAL_EXPRESSION,
                            start: 0,
                            end: 3,
-                           contents: Data( literal ) } );
+                           contents: data!( "foo" ) } );
         assert_eq!( parse_state, orig_state.advanceTo( 3 ) );
       }
       _ => fail!( "No match." )
@@ -54,9 +53,8 @@ mod tests {
   #[test]
   fn OptionEx_Match_Empty() {
     byte_var!(input = "y");
-    byte_var!(literal = "x");
     let orig_state = ToParseState( input );
-    match option!( &lit!( literal ) ).apply( &orig_state ) {
+    match option!( &lit!( "x" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );

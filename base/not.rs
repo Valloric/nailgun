@@ -36,9 +36,8 @@ mod tests {
   #[test]
   fn NotEx_Match_WithLiteral() {
     byte_var!(input = "zoo");
-    byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
-    match not!( &lit!( literal ) ).apply( &orig_state ) {
+    match not!( &lit!( "foo" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -71,8 +70,7 @@ mod tests {
     assert!( not!( &CharClass::new( bytes!( "a-z" ) ) ).apply(
         &ToParseState( bytes!( "b" ) ) ).is_none() )
 
-    byte_var!(literal = "x");
-    assert!( not!( &lit!( literal ) ).apply(
+    assert!( not!( &lit!( "x" ) ).apply(
         &ToParseState( bytes!( "x" ) ) ).is_none() )
   }
 }

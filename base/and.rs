@@ -36,9 +36,8 @@ mod tests {
   #[test]
   fn And_Match_WithLiteral() {
     byte_var!(input = "foo");
-    byte_var!(literal = "foo");
     let orig_state = ToParseState( input );
-    match and!( &lit!( literal ) ).apply( &orig_state ) {
+    match and!( &lit!( "foo" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -69,8 +68,7 @@ mod tests {
     assert!( and!( &CharClass::new( bytes!( "a-z" ) ) ).apply(
         &ToParseState( bytes!( "0" ) ) ).is_none() )
 
-    byte_var!(literal = "x");
-    assert!( and!( &lit!( literal ) ).apply(
+    assert!( and!( &lit!( "x" ) ).apply(
         &ToParseState( bytes!( "y" ) ) ).is_none() )
   }
 }

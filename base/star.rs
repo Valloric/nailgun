@@ -42,26 +42,25 @@ mod tests {
   #[test]
   fn Star_Match() {
     byte_var!(input = "aaa");
-    byte_var!(literal = "a");
     let orig_state = ToParseState( input );
-    match star!( &lit!( literal ) ).apply( &orig_state ) {
+    match star!( &lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
                     Node { name: LITERAL_EXPRESSION,
                            start: 0,
                            end: 1,
-                           contents: Data( literal ) } );
+                           contents: data!( "a" ) } );
         assert_eq!( *nodes.get( 1 ),
                     Node { name: LITERAL_EXPRESSION,
                            start: 1,
                            end: 2,
-                           contents: Data( literal ) } );
+                           contents: data!( "a" ) } );
         assert_eq!( *nodes.get( 2 ),
                     Node { name: LITERAL_EXPRESSION,
                            start: 2,
                            end: 3,
-                           contents: Data( literal ) } );
+                           contents: data!( "a" ) } );
         assert_eq!( parse_state, orig_state.advanceTo( 3 ) );
       }
       _ => fail!( "No match." )
@@ -71,16 +70,15 @@ mod tests {
   #[test]
   fn Star_Match_JustOne() {
     byte_var!(input = "abb");
-    byte_var!(literal = "a");
     let orig_state = ToParseState( input );
-    match star!( &lit!( literal ) ).apply( &orig_state ) {
+    match star!( &lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
                     Node { name: LITERAL_EXPRESSION,
                            start: 0,
                            end: 1,
-                           contents: Data( literal ) } );
+                           contents: data!( "a" ) } );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }
       _ => fail!( "No match." )
@@ -91,9 +89,8 @@ mod tests {
   #[test]
   fn Star_Match_Empty() {
     byte_var!(input = "y");
-    byte_var!(literal = "x");
     let orig_state = ToParseState( input );
-    match star!( &lit!( literal ) ).apply( &orig_state ) {
+    match star!( &lit!( "x" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );

@@ -43,22 +43,20 @@ mod tests {
   #[test]
   fn Sequence_Match() {
     byte_var!(input = "ab");
-    byte_var!(literal1 = "a");
-    byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
-    match seq!( lit!( literal1 ), lit!( literal2 ) ).apply( &orig_state ) {
+    match seq!( lit!( "a" ), lit!( "b" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
                     Node { name: LITERAL_EXPRESSION,
                            start: 0,
                            end: 1,
-                           contents: Data( literal1 ) } );
+                           contents: data!( "a" ) } );
         assert_eq!( *nodes.get( 1 ),
                     Node { name: LITERAL_EXPRESSION,
                            start: 1,
                            end: 2,
-                           contents: Data( literal2 ) } );
+                           contents: data!( "b" ) } );
         assert_eq!( parse_state, orig_state.advanceTo( 2 ) );
       }
       _ => fail!( "No match." )
@@ -68,11 +66,8 @@ mod tests {
   #[test]
   fn Sequence_NoMatch() {
     byte_var!(input = "aa");
-    byte_var!(literal1 = "a");
-    byte_var!(literal2 = "b");
     let orig_state = ToParseState( input );
 
-    assert!( seq!( lit!( literal1 ), lit!( literal2 ) ).apply(
-          &orig_state ).is_none() )
+    assert!( seq!( lit!( "a" ), lit!( "b" ) ).apply( &orig_state ).is_none() )
   }
 }
