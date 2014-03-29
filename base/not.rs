@@ -1,6 +1,6 @@
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! not( ( $ex:expr ) => ( NotEx::new($ex) ); )
+macro_rules! not( ( $ex:expr ) => ( NotEx::new(& $ex) ); )
 
 pub struct NotEx<'a> {
   expr: &'a Expression
@@ -35,7 +35,7 @@ mod tests {
   #[test]
   fn NotEx_Match_WithLiteral() {
     let orig_state = input_state!( "zoo" );
-    match not!( &lit!( "foo" ) ).apply( &orig_state ) {
+    match not!( lit!( "foo" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -49,7 +49,7 @@ mod tests {
   #[test]
   fn NotEx_Match_WithCharClass() {
     let orig_state = input_state!( "0" );
-    match not!( &CharClass::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
+    match not!( class!( "a-z" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                         parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -62,10 +62,7 @@ mod tests {
 
   #[test]
   fn NotEx_NoMatch() {
-    assert!( not!( &CharClass::new( bytes!( "a-z" ) ) ).apply(
-        &input_state!( "b" ) ).is_none() )
-
-    assert!( not!( &lit!( "x" ) ).apply(
-        &input_state!( "x" ) ).is_none() )
+    assert!( not!( class!( "a-z" ) ).apply( &input_state!( "b" ) ).is_none() )
+    assert!( not!( lit!( "x" ) ).apply( &input_state!( "x" ) ).is_none() )
   }
 }

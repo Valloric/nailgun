@@ -1,6 +1,6 @@
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! and( ( $ex:expr ) => ( And::new( $ex ) ); )
+macro_rules! and( ( $ex:expr ) => ( And::new( & $ex ) ); )
 
 pub struct And<'a> {
   expr: &'a Expression
@@ -35,7 +35,7 @@ mod tests {
   #[test]
   fn And_Match_WithLiteral() {
     let orig_state = input_state!( "foo" );
-    match and!( &lit!( "foo" ) ).apply( &orig_state ) {
+    match and!( lit!( "foo" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -49,7 +49,7 @@ mod tests {
   #[test]
   fn And_Match_WithCharClass() {
     let orig_state = input_state!( "c" );
-    match and!( &CharClass::new( bytes!( "a-z" ) ) ).apply( &orig_state ) {
+    match and!( class!( "a-z" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -62,11 +62,8 @@ mod tests {
 
   #[test]
   fn And_NoMatch() {
-    assert!( and!( &CharClass::new( bytes!( "a-z" ) ) ).apply(
-        &input_state!( "0" ) ).is_none() )
-
-    assert!( and!( &lit!( "x" ) ).apply(
-        &input_state!( "y" ) ).is_none() )
+    assert!( and!( class!( "a-z" ) ).apply( &input_state!( "0" ) ).is_none() )
+    assert!( and!( lit!( "x" ) ).apply( &input_state!( "y" ) ).is_none() )
   }
 }
 

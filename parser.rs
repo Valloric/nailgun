@@ -1,7 +1,7 @@
 #[feature(macro_rules)];
 
 use base::{ParseState, ParseResult, NotEx, Dot, Expression, Literal, Or,
-WrapEx};
+WrapEx, Sequence, Star};
 
 // macro_escape makes macros from annotated module visible in the "super"
 // module... and thus in the children of the "super" module as well.
@@ -22,16 +22,19 @@ macro_rules! rule(
 )
 
 
+rule!( Comment <- seq!( lit!( "#" ),
+                        star!( seq!( not!( ex!( EndOfLine ) ), Dot ) ),
+                        ex!( EndOfLine ) ) )
 rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
 rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
-rule!( EndOfFile <- not!( &Dot ) )
+rule!( EndOfFile <- not!( Dot ) )
 
 
 #[cfg(test)]
 mod tests {
   use base::test_utils::ToParseState;
   use base::{ParseResult};
-  use super::{EndOfFile, EndOfLine, Space};
+  use super::{EndOfFile, EndOfLine, Space, Comment};
 
   macro_rules! consumes(
     (
@@ -60,6 +63,14 @@ mod tests {
       }
     );
   )
+
+  #[test]
+  fn Comment_Works() {
+    assert!( consumes!( Comment, "#\n" ) );
+    assert!( consumes!( Comment, "# foo! \n" ) );
+    assert!( !matches!( Comment, "\n" ) );
+    assert!( !matches!( Comment, "a" ) );
+  }
 
   #[test]
   fn Space_Works() {

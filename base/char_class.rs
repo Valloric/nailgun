@@ -2,7 +2,10 @@ use base::unicode::{bytesFollowing, readCodepoint};
 use base::unescape::unescape;
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! class( ( $ex:expr ) => ( CharClass::new( $ex ) ); )
+macro_rules! class( ( $ex:expr ) => ( {
+      byte_var!( input = $ex )
+      CharClass::new( input )
+    } ) )
 
 static CHAR_CLASS_EXPRESSION : &'static str = "CharClass";
 
@@ -129,7 +132,7 @@ mod tests {
   use base::unicode::bytesFollowing;
   use super::{CHAR_CLASS_EXPRESSION, CharClass};
 
-  fn classMatch( char_class: CharClass, input: &[u8] ) -> bool {
+  fn charClassMatch( char_class: CharClass, input: &[u8] ) -> bool {
     fn bytesRead( input: &[u8] ) -> uint {
       match bytesFollowing( input[ 0 ] ) {
         Some( num_following ) => num_following + 1,
@@ -156,40 +159,40 @@ mod tests {
 
   #[test]
   fn CharClass_Match() {
-    assert!( classMatch( class!( bytes!( "a"          ) ), bytes!( "a" ) ) );
-    assert!( classMatch( class!( bytes!( "abcdef"     ) ), bytes!( "e" ) ) );
-    assert!( classMatch( class!( bytes!( "a-z"        ) ), bytes!( "a" ) ) );
-    assert!( classMatch( class!( bytes!( "a-z"        ) ), bytes!( "c" ) ) );
-    assert!( classMatch( class!( bytes!( "a-z"        ) ), bytes!( "z" ) ) );
-    assert!( classMatch( class!( bytes!( "0-9"        ) ), bytes!( "2" ) ) );
-    assert!( classMatch( class!( bytes!( "α-ω"        ) ), bytes!( "η" ) ) );
-    assert!( classMatch( class!( bytes!( "-"          ) ), bytes!( "-" ) ) );
-    assert!( classMatch( class!( bytes!( "a-"         ) ), bytes!( "-" ) ) );
-    assert!( classMatch( class!( bytes!( "-a"         ) ), bytes!( "-" ) ) );
-    assert!( classMatch( class!( bytes!( "a-zA-Z-"    ) ), bytes!( "-" ) ) );
-    assert!( classMatch( class!( bytes!( "aa-zA-Z-a"  ) ), bytes!( "-" ) ) );
-    assert!( classMatch( class!( bytes!( "a-zA-Z-"    ) ), bytes!( "z" ) ) );
-    assert!( classMatch( class!( bytes!( "aa-zA-Z-0"  ) ), bytes!( "0" ) ) );
-    assert!( classMatch( class!( bytes!( "a-cdefgh-k" ) ), bytes!( "e" ) ) );
-    assert!( classMatch( class!( bytes!( "---"        ) ), bytes!( "-" ) ) );
-    assert!( classMatch( class!( bytes!( "a-a"        ) ), bytes!( "a" ) ) );
+    assert!( charClassMatch( class!( "a"          ), bytes!( "a" ) ) );
+    assert!( charClassMatch( class!( "abcdef"     ), bytes!( "e" ) ) );
+    assert!( charClassMatch( class!( "a-z"        ), bytes!( "a" ) ) );
+    assert!( charClassMatch( class!( "a-z"        ), bytes!( "c" ) ) );
+    assert!( charClassMatch( class!( "a-z"        ), bytes!( "z" ) ) );
+    assert!( charClassMatch( class!( "0-9"        ), bytes!( "2" ) ) );
+    assert!( charClassMatch( class!( "α-ω"        ), bytes!( "η" ) ) );
+    assert!( charClassMatch( class!( "-"          ), bytes!( "-" ) ) );
+    assert!( charClassMatch( class!( "a-"         ), bytes!( "-" ) ) );
+    assert!( charClassMatch( class!( "-a"         ), bytes!( "-" ) ) );
+    assert!( charClassMatch( class!( "a-zA-Z-"    ), bytes!( "-" ) ) );
+    assert!( charClassMatch( class!( "aa-zA-Z-a"  ), bytes!( "-" ) ) );
+    assert!( charClassMatch( class!( "a-zA-Z-"    ), bytes!( "z" ) ) );
+    assert!( charClassMatch( class!( "aa-zA-Z-0"  ), bytes!( "0" ) ) );
+    assert!( charClassMatch( class!( "a-cdefgh-k" ), bytes!( "e" ) ) );
+    assert!( charClassMatch( class!( "---"        ), bytes!( "-" ) ) );
+    assert!( charClassMatch( class!( "a-a"        ), bytes!( "a" ) ) );
   }
 
 
   #[test]
   fn CharClass_Match_NonUnicode() {
-    assert!( classMatch( class!( [255] ), [255] ) );
+    assert!( charClassMatch( CharClass::new( [255] ), [255] ) );
   }
 
 
   #[test]
   fn CharClass_NoMatch() {
-    assert!( !classMatch( class!( bytes!( "a"   ) ), bytes!( "b" ) ) );
-    assert!( !classMatch( class!( bytes!( "-"   ) ), bytes!( "a" ) ) );
-    assert!( !classMatch( class!( bytes!( "z-a" ) ), bytes!( "a" ) ) );
-    assert!( !classMatch( class!( bytes!( "z-a" ) ), bytes!( "b" ) ) );
-    assert!( !classMatch( class!( bytes!( "a-z" ) ), bytes!( "0" ) ) );
-    assert!( !classMatch( class!( bytes!( "a-z" ) ), bytes!( "A" ) ) );
+    assert!( !charClassMatch( class!( "a"   ), bytes!( "b" ) ) );
+    assert!( !charClassMatch( class!( "-"   ), bytes!( "a" ) ) );
+    assert!( !charClassMatch( class!( "z-a" ), bytes!( "a" ) ) );
+    assert!( !charClassMatch( class!( "z-a" ), bytes!( "b" ) ) );
+    assert!( !charClassMatch( class!( "a-z" ), bytes!( "0" ) ) );
+    assert!( !charClassMatch( class!( "a-z" ), bytes!( "A" ) ) );
   }
 
 

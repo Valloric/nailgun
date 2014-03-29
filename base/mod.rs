@@ -20,11 +20,11 @@ pub mod test_utils;
 #[macro_escape]
 mod literal;
 #[macro_escape]
+mod char_class;
+#[macro_escape]
 mod not;
 #[macro_escape]
 mod and;
-#[macro_escape]
-mod char_class;
 mod dot;
 #[macro_escape]
 mod option;

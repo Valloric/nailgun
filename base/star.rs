@@ -1,6 +1,6 @@
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! star( ( $ex:expr ) => ( Star::new( $ex ) ); )
+macro_rules! star( ( $ex:expr ) => ( Star::new( & $ex ) ); )
 
 pub struct Star<'a> {
   expr: &'a Expression
@@ -41,7 +41,7 @@ mod tests {
   #[test]
   fn Star_Match() {
     let orig_state = input_state!( "aaa" );
-    match star!( &lit!( "a" ) ).apply( &orig_state ) {
+    match star!( lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -68,7 +68,7 @@ mod tests {
   #[test]
   fn Star_Match_JustOne() {
     let orig_state = input_state!( "abb" );
-    match star!( &lit!( "a" ) ).apply( &orig_state ) {
+    match star!( lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -86,7 +86,7 @@ mod tests {
   #[test]
   fn Star_Match_Empty() {
     let orig_state = input_state!( "y" );
-    match star!( &lit!( "x" ) ).apply( &orig_state ) {
+    match star!( lit!( "x" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
