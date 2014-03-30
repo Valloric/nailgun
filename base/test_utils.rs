@@ -5,6 +5,7 @@ pub fn ToParseState<'a>( bytes: &'a [u8] ) -> ParseState<'a> {
 }
 
 macro_rules! input_state( ( $ex:expr ) => ( {
+      use base::ParseState;
       byte_var!( input = $ex )
       ParseState { input: input, offset: 0 }
     } ) )

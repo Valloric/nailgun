@@ -99,8 +99,6 @@ rule!( EndOfFile <- not!( Dot ) )
 
 #[cfg(test)]
 mod tests {
-  use base::test_utils::ToParseState;
-  use base::{ParseResult};
   use super::{EndOfFile, EndOfLine, Space, Comment, Spacing, Char, Range, Class,
               Literal, Identifier, Definition};
 
@@ -109,8 +107,8 @@ mod tests {
       $name:ident, $input:expr
     ) => (
       {
-        byte_var!( input = $input )
-        match $name( &ToParseState( input ) ) {
+        use base::ParseResult;
+        match $name( &input_state!( $input ) ) {
           Some( ParseResult{ nodes: _,
                              parse_state: parse_state } ) => {
             parse_state.input.is_empty()
@@ -125,10 +123,7 @@ mod tests {
     (
       $name:ident, $input:expr
     ) => (
-      {
-        byte_var!( input = $input )
-        $name( &ToParseState( input ) ).is_some()
-      }
+      $name( &input_state!( $input ) ).is_some()
     );
   )
 
