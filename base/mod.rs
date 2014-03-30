@@ -135,14 +135,3 @@ pub trait Expression {
 
 type Rule = fn<'a>( &ParseState<'a> ) -> Option< ParseResult<'a> >;
 
-
-// TODO: We should pass around the lifetime of 'input' to other functions and
-// thus avoild allocating Data and stuff
-#[cfg(not(test))]
-pub fn parseBytes<'a>( input: &'a [u8] ) -> Node<'a> {
-  Node { name: LITERAL_EXPRESSION,
-         start: 0,
-         end: 3,
-         contents: Data( input ) }
-}
-

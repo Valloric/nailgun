@@ -1,4 +1,8 @@
+#[crate_type = "lib"];
 #[feature(macro_rules)];
+
+#[cfg(not(test))]
+use base::{Node, ParseState, NodeContents};
 
 // macro_escape makes macros from annotated module visible in the "super"
 // module... and thus in the children of the "super" module as well.
@@ -12,13 +16,40 @@ macro_rules! rule(
   (
     $name:ident <- $body:expr
   ) => (
-    fn $name<'a>( parse_state: &base::ParseState<'a> )
+    pub fn $name<'a>( parse_state: &base::ParseState<'a> )
          -> std::option::Option< base::ParseResult<'a> > {
       use base::Expression;
       $body.apply( parse_state )
     }
   );
 )
+
+#[cfg(not(test))]
+pub fn parse<'a>( input: &'a [u8] ) -> Option< Node<'a> > {
+  static root_name : &'static str = "NailedRoot";
+  let parse_state = ParseState { input: input, offset: 0 };
+  match rules::Grammar( &parse_state ) {
+    Some( result ) => {
+      let start = if result.nodes.len() != 0 {
+        result.nodes.get( 0 ).start
+      } else {
+        0
+      };
+
+      let end = match result.nodes.last() {
+        Some( ref node ) => node.end,
+        _ => 0
+      };
+
+      Some( Node { name: root_name,
+                   start: start,
+                   end: end,
+                   contents: base::Children( result.nodes ) } )
+    }
+    _ => None
+  }
+}
+
 
 mod rules {
   #[no_implicit_prelude];

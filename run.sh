@@ -1,3 +1,5 @@
 #!/bin/bash
 
-rustc -o /tmp/main main.rs && /tmp/main
+rustc --out-dir /tmp parser.rs \
+  && rustc -L /tmp -o /tmp/main main.rs \
+  && /tmp/main "$@"

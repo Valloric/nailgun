@@ -1,9 +1,12 @@
 #[feature(macro_rules)];
 
-mod parser;
+extern crate parser;
+use std::io;
 
 #[cfg(not(test))]
 fn main() {
-  println!( "{:?}", base::parseBytes( bytes!( "foo" ) ) );
+  let data = io::stdin().read_to_end().unwrap();
+
+  println!( "{:?}", parser::parse( data ) );
 }
 
