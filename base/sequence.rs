@@ -2,7 +2,7 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! seq( ( $( $ex:expr ),* ) => ( {
     use base;
-    base::Sequence::new( &[ $( & $ex as &Expression ),* ] ) } ); )
+    base::Sequence::new( &[ $( & $ex as &base::Expression ),* ] ) } ); )
 
 pub struct Sequence<'a> {
   exprs: &'a [&'a Expression]

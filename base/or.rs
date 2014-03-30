@@ -2,7 +2,7 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! or( ( $( $ex:expr ),* ) => ( {
     use base;
-    base::Or::new( &[ $( & $ex as &Expression ),* ] ) } ); )
+    base::Or::new( &[ $( & $ex as &base::Expression ),* ] ) } ); )
 
 pub struct Or<'a> {
   exprs: &'a [&'a Expression]

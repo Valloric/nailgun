@@ -1,6 +1,6 @@
 #[feature(macro_rules)];
 
-use base::{ParseState, ParseResult, Dot, Expression};
+use base::{ParseState, ParseResult, Dot};
 
 // macro_escape makes macros from annotated module visible in the "super"
 // module... and thus in the children of the "super" module as well.
@@ -15,12 +15,42 @@ macro_rules! rule(
     $name:ident <- $body:expr
   ) => (
     fn $name<'a>( parse_state: &ParseState<'a> ) -> Option< ParseResult<'a> > {
+      use base::Expression;
       $body.apply( parse_state )
     }
   );
 )
 
 
+rule!( Grammar <- seq!( ex!( Spacing ),
+                        star!( ex!( Definition ) ),
+                        ex!( EndOfFile ) ) )
+rule!( Definition <- seq!( ex!( Identifier ),
+                           ex!( LEFTARROW ),
+                           ex!( Expression ) ) )
+rule!( Expression <- seq!( ex!( Sequence ),
+                           star!( seq!( ex!( SLASH ), ex!( Sequence ) ) ) ) )
+rule!( Sequence <- star!( ex!( Prefix ) ) )
+rule!( Prefix <- seq!( opt!( or!( ex!( AND ),
+                                  ex!( NOT ) ) ),
+                       ex!( Suffix ) ) )
+rule!( Suffix <- seq!( ex!( Primary ),
+                       opt!( or!( ex!( QUESTION ),
+                                  ex!( STAR ),
+                                  ex!( PLUS ) ) ) ) )
+rule!( Primary <- or!( seq!( ex!( Identifier ),
+                             not!( ex!( LEFTARROW ) ) ),
+                       seq!( ex!( OPEN ),
+                             ex!( Expression ),
+                             ex!( CLOSE ) ),
+                       ex!( Literal ),
+                       ex!( Class ),
+                       ex!( DOT ) ) )
+rule!( Identifier <- seq!( ex!( IdentStart ),
+                           star!( ex!( IdentCont ) ),
+                           ex!( Spacing ) ) )
+rule!( IdentStart <- class!( "a-zA-Z_" ) )
+rule!( IdentCont <- or!( ex!( IdentStart ), class!( "0-9" ) ) )
 rule!( Literal <- or!( seq!( class!( "'" ),
                              star!( seq!( not!( class!( "'" ) ),
                                           ex!( Char ) ) ),
@@ -50,6 +80,7 @@ rule!( Char <- or!( seq!( lit!( r"\" ),
                           Dot ) ) )
 rule!( LEFTARROW <- seq!( lit!( "<-" ), ex!( Spacing ) ) )
 rule!( SLASH <- seq!( lit!( "/" ), ex!( Spacing ) ) )
+rule!( AND <- seq!( lit!( "&" ), ex!( Spacing ) ) )
 rule!( NOT <- seq!( lit!( "!" ), ex!( Spacing ) ) )
 rule!( QUESTION <- seq!( lit!( "?" ), ex!( Spacing ) ) )
 rule!( STAR <- seq!( lit!( "*" ), ex!( Spacing ) ) )
@@ -71,7 +102,7 @@ mod tests {
   use base::test_utils::ToParseState;
   use base::{ParseResult};
   use super::{EndOfFile, EndOfLine, Space, Comment, Spacing, Char, Range, Class,
-              Literal};
+              Literal, Identifier, Definition};
 
   macro_rules! consumes(
     (
@@ -100,6 +131,30 @@ mod tests {
       }
     );
   )
+
+  #[test]
+  fn Definition_Works() {
+    assert!( consumes!( Definition,
+                        "Grammar <- Spacing Definition+ EndOfFile" ) )
+    assert!( consumes!( Definition,
+                        r#"Char <- '\\' [nrt'"\[\]\\] /
+                                   '\\' [0-2][0-7][0-7] /
+                                   '\\' [0-7][0-7]? /
+                                   !'\\' ."# ) )
+  }
+
+  #[test]
+  fn Identifier_Works() {
+    assert!( consumes!( Identifier, "abc" ) );
+    assert!( consumes!( Identifier, "a" ) );
+    assert!( consumes!( Identifier, "_" ) );
+    assert!( consumes!( Identifier, "a123" ) );
+    assert!( consumes!( Identifier, "a  \n" ) );
+
+    assert!( !consumes!( Identifier, "1a" ) );
+    assert!( !consumes!( Identifier, "1" ) );
+    assert!( !consumes!( Identifier, "Ć" ) );
+  }
 
   #[test]
   fn Literal_Works() {
