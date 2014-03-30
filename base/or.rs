@@ -33,8 +33,7 @@ impl<'a> Expression for Or<'a> {
 #[cfg(test)]
 mod tests {
   use base::{Node, ParseState, ParseResult, Expression, Data};
-  use base::literal::{Literal, LITERAL_EXPRESSION};
-  use super::{Or};
+  use base::literal::{LITERAL_EXPRESSION};
 
   #[test]
   fn Or_Match_FirstExpr() {

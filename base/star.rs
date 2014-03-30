@@ -37,8 +37,7 @@ impl<'a> Expression for Star<'a> {
 #[cfg(test)]
 mod tests {
   use base::{Node, ParseResult, ParseState, Expression, Data};
-  use base::literal::{Literal, LITERAL_EXPRESSION};
-  use super::{Star};
+  use base::literal::{LITERAL_EXPRESSION};
 
   #[test]
   fn Star_Match() {

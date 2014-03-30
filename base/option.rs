@@ -30,8 +30,7 @@ impl<'a> Expression for OptionEx<'a> {
 #[cfg(test)]
 mod tests {
   use base::{Node, ParseResult, Expression, Data, ParseState};
-  use base::literal::{Literal, LITERAL_EXPRESSION};
-  use super::{OptionEx};
+  use base::literal::{LITERAL_EXPRESSION};
 
   #[test]
   fn OptionEx_Match_WithLiteral() {

@@ -30,9 +30,6 @@ impl<'a> Expression for NotEx<'a> {
 #[cfg(test)]
 mod tests {
   use base::{ParseResult, Expression, ParseState};
-  use base::literal::Literal;
-  use base::char_class::CharClass;
-  use super::NotEx;
 
   #[test]
   fn NotEx_Match_WithLiteral() {

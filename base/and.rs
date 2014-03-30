@@ -30,9 +30,6 @@ impl<'a> Expression for And<'a> {
 #[cfg(test)]
 mod tests {
   use base::{ParseResult, Expression, ParseState};
-  use base::literal::Literal;
-  use base::char_class::CharClass;
-  use super::And;
 
   #[test]
   fn And_Match_WithLiteral() {

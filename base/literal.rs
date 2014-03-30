@@ -37,7 +37,7 @@ impl Expression for Literal {
 #[cfg(test)]
 mod tests {
   use base::{Node, Data, ParseResult, ParseState, Expression};
-  use super::{LITERAL_EXPRESSION, Literal};
+  use super::{LITERAL_EXPRESSION};
 
   #[test]
   fn Literal_Match() {
