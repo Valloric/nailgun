@@ -21,6 +21,16 @@ macro_rules! rule(
 )
 
 
+rule!( Literal <- or!( seq!( class!( "'" ),
+                             star!( seq!( not!( class!( "'" ) ),
+                                          ex!( Char ) ) ),
+                             class!( "'" ),
+                             ex!( Spacing ) ),
+                       seq!( class!( "\"" ),
+                             star!( seq!( not!( class!( "\"" ) ),
+                                          ex!( Char ) ) ),
+                             class!( "\"" ),
+                             ex!( Spacing ) ) ) )
 rule!( Class <- seq!( lit!( "[" ),
                       star!( seq!( not!( lit!( "]" ) ), ex!( Range ) ) ),
                       lit!( "]" ),
@@ -60,7 +70,8 @@ rule!( EndOfFile <- not!( Dot ) )
 mod tests {
   use base::test_utils::ToParseState;
   use base::{ParseResult};
-  use super::{EndOfFile, EndOfLine, Space, Comment, Spacing, Char, Range, Class};
+  use super::{EndOfFile, EndOfLine, Space, Comment, Spacing, Char, Range, Class,
+              Literal};
 
   macro_rules! consumes(
     (
@@ -89,6 +100,14 @@ mod tests {
       }
     );
   )
+
+  #[test]
+  fn Literal_Works() {
+    assert!( consumes!( Literal, "'abc'" ) );
+    assert!( consumes!( Literal, r#""abc""# ) );
+    assert!( consumes!( Literal, "'abc'  \n" ) );
+    assert!( !consumes!( Literal, "'abc''bb'" ) );
+  }
 
   #[test]
   fn Class_Works() {
