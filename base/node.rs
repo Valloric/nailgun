@@ -61,6 +61,25 @@ impl<'a> Node<'a> {
     Ok(())
   }
 
+  pub fn newParent( name: &'static str, children: Vec<Node<'a>> )
+      -> Node<'a> {
+    let start = if children.len() != 0 {
+      children.get( 0 ).start
+    } else {
+      0
+    };
+
+    let end = match children.last() {
+      Some( ref node ) => node.end,
+      _ => 0
+    };
+
+    Node { name: name,
+           start: start,
+           end: end,
+           contents: Children( children ) }
+  }
+
   // fn matchedData( &self ) -> Vec<u8> {
   //   match self.contents {
   //     Empty => ~"",

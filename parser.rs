@@ -19,7 +19,20 @@ macro_rules! rule(
     pub fn $name<'a>( parse_state: &base::ParseState<'a> )
          -> std::option::Option< base::ParseResult<'a> > {
       use base::Expression;
-      $body.apply( parse_state )
+      use base::Node;
+      use base::ParseResult;
+      use std::clone::Clone;
+      use std::option::{Some, None};
+      static node_name : &'static str = stringify!( $name );
+
+      match $body.apply( parse_state ) {
+        Some( result ) => {
+          let state = result.parse_state.clone();
+          Some( ParseResult::oneNode(
+              Node::newParent( node_name, result.nodes ), state ) )
+        }
+        _ => None
+      }
     }
   );
 )
@@ -29,23 +42,7 @@ pub fn parse<'a>( input: &'a [u8] ) -> Option< Node<'a> > {
   static root_name : &'static str = "NailedRoot";
   let parse_state = ParseState { input: input, offset: 0 };
   match rules::Grammar( &parse_state ) {
-    Some( result ) => {
-      let start = if result.nodes.len() != 0 {
-        result.nodes.get( 0 ).start
-      } else {
-        0
-      };
-
-      let end = match result.nodes.last() {
-        Some( ref node ) => node.end,
-        _ => 0
-      };
-
-      Some( Node { name: root_name,
-                   start: start,
-                   end: end,
-                   contents: base::Children( result.nodes ) } )
-    }
+    Some( result ) => Some( Node::newParent( root_name, result.nodes ) ),
     _ => None
   }
 }
