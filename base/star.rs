@@ -1,6 +1,8 @@
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! star( ( $ex:expr ) => ( Star::new( & $ex ) ); )
+macro_rules! star( ( $ex:expr ) => ( {
+    use base;
+    base::Star::new( & $ex ) } ); )
 
 pub struct Star<'a> {
   expr: &'a Expression

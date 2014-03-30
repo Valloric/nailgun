@@ -1,8 +1,9 @@
 use super::{Expression, ParseState, ParseResult};
 
 macro_rules! lit( ( $ex:expr ) => ( {
+      use base;
       byte_var!( input = $ex )
-      Literal::new( input )
+      base::Literal::new( input )
     } ) )
 
 pub static LITERAL_EXPRESSION : &'static str = "Literal";

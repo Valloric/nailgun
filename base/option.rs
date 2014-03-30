@@ -1,6 +1,8 @@
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! option( ( $ex:expr ) => ( OptionEx::new( & $ex ) ); )
+macro_rules! option( ( $ex:expr ) => ( {
+    use base;
+    base::OptionEx::new( & $ex ) } ); )
 
 pub struct OptionEx<'a> {
   expr: &'a Expression

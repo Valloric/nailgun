@@ -1,6 +1,8 @@
 use super::{Expression, ParseState, ParseResult, Rule};
 
-macro_rules! ex( ( $ex:expr ) => ( WrapEx{ rule: $ex } ); )
+macro_rules! ex( ( $ex:expr ) => ( {
+    use base;
+    base::WrapEx{ rule: $ex } } ); )
 
 pub struct WrapEx {
   rule: Rule

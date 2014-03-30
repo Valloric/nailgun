@@ -1,6 +1,8 @@
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! not( ( $ex:expr ) => ( NotEx::new(& $ex) ); )
+macro_rules! not( ( $ex:expr ) => ( {
+    use base;
+    base::NotEx::new(& $ex) } ); )
 
 pub struct NotEx<'a> {
   expr: &'a Expression

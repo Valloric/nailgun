@@ -1,6 +1,8 @@
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! plus( ( $ex:expr ) => ( Plus::new( & $ex ) ); )
+macro_rules! plus( ( $ex:expr ) => ( {
+    use base;
+    base::Plus::new( & $ex ) } ); )
 
 pub struct Plus<'a> {
   expr: &'a Expression

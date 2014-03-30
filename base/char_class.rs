@@ -3,8 +3,9 @@ use base::unescape::unescape;
 use super::{Expression, ParseState, ParseResult};
 
 macro_rules! class( ( $ex:expr ) => ( {
+      use base;
       byte_var!( input = $ex )
-      CharClass::new( input )
+      base::CharClass::new( input )
     } ) )
 
 static CHAR_CLASS_EXPRESSION : &'static str = "CharClass";

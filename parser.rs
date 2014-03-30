@@ -1,7 +1,6 @@
 #[feature(macro_rules)];
 
-use base::{ParseState, ParseResult, NotEx, Dot, Expression, Literal, Or,
-WrapEx, Sequence, Star};
+use base::{ParseState, ParseResult, Dot, Expression};
 
 // macro_escape makes macros from annotated module visible in the "super"
 // module... and thus in the children of the "super" module as well.

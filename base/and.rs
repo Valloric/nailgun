@@ -1,6 +1,8 @@
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! and( ( $ex:expr ) => ( And::new( & $ex ) ); )
+macro_rules! and( ( $ex:expr ) => ( {
+    use base;
+    base::And::new( & $ex ) } ); )
 
 pub struct And<'a> {
   expr: &'a Expression
