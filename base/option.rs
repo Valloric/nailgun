@@ -29,7 +29,7 @@ impl<'a> Expression for OptionEx<'a> {
 
 #[cfg(test)]
 mod tests {
-  use base::{Node, ParseResult, Expression, Data, ParseState};
+  use base::{Node, ParseResult, Expression, Data};
   use base::literal::{LITERAL_EXPRESSION};
 
   #[test]

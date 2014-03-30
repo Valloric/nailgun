@@ -43,7 +43,7 @@ impl<'a> Expression for Plus<'a> {
 
 #[cfg(test)]
 mod tests {
-  use base::{Node, ParseResult, ParseState, Expression, Data};
+  use base::{Node, ParseResult, Expression, Data};
   use base::literal::{LITERAL_EXPRESSION};
 
   #[test]

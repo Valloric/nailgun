@@ -32,7 +32,7 @@ impl<'a> Expression for Or<'a> {
 
 #[cfg(test)]
 mod tests {
-  use base::{Node, ParseState, ParseResult, Expression, Data};
+  use base::{Node, ParseResult, Expression, Data};
   use base::literal::{LITERAL_EXPRESSION};
 
   #[test]

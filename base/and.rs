@@ -29,7 +29,7 @@ impl<'a> Expression for And<'a> {
 
 #[cfg(test)]
 mod tests {
-  use base::{ParseResult, Expression, ParseState};
+  use base::{ParseResult, Expression};
 
   #[test]
   fn And_Match_WithLiteral() {

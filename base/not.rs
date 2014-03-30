@@ -29,7 +29,7 @@ impl<'a> Expression for NotEx<'a> {
 
 #[cfg(test)]
 mod tests {
-  use base::{ParseResult, Expression, ParseState};
+  use base::{ParseResult, Expression};
 
   #[test]
   fn NotEx_Match_WithLiteral() {
