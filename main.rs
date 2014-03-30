@@ -5,8 +5,10 @@ use std::io;
 
 #[cfg(not(test))]
 fn main() {
-  let data = io::stdin().read_to_end().unwrap();
-
-  println!( "{:?}", parser::parse( data ) );
+  let input = io::stdin().read_to_end().unwrap();
+  match parser::parse( input ) {
+    Some( ref node ) => println!( "{}", node ),
+    _ => println!( "Couldn't parse input." )
+  }
 }
 

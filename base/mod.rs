@@ -1,5 +1,6 @@
-#[cfg(not(test))]
-use base::literal::LITERAL_EXPRESSION;
+use std::fmt;
+use std::str;
+use std::fmt::{Result};
 
 pub use self::not::NotEx;
 pub use self::and::And;
@@ -14,6 +15,7 @@ pub use self::sequence::Sequence;
 pub use self::wrap::WrapEx;
 
 
+#[cfg(test)]
 #[macro_escape]
 pub mod test_utils;
 
@@ -50,7 +52,7 @@ pub enum NodeContents<'a> {
 }
 
 
-#[deriving(Show, Eq)]
+#[deriving(Eq)]
 pub struct Node<'a> {
   name: &'static str,
   start: uint,
@@ -59,6 +61,48 @@ pub struct Node<'a> {
 }
 
 impl<'a> Node<'a> {
+  fn format( &self, formatter: &mut fmt::Formatter, indent_spaces: int )
+      -> fmt::Result {
+    fn indent( formatter: &mut fmt::Formatter, indent_spaces: int )
+        -> fmt::Result {
+      for _ in range( 0, indent_spaces ) {
+        try!( write!( formatter.buf, " " ) )
+      }
+      Ok(())
+    }
+
+    try!( indent( formatter, indent_spaces ) );
+    try!( write!( formatter.buf,
+                  "Node \\{name: {0}, start: {1}, end: {2}",
+                  self.name, self.start, self.end ) );
+
+    match self.contents {
+      Data( data ) => {
+        match str::from_utf8( data ) {
+          Some( string ) => {
+            try!( writeln!( formatter.buf,
+                            ", contents: \"{0}\" \\}",
+                            string ) );
+          }
+          _ => {
+            try!( writeln!( formatter.buf,
+                            ", contents: \"{0}\" \\}",
+                            data ) );
+          }
+        }
+      }
+      Children( ref children ) => {
+        try!( writeln!( formatter.buf, " \\}" ) );
+        for child in children.iter() {
+          try!( child.format( formatter, indent_spaces + 1) )
+        }
+      }
+      _ => ()
+    };
+
+    Ok(())
+  }
+
   // fn matchedData( &self ) -> Vec<u8> {
   //   match self.contents {
   //     Empty => ~"",
@@ -71,6 +115,12 @@ impl<'a> Node<'a> {
 
   // TODO: methods in_order/pre_order/post_order that yield
   // iterators for walking the node tree structure
+}
+
+impl<'a> fmt::Show for Node<'a> {
+  fn fmt( &self, formatter: &mut fmt::Formatter ) -> fmt::Result {
+    self.format( formatter, 0 )
+  }
 }
 
 

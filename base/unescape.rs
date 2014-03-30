@@ -61,6 +61,7 @@ pub fn unescape( input: &[u8] ) -> Vec<u8> {
 }
 
 // TODO: move to somewhere more generic
+#[cfg(test)]
 pub fn vecBytes( input: &'static str ) -> Vec<u8> {
   Vec::from_slice( input.as_bytes() )
 }

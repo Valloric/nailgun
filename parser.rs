@@ -2,7 +2,7 @@
 #![feature(macro_rules)]
 
 #[cfg(not(test))]
-use base::{Node, ParseState, NodeContents};
+pub use base::{Node, ParseState, NodeContents};
 
 // macro_escape makes macros from annotated module visible in the "super"
 // module... and thus in the children of the "super" module as well.
@@ -58,7 +58,7 @@ mod rules {
   use std;
 
   rule!( Grammar <- seq!( ex!( Spacing ),
-                          star!( ex!( Definition ) ),
+                          plus!( ex!( Definition ) ),
                           ex!( EndOfFile ) ) )
   rule!( Definition <- seq!( ex!( Identifier ),
                             ex!( LEFTARROW ),
