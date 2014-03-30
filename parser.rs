@@ -21,6 +21,8 @@ macro_rules! rule(
 )
 
 
+rule!( Range <- or!( seq!( ex!( Char ), lit!( "-" ), ex!( Char ) ),
+                     ex!( Char ) ) )
 rule!( Char <- or!( seq!( lit!( r"\" ),
                           class!( r#"nrt'"[]\"# ) ),
                     seq!( lit!( r"\" ),
@@ -54,7 +56,7 @@ rule!( EndOfFile <- not!( Dot ) )
 mod tests {
   use base::test_utils::ToParseState;
   use base::{ParseResult};
-  use super::{EndOfFile, EndOfLine, Space, Comment, Spacing, Char};
+  use super::{EndOfFile, EndOfLine, Space, Comment, Spacing, Char, Range};
 
   macro_rules! consumes(
     (
@@ -83,6 +85,12 @@ mod tests {
       }
     );
   )
+
+  #[test]
+  fn Range_Works() {
+    assert!( consumes!( Range, "a-z" ) );
+    assert!( consumes!( Range, "a" ) );
+  }
 
   #[test]
   fn Char_Works() {
