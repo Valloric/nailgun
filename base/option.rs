@@ -1,6 +1,6 @@
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! option( ( $ex:expr ) => ( {
+macro_rules! opt( ( $ex:expr ) => ( {
     use base;
     base::OptionEx::new( & $ex ) } ); )
 
@@ -36,7 +36,7 @@ mod tests {
   #[test]
   fn OptionEx_Match_WithLiteral() {
     let orig_state = input_state!( "foo" );
-    match option!( lit!( "foo" ) ).apply( &orig_state ) {
+    match opt!( lit!( "foo" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -53,7 +53,7 @@ mod tests {
   #[test]
   fn OptionEx_Match_Empty() {
     let orig_state = input_state!( "y" );
-    match option!( lit!( "x" ) ).apply( &orig_state ) {
+    match opt!( lit!( "x" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );

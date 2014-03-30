@@ -21,6 +21,17 @@ macro_rules! rule(
 )
 
 
+rule!( Char <- or!( seq!( lit!( r"\" ),
+                          class!( r#"nrt'"[]\"# ) ),
+                    seq!( lit!( r"\" ),
+                          class!( "0-2" ),
+                          class!( "0-7" ),
+                          class!( "0-7" ) ),
+                    seq!( lit!( r"\" ),
+                          class!( "0-7" ),
+                          opt!( class!( "0-7" ) ) ),
+                    seq!( not!( lit!( r"\" ) ),
+                          Dot ) ) )
 rule!( LEFTARROW <- seq!( lit!( "<-" ), ex!( Spacing ) ) )
 rule!( SLASH <- seq!( lit!( "/" ), ex!( Spacing ) ) )
 rule!( NOT <- seq!( lit!( "!" ), ex!( Spacing ) ) )
@@ -43,7 +54,7 @@ rule!( EndOfFile <- not!( Dot ) )
 mod tests {
   use base::test_utils::ToParseState;
   use base::{ParseResult};
-  use super::{EndOfFile, EndOfLine, Space, Comment, Spacing};
+  use super::{EndOfFile, EndOfLine, Space, Comment, Spacing, Char};
 
   macro_rules! consumes(
     (
@@ -72,6 +83,23 @@ mod tests {
       }
     );
   )
+
+  #[test]
+  fn Char_Works() {
+    assert!( consumes!( Char, r"\n" ) );
+    assert!( consumes!( Char, r"\]" ) );
+    assert!( consumes!( Char, r"\\" ) );
+    assert!( consumes!( Char, r"\'" ) );
+    assert!( consumes!( Char, "a" ) );
+    assert!( consumes!( Char, "x" ) );
+    assert!( consumes!( Char, "Ć" ) );
+    assert!( consumes!( Char, "€" ) );
+    assert!( consumes!( Char, r"\277" ) );
+    assert!( consumes!( Char, r"\77" ) );
+    assert!( consumes!( Char, r"\7" ) );
+
+    assert!( !consumes!( Char, "aa" ) );
+  }
 
   #[test]
   fn Spacing_Works() {

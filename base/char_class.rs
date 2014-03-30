@@ -59,6 +59,8 @@ impl CharClass {
       }
     }
 
+    // TODO: instead of unescaping the input here, the passed-in value should be
+    // unescaped already by the peg code generator.
     let chars = toU32Vector( unescape( contents ).as_slice() );
     let mut char_class = CharClass { single_chars: Vec::new(),
                                                ranges: Vec::new() };
@@ -179,6 +181,14 @@ mod tests {
     assert!( charClassMatch( class!( "a-a"        ), bytes!( "a" ) ) );
   }
 
+  // TODO: Use these tests for the char-class unescape code that will be written
+  // in the code generator.
+  // #[test]
+  // fn CharClass_Match_ClassEscapedChars() {
+  //   assert!( charClassMatch( class!( r"\]" ), bytes!( "]" ) ) );
+  //   assert!( charClassMatch( class!( r"\\" ), bytes!( r"\" ) ) );
+  //   assert!( !charClassMatch( class!( r"\]" ), bytes!( r"\" ) ) );
+  // }
 
   #[test]
   fn CharClass_Match_NonUnicode() {
