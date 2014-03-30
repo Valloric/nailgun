@@ -23,6 +23,8 @@ macro_rules! rule(
       use base::ParseResult;
       use std::clone::Clone;
       use std::option::{Some, None};
+
+      #[allow(dead_code)]
       static node_name : &'static str = stringify!( $name );
 
       match $body.apply( parse_state ) {

@@ -9,7 +9,7 @@ pub use self::plus::Plus;
 pub use self::or::Or;
 pub use self::sequence::Sequence;
 pub use self::wrap::WrapEx;
-pub use self::node::{Node, NodeContents, Data, Children, Empty};
+pub use self::node::{Node, NodeContents, Data, Children};
 
 
 mod node;

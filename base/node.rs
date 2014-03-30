@@ -5,8 +5,7 @@ use std::fmt::{Result};
 #[deriving(Show, Eq)]
 pub enum NodeContents<'a> {
   Data( &'a [u8] ),
-  Children( Vec<Node<'a>> ),
-  Empty
+  Children( Vec<Node<'a>> )
 }
 
 
@@ -18,17 +17,17 @@ pub struct Node<'a> {
   contents: NodeContents<'a>
 }
 
+fn indent( formatter: &mut fmt::Formatter, indent_spaces: int )
+    -> fmt::Result {
+  for _ in range( 0, indent_spaces ) {
+    try!( write!( formatter.buf, " " ) )
+  }
+  Ok(())
+}
+
 impl<'a> Node<'a> {
   fn format( &self, formatter: &mut fmt::Formatter, indent_spaces: int )
       -> fmt::Result {
-    fn indent( formatter: &mut fmt::Formatter, indent_spaces: int )
-        -> fmt::Result {
-      for _ in range( 0, indent_spaces ) {
-        try!( write!( formatter.buf, " " ) )
-      }
-      Ok(())
-    }
-
     try!( indent( formatter, indent_spaces ) );
     try!( write!( formatter.buf,
                   "Node \\{name: {0}, start: {1}, end: {2}",
@@ -55,7 +54,6 @@ impl<'a> Node<'a> {
           try!( child.format( formatter, indent_spaces + 1) )
         }
       }
-      _ => ()
     };
 
     Ok(())
@@ -80,15 +78,16 @@ impl<'a> Node<'a> {
            contents: Children( children ) }
   }
 
-  // fn matchedData( &self ) -> Vec<u8> {
-  //   match self.contents {
-  //     Empty => ~"",
-  //     Data( ref x ) => x.to_owned(),
-  //
-  //     // TODO: recurse through children and collect all text
-  //     Children( _ ) => ~"foo"
-  //   }
-  // }
+  #[allow(dead_code)]
+  fn matchedData( &self ) -> Vec<u8> {
+    match self.contents {
+      Data( x ) => Vec::from_slice( x ),
+      Children( _ ) => {
+        // TODO: implement
+        vec!()
+      }
+    }
+  }
 
   // TODO: methods in_order/pre_order/post_order that yield
   // iterators for walking the node tree structure
