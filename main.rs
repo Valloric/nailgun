@@ -1,4 +1,4 @@
-#[feature(macro_rules)];
+#![feature(macro_rules)]
 
 extern crate parser;
 use std::io;

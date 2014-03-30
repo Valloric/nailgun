@@ -1,5 +1,5 @@
-#[crate_type = "lib"];
-#[feature(macro_rules)];
+#![crate_type = "lib"]
+#![feature(macro_rules)]
 
 #[cfg(not(test))]
 use base::{Node, ParseState, NodeContents};
@@ -52,7 +52,7 @@ pub fn parse<'a>( input: &'a [u8] ) -> Option< Node<'a> > {
 
 
 mod rules {
-  #[no_implicit_prelude];
+  #![no_implicit_prelude]
 
   use base;
   use std;
