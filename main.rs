@@ -5,11 +5,12 @@ extern crate parser;
 use getopts::{optflag, getopts};
 use std::os;
 use std::io;
+use std::path::Path;
 
 
 fn printUsage( opts: &[getopts::OptGroup] ) {
-  let args = os::args();
-  let short = getopts::short_usage( args[0], opts );
+  let program = Path::new( os::args()[ 0 ] );
+  let short = getopts::short_usage( program.filename_str().unwrap(), opts );
   let usage = getopts::usage( short, opts );
   println!( "{}", usage );
 }
