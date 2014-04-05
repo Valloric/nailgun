@@ -60,41 +60,41 @@ mod rules {
                           plus!( ex!( Definition ) ),
                           ex!( EndOfFile ) ) )
   rule!( Definition <- seq!( ex!( Identifier ),
-                            ex!( LEFTARROW ),
-                            ex!( Expression ) ) )
+                             ex!( LEFTARROW ),
+                             ex!( Expression ) ) )
   rule!( Expression <- seq!( ex!( Sequence ),
-                            star!( seq!( ex!( SLASH ), ex!( Sequence ) ) ) ) )
+                             star!( seq!( ex!( SLASH ), ex!( Sequence ) ) ) ) )
   rule!( Sequence <- star!( ex!( Prefix ) ) )
   rule!( Prefix <- seq!( opt!( or!( ex!( AND ),
                                     ex!( NOT ) ) ),
-                        ex!( Suffix ) ) )
+                         ex!( Suffix ) ) )
   rule!( Suffix <- seq!( ex!( Primary ),
-                        opt!( or!( ex!( QUESTION ),
+                         opt!( or!( ex!( QUESTION ),
                                     ex!( STAR ),
                                     ex!( PLUS ) ) ) ) )
   rule!( Primary <- or!( seq!( ex!( Identifier ),
                               not!( ex!( LEFTARROW ) ) ),
-                        seq!( ex!( OPEN ),
-                              ex!( Expression ),
-                              ex!( CLOSE ) ),
-                        ex!( Literal ),
-                        ex!( Class ),
-                        ex!( DOT ) ) )
+                         seq!( ex!( OPEN ),
+                               ex!( Expression ),
+                               ex!( CLOSE ) ),
+                         ex!( Literal ),
+                         ex!( Class ),
+                         ex!( DOT ) ) )
   rule!( Identifier <- seq!( ex!( IdentStart ),
-                            star!( ex!( IdentCont ) ),
-                            ex!( Spacing ) ) )
+                             star!( ex!( IdentCont ) ),
+                             ex!( Spacing ) ) )
   rule!( IdentStart <- class!( "a-zA-Z_" ) )
   rule!( IdentCont <- or!( ex!( IdentStart ), class!( "0-9" ) ) )
   rule!( Literal <- or!( seq!( class!( "'" ),
-                              star!( seq!( not!( class!( "'" ) ),
+                               star!( seq!( not!( class!( "'" ) ),
                                             ex!( Char ) ) ),
-                              class!( "'" ),
-                              ex!( Spacing ) ),
-                        seq!( class!( "\"" ),
-                              star!( seq!( not!( class!( "\"" ) ),
+                               class!( "'" ),
+                               ex!( Spacing ) ),
+                         seq!( class!( "\"" ),
+                               star!( seq!( not!( class!( "\"" ) ),
                                             ex!( Char ) ) ),
-                              class!( "\"" ),
-                              ex!( Spacing ) ) ) )
+                               class!( "\"" ),
+                               ex!( Spacing ) ) ) )
   rule!( Class <- seq!( lit!( "[" ),
                         star!( seq!( not!( lit!( "]" ) ), ex!( Range ) ) ),
                         lit!( "]" ),
@@ -124,7 +124,8 @@ mod rules {
   rule!( DOT <- seq!( lit!( "." ), ex!( Spacing ) ) )
   rule!( Spacing <- star!( or!( ex!( Space ), ex!( Comment ) ) ) )
   rule!( Comment <- seq!( lit!( "#" ),
-                          star!( seq!( not!( ex!( EndOfLine ) ), base::Dot ) ),
+                          star!( seq!( not!( ex!( EndOfLine ) ),
+                                       base::Dot ) ),
                           ex!( EndOfLine ) ) )
   rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
   rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
