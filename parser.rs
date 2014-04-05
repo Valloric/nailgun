@@ -134,7 +134,7 @@ mod rules {
   #[cfg(test)]
   mod tests {
     use super::{EndOfFile, EndOfLine, Space, Comment, Spacing, Char, Range,
-                Class, Literal, Identifier, Definition};
+                Class, Literal, Identifier, Definition, Grammar};
 
     macro_rules! consumes(
       (
@@ -163,6 +163,16 @@ mod rules {
         $name( &input_state!( $input ) ).is_some()
       );
     )
+
+    #[test]
+    fn Grammar_Works() {
+      assert!( consumes!( Grammar,
+                          r#"
+        h16           <- HEXDIGIT (HEXDIGIT (HEXDIGIT HEXDIGIT?)?)?
+        ls32          <- h16 ":" h16 / IPv4address
+        IPv4address   <- dec_octet "." dec_octet "." dec_octet "." dec_octet"#
+        ) )
+    }
 
     #[test]
     fn Definition_Works() {
