@@ -44,8 +44,8 @@ mod unescape;
 
 #[deriving(Show, Clone, Eq)]
 pub struct ParseState<'a> {
-  input: &'a [u8],  // Unconsumed input from "main" slice.
-  offset: uint  // Offset of 'input' from start of "main" slice.
+  pub input: &'a [u8],  // Unconsumed input from "main" slice.
+  pub offset: uint  // Offset of 'input' from start of "main" slice.
 }
 
 
@@ -73,8 +73,8 @@ impl<'a> ParseState<'a> {
 }
 
 pub struct ParseResult<'a> {
-  nodes: Vec< Node<'a> >,
-  parse_state: ParseState<'a>
+  pub nodes: Vec< Node<'a> >,
+  pub parse_state: ParseState<'a>
 }
 
 

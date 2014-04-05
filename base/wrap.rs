@@ -5,7 +5,7 @@ macro_rules! ex( ( $ex:expr ) => ( {
     base::WrapEx{ rule: $ex } } ); )
 
 pub struct WrapEx {
-  rule: Rule
+  pub rule: Rule
 }
 
 

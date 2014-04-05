@@ -11,10 +11,10 @@ pub enum NodeContents<'a> {
 
 #[deriving(Eq)]
 pub struct Node<'a> {
-  name: &'static str,
-  start: uint,
-  end: uint,
-  contents: NodeContents<'a>
+  pub name: &'static str,
+  pub start: uint,
+  pub end: uint,
+  pub contents: NodeContents<'a>
 }
 
 fn indent( formatter: &mut fmt::Formatter, indent_spaces: int )
