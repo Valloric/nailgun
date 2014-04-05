@@ -3,23 +3,21 @@
 # From: https://github.com/ermine/kombain/blob/db7acb2c5d387bb251f6a6e5067e27e4f116195d/url/url.peg
 # License: 3-BSD
 
-URI           <- scheme ":" hier_part ("?" query )? ("#" fragment)?
+URI           <- scheme ":" hier_part? ("?" query )? ("#" fragment)?
 
 hier_part     <- "//" authority path_abempty
                / path_absolute
                / path_rootless
-               / path_empty
 
 URI_reference <- URI / relative_ref
 
-absolute_URI  <- scheme ":" hier_part ("?" query)?
+absolute_URI  <- scheme ":" hier_part? ("?" query)?
 
-relative_ref  <- relative_part ("?" query)? ("#" fragment)?
+relative_ref  <- relative_part? ("?" query)? ("#" fragment)?
 
 relative_part <- "//" authority path_abempty
                / path_absolute
                / path_noscheme
-               / path_empty
 
 scheme        <- ALPHA ( ALPHA / DIGIT / "+" / "-" / "." )*
 
@@ -38,6 +36,7 @@ IPv6address   <-  h16 ":" h16 ":" h16 ":" h16 ":" h16 ":" h16 ":" ls32
 
                / ((h16 ":")? h16)? "::" h16 ":" h16 ":" h16 ":" ls32
 
+                # TODO: fix this *2, *3 etc nonsense
                / [ *2( h16 ":" ) h16 ] "::" h16 ":" h16 ':' ls32
                / [ *3( h16 ":" ) h16 ] "::" h16 ":" ls32
                / [ *4( h16 ":" ) h16 ] "::" ls32
@@ -56,22 +55,15 @@ dec_octet     <- DIGIT                 # 0-9
 
 reg_name      <- ( unreserved / pct_encoded / sub_delims )*
 
-path          <- path_abempty    # begins with "/" or is empty
-               / path_absolute   # begins with "/" but not "//"
-               / path_noscheme   # begins with a non-colon segment
-               / path_rootless   # begins with a segment
-               / path_empty      # zero characters
-
 path_abempty  <- ( "/" segment )*
 path_absolute <- "/" ( segment_nz ( "/" segment )* )?
 path_noscheme <- segment_nz_nc ( "/" segment )*
 path_rootless <- segment_nz ( "/" segment )*
-path_empty    <- 0<pchar>
 
-segment       <- *pchar
-segment_nz    <- 1*pchar
-segment_nz-nc <- ( unreserved / pct_encoded / sub_delims / "@" )+
-                ; non-zero-length segment without any colon ":"
+segment       <- pchar*
+segment_nz    <- pchar+
+segment_nz_nc <- ( unreserved / pct_encoded / sub_delims / "@" )+
+                 # non-zero-length segment without any colon ":"
 
 pchar         <- unreserved / pct_encoded / sub_delims / ":" / "@"
 
