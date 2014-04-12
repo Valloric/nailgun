@@ -33,7 +33,6 @@ impl<'a> Expression for Or<'a> {
 #[cfg(test)]
 mod tests {
   use base::{Node, ParseResult, Expression, Data};
-  use base::literal::{LITERAL_EXPRESSION};
 
   #[test]
   fn Or_Match_FirstExpr() {
@@ -42,10 +41,7 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node { name: LITERAL_EXPRESSION,
-                           start: 0,
-                           end: 1,
-                           contents: data!( "a" ) } );
+                    Node::noName( 0, 1, data!( "a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }
       _ => fail!( "No match." )
@@ -59,10 +55,7 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node { name: LITERAL_EXPRESSION,
-                           start: 0,
-                           end: 1,
-                           contents: data!( "a" ) } );
+                    Node::noName( 0, 1, data!( "a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }
       _ => fail!( "No match." )
@@ -76,10 +69,7 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node { name: LITERAL_EXPRESSION,
-                           start: 0,
-                           end: 1,
-                           contents: data!( "a" ) } );
+                    Node::noName( 0, 1, data!( "a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }
       _ => fail!( "No match." )

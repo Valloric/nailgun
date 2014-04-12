@@ -37,7 +37,6 @@ impl<'a> Expression for Sequence<'a> {
 #[cfg(test)]
 mod tests {
   use base::{Node, ParseResult, Expression, Data};
-  use base::literal::{LITERAL_EXPRESSION};
 
   #[test]
   fn Sequence_Match() {
@@ -46,15 +45,9 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node { name: LITERAL_EXPRESSION,
-                           start: 0,
-                           end: 1,
-                           contents: data!( "a" ) } );
+                    Node::noName( 0, 1, data!( "a" ) ) );
         assert_eq!( *nodes.get( 1 ),
-                    Node { name: LITERAL_EXPRESSION,
-                           start: 1,
-                           end: 2,
-                           contents: data!( "b" ) } );
+                    Node::noName( 1, 2, data!( "b" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 2 ) );
       }
       _ => fail!( "No match." )

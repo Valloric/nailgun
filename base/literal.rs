@@ -6,7 +6,6 @@ macro_rules! lit( ( $ex:expr ) => ( {
       base::Literal::new( input )
     } ) )
 
-pub static LITERAL_EXPRESSION : &'static str = "Literal";
 
 pub struct Literal {
   text: &'static [u8]
@@ -28,8 +27,7 @@ impl Expression for Literal {
       return None;
     }
 
-    parse_state.nameAndOffsetToResult(
-          LITERAL_EXPRESSION, parse_state.offset + self.text.len() )
+    parse_state.offsetToResult( parse_state.offset + self.text.len() )
   }
 }
 
@@ -37,7 +35,6 @@ impl Expression for Literal {
 #[cfg(test)]
 mod tests {
   use base::{Node, Data, ParseResult, ParseState, Expression};
-  use super::{LITERAL_EXPRESSION};
 
   #[test]
   fn Literal_Match() {
@@ -46,10 +43,7 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node { name: LITERAL_EXPRESSION,
-                           start: 0,
-                           end: 3,
-                           contents: data!( "foo" ) } );
+                    Node::noName( 0, 3, data!( "foo" ) ) );
         assert_eq!( parse_state, ParseState{ input: bytes!( "bar" ),
                                              offset: 3 } );
       }

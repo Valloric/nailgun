@@ -61,18 +61,18 @@ impl<'a> ParseState<'a> {
     self.input.slice_to( new_offset - self.offset )
   }
 
-  fn nameAndOffsetToResult( &self, node_name: &'static str, new_offset: uint )
+  fn offsetToResult( &self, new_offset: uint )
       -> Option< ParseResult<'a> > {
     Some( ParseResult::oneNode(
-        Node { name: node_name,
-               start: self.offset,
-               end: new_offset,
-               contents: Data( self.sliceTo( new_offset ) ) },
-        self.advanceTo( new_offset ) ) )
+            Node::noName( self.offset,
+                          new_offset,
+                          Data( self.sliceTo( new_offset ) ) ),
+          self.advanceTo( new_offset ) ) )
   }
 }
 
 pub struct ParseResult<'a> {
+  // TODO: can this be just one node instead of a vector?
   pub nodes: Vec< Node<'a> >,
   pub parse_state: ParseState<'a>
 }

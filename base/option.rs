@@ -30,7 +30,6 @@ impl<'a> Expression for OptionEx<'a> {
 #[cfg(test)]
 mod tests {
   use base::{Node, ParseResult, Expression, Data};
-  use base::literal::{LITERAL_EXPRESSION};
 
   #[test]
   fn OptionEx_Match_WithLiteral() {
@@ -39,10 +38,7 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node { name: LITERAL_EXPRESSION,
-                           start: 0,
-                           end: 3,
-                           contents: data!( "foo" ) } );
+                    Node::noName( 0, 3, data!( "foo" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 3 ) );
       }
       _ => fail!( "No match." )

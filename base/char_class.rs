@@ -8,7 +8,6 @@ macro_rules! class( ( $ex:expr ) => ( {
       base::CharClass::new( input )
     } ) )
 
-static CHAR_CLASS_EXPRESSION : &'static str = "CharClass";
 
 fn toU32Vector( input: &[u8] ) -> Vec<u32> {
   let mut i = 0;
@@ -96,8 +95,7 @@ impl CharClass {
     match readCodepoint( parse_state.input ) {
       Some( ch ) if self.matches( ch as u32 ) => {
         let num_following = bytesFollowing( parse_state.input[ 0 ] ).unwrap();
-        parse_state.nameAndOffsetToResult(
-          CHAR_CLASS_EXPRESSION, parse_state.offset + num_following + 1 )
+        parse_state.offsetToResult( parse_state.offset + num_following + 1 )
       }
       _ => None
     }
@@ -108,8 +106,7 @@ impl CharClass {
       Option< ParseResult<'a> > {
     match parse_state.input.get( 0 ) {
       Some( byte ) if self.matches( *byte as u32 ) => {
-        parse_state.nameAndOffsetToResult(
-          CHAR_CLASS_EXPRESSION, parse_state.offset + 1 )
+        parse_state.offsetToResult( parse_state.offset + 1 )
       }
       _ => None
     }
@@ -133,7 +130,7 @@ mod tests {
   use base::{Node, Data, ParseResult, Expression, ParseState};
   use base::test_utils::ToParseState;
   use base::unicode::bytesFollowing;
-  use super::{CHAR_CLASS_EXPRESSION, CharClass};
+  use super::{CharClass};
 
   fn charClassMatch( char_class: CharClass, input: &[u8] ) -> bool {
     fn bytesRead( input: &[u8] ) -> uint {
@@ -148,10 +145,7 @@ mod tests {
                           parse_state: parse_state } ) => {
         let bytes_read = bytesRead( input );
         assert_eq!( *nodes.get( 0 ),
-                    Node { name: CHAR_CLASS_EXPRESSION,
-                           start: 0,
-                           end: bytes_read,
-                           contents: Data( input ) } );
+                    Node::noName( 0, bytes_read, Data( input ) ) );
         assert_eq!( parse_state, ParseState{ input: &[], offset: bytes_read } );
         true
       }

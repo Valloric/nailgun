@@ -2,6 +2,8 @@ use std::fmt;
 use std::str;
 use std::fmt::{Result};
 
+static EMPTY : &'static str = "";
+
 #[deriving(Show, Eq)]
 pub enum NodeContents<'a> {
   Data( &'a [u8] ),
@@ -57,6 +59,11 @@ impl<'a> Node<'a> {
     };
 
     Ok(())
+  }
+
+  pub fn noName( start: uint, end: uint, contents: NodeContents<'a> )
+      -> Node<'a> {
+    Node { name: EMPTY, start: start, end: end, contents: contents }
   }
 
   pub fn newParent( name: &'static str, children: Vec<Node<'a>> )
