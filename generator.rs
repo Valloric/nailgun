@@ -21,6 +21,7 @@ pub fn codeForNode( node: &Node ) -> ~str {
     "Sequence" => sequenceOutput( node ),
     "Literal" => literalOutput( node ),
     "Class" => classOutput( node ),
+    "Suffix" => suffixOutput( node ),
     "Spacing" => ~"",
     "EndOfLine" => ~"",
     "LEFTARROW" => ~" <- ",
@@ -72,6 +73,23 @@ fn sequenceOutput( node: &Node ) -> ~str {
     }
     output.push_str( " )" );
     output.into_owned()
+  }
+}
+
+
+fn suffixOutput( node: &Node ) -> ~str {
+  let children = node_children!( node );
+  if children.len() == 1 {
+    codeForNodeContents( node )
+  } else {
+    let macro_name = match children.get( 1 ).name {
+      "QUESTION" => ~"opt",
+      "STAR" => ~"star",
+      "PLUS" => ~"plus",
+      _ => fail!( "Bad second child." )
+    };
+
+    [ macro_name, ~"!( ", codeForNode( children.get( 0 ) ), ~" )" ].concat()
   }
 }
 
