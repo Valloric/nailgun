@@ -3,6 +3,7 @@ use std::str;
 use std::fmt::{Result};
 
 static EMPTY : &'static str = "";
+static NO_NAME : &'static str = "<none>";
 
 #[deriving(Show, Eq)]
 pub enum NodeContents<'a> {
@@ -33,7 +34,7 @@ impl<'a> Node<'a> {
     try!( indent( formatter, indent_spaces ) );
     try!( write!( formatter.buf,
                   "Node \\{name: {0}, start: {1}, end: {2}",
-                  self.name, self.start, self.end ) );
+                  self.displayName(), self.start, self.end ) );
 
     match self.contents {
       Data( data ) => {
@@ -61,13 +62,33 @@ impl<'a> Node<'a> {
     Ok(())
   }
 
+  pub fn displayName( &self ) -> &'static str {
+    if !self.name.is_empty() {
+      self.name
+    } else {
+      NO_NAME
+    }
+  }
+
   pub fn noName( start: uint, end: uint, contents: NodeContents<'a> )
       -> Node<'a> {
     Node { name: EMPTY, start: start, end: end, contents: contents }
   }
 
-  pub fn newParent( name: &'static str, children: Vec<Node<'a>> )
+  pub fn newParent( name: &'static str, mut children: Vec<Node<'a>> )
       -> Node<'a> {
+    // In case 'children' has only one node with an empty name, our new Node
+    // will take the guts of the child with the new 'name'.
+    if children.len() == 1 && children.get( 0 ).name.is_empty() {
+      match children.pop() {
+        Some( mut child ) => {
+          child.name = name;
+          return child;
+        }
+        _ => ()
+      }
+    }
+
     let start = if children.len() != 0 {
       children.get( 0 ).start
     } else {

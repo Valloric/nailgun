@@ -2,7 +2,7 @@
 #![feature(macro_rules)]
 
 #[cfg(not(test))]
-pub use base::{Node, ParseState, Children, NodeContents};
+pub use base::{Node, ParseState, Data, Children, NodeContents};
 
 // macro_escape makes macros from annotated module visible in the "super"
 // module... and thus in the children of the "super" module as well.
