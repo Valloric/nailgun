@@ -23,11 +23,12 @@ pub fn codeForNode( node: &Node ) -> ~str {
     "Class" => classOutput( node ),
     "Suffix" => suffixOutput( node ),
     "Prefix" => prefixOutput( node ),
+    "Primary" => primaryOutput( node ),
     "DOT" => ~"base::Dot",
-    "Spacing" => ~"",
-    "EndOfLine" => ~"",
     "LEFTARROW" => ~" <- ",
     "SLASH" => ~", ",
+    "Spacing" => ~"",
+    "EndOfLine" => ~"",
     "OPEN" => ~"",
     "CLOSE" => ~"",
     _ => codeForNodeContents( node )
@@ -48,6 +49,10 @@ fn codeForNodeContents( node: &Node ) -> ~str {
 
 fn wrapChildrenOutput( before: ~str, node: &Node, after: ~str ) -> ~str {
   [ before, codeForNodeContents( node ), after ].concat()
+}
+
+fn wrapNodeOutput( before: ~str, node: &Node, after: ~str ) -> ~str {
+  [ before, codeForNode( node ), after ].concat()
 }
 
 
@@ -106,6 +111,17 @@ fn prefixOutput( node: &Node ) -> ~str {
     [ macro_name, ~"!( ", codeForNode( children.get( 1 ) ), ~" )" ].concat()
   }
 }
+
+
+fn primaryOutput( node: &Node ) -> ~str {
+  let children = node_children!( node );
+  if children.len() == 1 && children.get( 0 ).name == "Identifier" {
+    wrapNodeOutput( ~"ex!( ", children.get( 0 ), ~" )" )
+  } else {
+    codeForNodeContents( node )
+  }
+}
+
 
 fn literalOutput( node: &Node ) -> ~str {
   stringBasedRule( node, "lit" )
