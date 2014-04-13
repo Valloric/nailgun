@@ -127,26 +127,25 @@ fn primaryOutput( node: &Node ) -> ~str {
 
 
 fn literalOutput( node: &Node ) -> ~str {
-  // TODO: write escape func
   stringBasedRule( node, "lit" )
-    .replace( "\n", r"\n" )
-    .replace( "\t", r"\t" )
-    .replace( "\r", r"\r" )
 }
 
 
 fn classOutput( node: &Node ) -> ~str {
   stringBasedRule( node, "class" )
-    .replace( r"\]", r"]" )
-    .replace( r"\[", r"[" )
+    .replace( r"\\]", r"]" )
+    .replace( r"\\[", r"[" )
 }
 
 
 fn stringBasedRule( node: &Node, rule_name: &str ) -> ~str {
-  let content = unescapeString( codeForNodeContents( node ).trim() );
-
-  [ rule_name.to_owned(),
-    ~"!( r\"",
-    content.slice_chars( 1, content.len() - 1 ).replace( r#"""#, r#"\""# ),
-    ~"\" )" ].concat()
+  let full = codeForNodeContents( node );
+  // TODO: write escape func
+  let content = unescapeString( full.slice_chars( 1, full.len() - 1 ) )
+    .replace( r"\", r"\\" )
+    .replace( "\n", r"\n" )
+    .replace( "\t", r"\t" )
+    .replace( "\r", r"\r" )
+    .replace( "\"", r#"\""# );
+  format!( "{}!( \"{}\" )", rule_name, content )
 }
