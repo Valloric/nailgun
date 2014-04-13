@@ -127,7 +127,11 @@ fn primaryOutput( node: &Node ) -> ~str {
 
 
 fn literalOutput( node: &Node ) -> ~str {
+  // TODO: write escape func
   stringBasedRule( node, "lit" )
+    .replace( "\n", r"\n" )
+    .replace( "\t", r"\t" )
+    .replace( "\r", r"\r" )
 }
 
 
