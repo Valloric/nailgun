@@ -5,12 +5,25 @@ import re
 import os.path as p
 
 def StripRules( contents ):
-  regex = re.compile( u'// RULES START.*?// RULES END', re.DOTALL )
-  return regex.sub( u'', contents )
+  return re.sub( u'// RULES START.*?// RULES END', u'', contents,
+                 flags = re.DOTALL )
 
 
 def StripComments( contents ):
   return re.sub( u'\s*//.*$', u'', contents, flags = re.MULTILINE )
+
+
+def StripTests( contents ):
+  while True:
+    match = re.search( u'#\[cfg\(test\)\]\s*?( *)mod tests \{', contents,
+                      re.DOTALL | re.MULTILINE )
+    if not match:
+      break
+    mod_indent = ( match.group( 1 ) or u'' ).strip( '\n' )
+    regex = re.compile( u'^' + mod_indent +  '\}', re.MULTILINE )
+    brace = list( regex.finditer( contents, match.end() ) )[ 0 ]
+    contents = contents[ : match.start() ] + contents[ brace.end() : ]
+  return contents
 
 
 def FindModuleFile( module_name, parent_file ):
@@ -49,14 +62,15 @@ def InlineModules( filename, contents ):
                                                 module_name,
                                                 module_contents ) ) +
       contents[ match.end( 0 ) : ] )
-
   return contents
 
 
 def Main():
-  parser_contents = FileContents( 'parser.rs' )
+  input_file = 'parser.rs'
+  parser_contents = FileContents( input_file )
   parser_contents = StripRules( parser_contents )
-  parser_contents = InlineModules( 'parser.rs', parser_contents )
+  parser_contents = InlineModules( input_file, parser_contents )
+  parser_contents = StripTests( parser_contents )
   parser_contents = StripComments( parser_contents )
   print parser_contents.encode( 'utf-8' )
 
