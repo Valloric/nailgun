@@ -22,6 +22,7 @@ pub fn codeForNode( node: &Node ) -> ~str {
     "Literal" => literalOutput( node ),
     "Class" => classOutput( node ),
     "Suffix" => suffixOutput( node ),
+    "Prefix" => prefixOutput( node ),
     "DOT" => ~"base::Dot",
     "Spacing" => ~"",
     "EndOfLine" => ~"",
@@ -67,7 +68,7 @@ fn sequenceOutput( node: &Node ) -> ~str {
   } else {
     let mut output = StrBuf::from_str( "seq!( " );
     for i in range( 0, children.len() ) {
-      output.push_str( codeForNodeContents( children.get( i ) ) );
+      output.push_str( codeForNode( children.get( i ) ) );
       if i != children.len() -1 {
         output.push_str( ", " );
       }
@@ -94,6 +95,17 @@ fn suffixOutput( node: &Node ) -> ~str {
   }
 }
 
+
+fn prefixOutput( node: &Node ) -> ~str {
+  let children = node_children!( node );
+  if children.len() == 1 {
+    codeForNodeContents( node )
+  } else {
+    let macro_name = children.get( 0 ).name.chars()
+      .map( |x| x.to_lowercase() ).collect();
+    [ macro_name, ~"!( ", codeForNode( children.get( 1 ) ), ~" )" ].concat()
+  }
+}
 
 fn literalOutput( node: &Node ) -> ~str {
   stringBasedRule( node, "lit" )
