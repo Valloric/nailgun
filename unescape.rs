@@ -1,4 +1,5 @@
 use std::u8;
+use std::str::from_utf8;
 use std::char::from_u32;
 use std::char;
 use std::u32;
@@ -60,6 +61,12 @@ pub fn unescape( input: &[u8] ) -> Vec<u8> {
   return final_bytes;
 }
 
+
+pub fn unescapeString( input: &str ) -> ~str {
+  from_utf8( unescape( input.as_bytes() ).as_slice() ).unwrap().to_owned()
+}
+
+
 // TODO: move to somewhere more generic
 #[cfg(test)]
 pub fn vecBytes( input: &'static str ) -> Vec<u8> {
@@ -120,7 +127,6 @@ fn addThreeBytesAsOctal( mut input: Vec<u8>, bytes: [u8, ..3] ) -> Vec<u8> {
   }
   input
 }
-
 
 
 fn addEscapedByte( mut input: Vec<u8>, byte: u8 ) -> Vec<u8> {

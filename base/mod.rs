@@ -39,7 +39,6 @@ mod sequence;
 #[macro_escape]
 mod wrap;
 mod unicode;
-mod unescape;
 
 
 #[deriving(Show, Clone, Eq)]

@@ -1,9 +1,11 @@
 
 use std::str;
 use parser::{Node, Children, Data};
+use self::unescape::unescapeString;
 
 #[macro_escape]
 mod macros;
+mod unescape;
 
 // TODO: figure out how to write this as a function on Node; the borrow checker
 // was extra painful the last time you tried.
@@ -131,12 +133,13 @@ fn literalOutput( node: &Node ) -> ~str {
 
 fn classOutput( node: &Node ) -> ~str {
   stringBasedRule( node, "class" )
+    .replace( r"\]", r"]" )
+    .replace( r"\[", r"[" )
 }
 
 
 fn stringBasedRule( node: &Node, rule_name: &str ) -> ~str {
-  // TODO: unescape chars
-  let content = codeForNodeContents( node ).trim().to_owned();
+  let content = unescapeString( codeForNodeContents( node ).trim() );
 
   [ rule_name.to_owned(),
     ~"!( r\"",

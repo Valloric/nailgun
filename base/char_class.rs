@@ -1,5 +1,4 @@
 use base::unicode::{bytesFollowing, readCodepoint};
-use base::unescape::unescape;
 use super::{Expression, ParseState, ParseResult};
 
 macro_rules! class( ( $ex:expr ) => ( {
@@ -58,11 +57,9 @@ impl CharClass {
       }
     }
 
-    // TODO: instead of unescaping the input here, the passed-in value should be
-    // unescaped already by the peg code generator.
-    let chars = toU32Vector( unescape( contents ).as_slice() );
+    let chars = toU32Vector( contents.as_slice() );
     let mut char_class = CharClass { single_chars: Vec::new(),
-                                               ranges: Vec::new() };
+                                     ranges: Vec::new() };
     let mut index = 0;
     loop {
       match rangeAtIndex( index, chars.as_slice() ) {
