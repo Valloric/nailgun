@@ -22,6 +22,7 @@ pub fn codeForNode( node: &Node ) -> ~str {
     "Literal" => literalOutput( node ),
     "Class" => classOutput( node ),
     "Suffix" => suffixOutput( node ),
+    "DOT" => ~"base::Dot",
     "Spacing" => ~"",
     "EndOfLine" => ~"",
     "LEFTARROW" => ~" <- ",
