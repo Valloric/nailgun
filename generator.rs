@@ -16,13 +16,14 @@ macro_rules! node_children( ( $node:expr ) => ( {
 
 pub fn codeForNode( node: &Node ) -> ~str {
   match node.name {
-    "Definition" => wrapChildrenOutput( ~"rule!( ", node, ~")\n" ),
+    "Definition" => wrapChildrenOutput( ~"rule!( ", node, ~" )\n" ),
     "Expression" => expressionOutput( node ),
     "Sequence" => sequenceOutput( node ),
     "Literal" => literalOutput( node ),
     "Class" => classOutput( node ),
-    "Spacing" => ~" ",
+    "Spacing" => ~"",
     "EndOfLine" => ~"",
+    "LEFTARROW" => ~" <- ",
     "SLASH" => ~", ",
     "OPEN" => ~"",
     "CLOSE" => ~"",
@@ -52,7 +53,7 @@ fn expressionOutput( node: &Node ) -> ~str {
   if children.len() == 1 {
     codeForNodeContents( node )
   } else {
-    wrapChildrenOutput( ~"or!( ", node , ~") " )
+    wrapChildrenOutput( ~"or!( ", node , ~" )" )
   }
 }
 
@@ -69,7 +70,7 @@ fn sequenceOutput( node: &Node ) -> ~str {
         output.push_str( ", " );
       }
     }
-    output.push_str( ")" );
+    output.push_str( " )" );
     output.into_owned()
   }
 }
