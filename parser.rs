@@ -56,6 +56,8 @@ mod rules {
   use base;
   use std;
 
+  // RULES START
+
   rule!( Grammar <- seq!( ex!( Spacing ),
                           plus!( ex!( Definition ) ),
                           ex!( EndOfFile ) ) )
@@ -131,6 +133,7 @@ mod rules {
   rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
   rule!( EndOfFile <- not!( base::Dot ) )
 
+  // RULES END
 
   #[cfg(test)]
   mod tests {
