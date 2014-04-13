@@ -5,17 +5,17 @@ import re
 import os.path as p
 
 def StripRules( contents ):
-  return re.sub( u'// RULES START.*?// RULES END', u'', contents,
+  return re.sub( ur'// RULES START.*?// RULES END', u'', contents,
                  flags = re.DOTALL )
 
 
 def StripComments( contents ):
-  return re.sub( u'\s*//.*$', u'', contents, flags = re.MULTILINE )
+  return re.sub( ur'\s*//.*$', u'', contents, flags = re.MULTILINE )
 
 
 def StripTests( contents ):
   while True:
-    match = re.search( u'#\[cfg\(test\)\]\s*?( *)mod tests \{', contents,
+    match = re.search( ur'#\[cfg\(test\)\]\s*?( *)mod tests \{', contents,
                       re.DOTALL | re.MULTILINE )
     if not match:
       break
@@ -24,6 +24,12 @@ def StripTests( contents ):
     brace = list( regex.finditer( contents, match.end() ) )[ 0 ]
     contents = contents[ : match.start() ] + contents[ brace.end() : ]
   return contents
+
+
+def StripExtraWhitespace( contents ):
+  # Some previous stages like StripTests can leave several lines of whitespace
+  # before '}' chars. We want to remove such whitespace.
+  return re.sub( ur'\s*?^( *\})', '\n\\1', contents, flags = re.MULTILINE )
 
 
 def FindModuleFile( module_name, parent_file ):
@@ -43,7 +49,7 @@ def FileContents( filename ):
 
 def InlineModules( filename, contents ):
   while True:
-    match = re.search( u'(\s*)(pub\s+)?mod (\w+);', contents )
+    match = re.search( ur'(\s*)(pub\s+)?mod (\w+);', contents )
     if not match:
       break
     module_name = match.group( 3 )
@@ -72,6 +78,7 @@ def Main():
   parser_contents = InlineModules( input_file, parser_contents )
   parser_contents = StripTests( parser_contents )
   parser_contents = StripComments( parser_contents )
+  parser_contents = StripExtraWhitespace( parser_contents )
   print parser_contents.encode( 'utf-8' )
 
 
