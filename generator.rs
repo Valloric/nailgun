@@ -51,6 +51,7 @@ fn wrapChildrenOutput( before: ~str, node: &Node, after: ~str ) -> ~str {
   [ before, codeForNodeContents( node ), after ].concat()
 }
 
+
 fn wrapNodeOutput( before: ~str, node: &Node, after: ~str ) -> ~str {
   [ before, codeForNode( node ), after ].concat()
 }
@@ -58,19 +59,17 @@ fn wrapNodeOutput( before: ~str, node: &Node, after: ~str ) -> ~str {
 
 fn expressionOutput( node: &Node ) -> ~str {
   let children = node_children!( node );
-  if children.len() == 1 {
-    codeForNodeContents( node )
-  } else {
+  if children.len() > 1 {
     wrapChildrenOutput( ~"or!( ", node , ~" )" )
+  } else {
+    codeForNodeContents( node )
   }
 }
 
 
 fn sequenceOutput( node: &Node ) -> ~str {
   let children = node_children!( node );
-  if children.len() == 1 {
-    codeForNodeContents( node )
-  } else {
+  if children.len() > 1 {
     let mut output = StrBuf::from_str( "seq!( " );
     for i in range( 0, children.len() ) {
       output.push_str( codeForNode( children.get( i ) ) );
@@ -80,15 +79,15 @@ fn sequenceOutput( node: &Node ) -> ~str {
     }
     output.push_str( " )" );
     output.into_owned()
+  } else {
+    codeForNodeContents( node )
   }
 }
 
 
 fn suffixOutput( node: &Node ) -> ~str {
   let children = node_children!( node );
-  if children.len() == 1 {
-    codeForNodeContents( node )
-  } else {
+  if children.len() == 2 {
     let macro_name = match children.get( 1 ).name {
       "QUESTION" => ~"opt",
       "STAR" => ~"star",
@@ -97,18 +96,20 @@ fn suffixOutput( node: &Node ) -> ~str {
     };
 
     [ macro_name, ~"!( ", codeForNode( children.get( 0 ) ), ~" )" ].concat()
+  } else {
+    codeForNodeContents( node )
   }
 }
 
 
 fn prefixOutput( node: &Node ) -> ~str {
   let children = node_children!( node );
-  if children.len() == 1 {
-    codeForNodeContents( node )
-  } else {
+  if children.len() == 2 {
     let macro_name = children.get( 0 ).name.chars()
       .map( |x| x.to_lowercase() ).collect();
     [ macro_name, ~"!( ", codeForNode( children.get( 1 ) ), ~" )" ].concat()
+  } else {
+    codeForNodeContents( node )
   }
 }
 
