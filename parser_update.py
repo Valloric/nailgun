@@ -71,16 +71,24 @@ def InlineModules( filename, contents ):
   return contents
 
 
+def PreludeWrap( contents ):
+  return ''.join( [
+    """pub static PRELUDE : &'static str = r###"\n""",
+    contents,
+    '"###;' ] )
+
+
 def Main():
   input_file = 'parser.rs'
-  parser_contents = FileContents( input_file )
-  parser_contents = StripRules( parser_contents )
-  parser_contents = InlineModules( input_file, parser_contents )
-  parser_contents = StripTests( parser_contents )
-  parser_contents = StripComments( parser_contents )
-  parser_contents = StripExtraWhitespace( parser_contents )
-  print parser_contents.encode( 'utf-8' )
+  prelude = FileContents( input_file )
+  prelude = StripRules( prelude )
+  prelude = InlineModules( input_file, prelude )
+  prelude = StripTests( prelude )
+  prelude = StripComments( prelude )
+  prelude = StripExtraWhitespace( prelude )
+  prelude = PreludeWrap( prelude )
 
+  codecs.open( 'prelude.rs', 'w+', 'utf-8' ).write( prelude )
 
 if __name__ == "__main__":
   Main()

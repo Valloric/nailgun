@@ -1,6 +1,6 @@
 
 use std::str;
-use parser::{Node, Children, Data};
+use inlined_parser::{Node, Children, Data};
 use self::unescape::unescapeString;
 
 #[macro_escape]
