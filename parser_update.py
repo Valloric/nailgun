@@ -2,6 +2,7 @@
 
 import codecs
 import re
+import subprocess
 import os.path as p
 
 def StripRules( contents ):
@@ -89,6 +90,12 @@ def Main():
   prelude = PreludeWrap( prelude )
 
   codecs.open( 'prelude.rs', 'w+', 'utf-8' ).write( prelude )
+
+  output = subprocess.check_output(
+    ['./run.sh', '-g' ],
+    stdin = open( './examples/original_peg_grammar.peg', 'r+' ) )
+
+  open( './inlined_parser.rs', 'w+' ).write( output )
 
 if __name__ == "__main__":
   Main()
