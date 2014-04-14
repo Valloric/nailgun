@@ -5,6 +5,12 @@ import re
 import subprocess
 import os.path as p
 
+DEV_PARSER_FILE = './parser.rs'
+PRELUDE_FILE = './prelude.rs'
+INLINED_PARSER_FILE = './inlined_parser.rs'
+INPUT_PEG_FILE = './examples/original_peg_grammar.peg'
+
+
 def StripRules( contents ):
   return re.sub( ur'// RULES START.*?// RULES END', u'', contents,
                  flags = re.DOTALL )
@@ -80,22 +86,21 @@ def PreludeWrap( contents ):
 
 
 def Main():
-  input_file = 'parser.rs'
-  prelude = FileContents( input_file )
+  prelude = FileContents( DEV_PARSER_FILE )
   prelude = StripRules( prelude )
-  prelude = InlineModules( input_file, prelude )
+  prelude = InlineModules( DEV_PARSER_FILE, prelude )
   prelude = StripTests( prelude )
   prelude = StripComments( prelude )
   prelude = StripExtraWhitespace( prelude )
   prelude = PreludeWrap( prelude )
 
-  codecs.open( 'prelude.rs', 'w+', 'utf-8' ).write( prelude )
+  codecs.open( PRELUDE_FILE, 'w+', 'utf-8' ).write( prelude )
 
   output = subprocess.check_output(
     ['./run.sh', '-g' ],
-    stdin = open( './examples/original_peg_grammar.peg', 'r+' ) )
+    stdin = open( INPUT_PEG_FILE, 'r+' ) )
 
-  open( './inlined_parser.rs', 'w+' ).write( output )
+  open( INLINED_PARSER_FILE, 'w+' ).write( output )
 
 if __name__ == "__main__":
   Main()
