@@ -80,7 +80,10 @@ def InlineModules( filename, contents ):
 
 def PreludeWrap( contents ):
   return ''.join( [
-    """pub static PRELUDE : &'static str = r###"\n""",
+    # We add allow(dead_code) so that the user doesn't get warnings if their
+    # generated grammar only uses some features of PEG (and thus only some of
+    # the generated code) and not all.
+    """pub static PRELUDE : &'static str = r###"\n#![allow(dead_code)]\n""",
     contents,
     '"###;' ] )
 
@@ -94,13 +97,15 @@ def Main():
   prelude = StripExtraWhitespace( prelude )
   prelude = PreludeWrap( prelude )
 
-  codecs.open( PRELUDE_FILE, 'w+', 'utf-8' ).write( prelude )
+  with f as codecs.open( PRELUDE_FILE, 'w+', 'utf-8' ):
+    f.write( prelude )
 
   output = subprocess.check_output(
     ['./run.sh', '-g' ],
     stdin = open( INPUT_PEG_FILE, 'r+' ) )
 
-  open( INLINED_PARSER_FILE, 'w+' ).write( output )
+  with f as codecs.open( INLINED_PARSER_FILE, 'w+', 'utf-8' ):
+    f.write( output )
 
 if __name__ == "__main__":
   Main()
