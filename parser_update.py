@@ -91,9 +91,30 @@ def PreludeWrap( contents ):
     '"###;' ] )
 
 
+def ExtractRules( inlined_parser ):
+  consume = False
+  rules = []
+  for line in inlined_parser.split( '\n' ):
+    if line.startswith( '  rule!( Grammar' ):
+      consume = True
+    if consume:
+      if line.strip():
+        rules.append( line )
+      else:
+        break
+  return '\n'.join( rules )
+
+
+def ReplaceRules( parser, new_rules ):
+  match = re.search( ur'// RULES START\n\n(.*?)\s+// RULES END',
+                     parser,
+                     flags = re.DOTALL | re.MULTILINE )
+  return parser[ : match.start( 1 ) ] + new_rules + parser[ match.end( 1 ) : ]
+
+
 def Main():
-  prelude = FileContents( DEV_PARSER_FILE )
-  prelude = StripRules( prelude )
+  dev_parser = FileContents( DEV_PARSER_FILE )
+  prelude = StripRules( dev_parser )
   prelude = InlineModules( DEV_PARSER_FILE, prelude )
   prelude = StripTests( prelude )
   prelude = StripComments( prelude )
@@ -103,12 +124,16 @@ def Main():
   with codecs.open( PRELUDE_FILE, 'w+', 'utf-8' ) as f:
     f.write( prelude )
 
-  output = subprocess.check_output(
+  inlined_parser = subprocess.check_output(
     ['./run.sh', '-g' ],
     stdin = open( INPUT_PEG_FILE, 'r+' ) )
 
   with codecs.open( INLINED_PARSER_FILE, 'w+', 'utf-8' ) as f:
-    f.write( output )
+    f.write( inlined_parser )
+
+  with codecs.open( DEV_PARSER_FILE, 'w+', 'utf-8' ) as f:
+    f.write( ReplaceRules( dev_parser, ExtractRules( inlined_parser ) ) )
+
 
 if __name__ == "__main__":
   Main()
