@@ -38,7 +38,7 @@ def StripExtraWhitespace( contents ):
   # before '}' chars. We want to remove such whitespace.
   contents = re.sub( ur'\s*?^( *\})', '\n\\1', contents, flags = re.MULTILINE )
 
-  # Also, trailing whitespace is annoying
+  # Also, trailing whitespace is annoying.
   return re.sub( u'[\r \t]+$', '', contents, flags = re.MULTILINE )
 
 

@@ -19,7 +19,7 @@ fn stdin() -> Vec<u8> {
 }
 
 
-fn indentLines( input: ~str, num_spaces: uint ) -> ~str {
+fn indentLines( input: &str, num_spaces: uint ) -> ~str {
   let indent = " ".repeat( num_spaces );
   input.split( '\n' ).map(
     |x| [ indent.as_slice(), x, "\n" ].concat() )
