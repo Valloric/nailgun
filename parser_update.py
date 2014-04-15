@@ -36,7 +36,10 @@ def StripTests( contents ):
 def StripExtraWhitespace( contents ):
   # Some previous stages like StripTests can leave several lines of whitespace
   # before '}' chars. We want to remove such whitespace.
-  return re.sub( ur'\s*?^( *\})', '\n\\1', contents, flags = re.MULTILINE )
+  contents = re.sub( ur'\s*?^( *\})', '\n\\1', contents, flags = re.MULTILINE )
+
+  # Also, trailing whitespace is annoying
+  return re.sub( u'[\r \t]+$', '', contents, flags = re.MULTILINE )
 
 
 def FindModuleFile( module_name, parent_file ):
@@ -83,7 +86,7 @@ def PreludeWrap( contents ):
     # We add allow(dead_code) so that the user doesn't get warnings if their
     # generated grammar only uses some features of PEG (and thus only some of
     # the generated code) and not all.
-    """pub static PRELUDE : &'static str = r###"\n#![allow(dead_code)]\n""",
+    """pub static PRELUDE : &'static str = r###"#![allow(dead_code)]\n""",
     contents,
     '"###;' ] )
 
@@ -97,14 +100,14 @@ def Main():
   prelude = StripExtraWhitespace( prelude )
   prelude = PreludeWrap( prelude )
 
-  with f as codecs.open( PRELUDE_FILE, 'w+', 'utf-8' ):
+  with codecs.open( PRELUDE_FILE, 'w+', 'utf-8' ) as f:
     f.write( prelude )
 
   output = subprocess.check_output(
     ['./run.sh', '-g' ],
     stdin = open( INPUT_PEG_FILE, 'r+' ) )
 
-  with f as codecs.open( INLINED_PARSER_FILE, 'w+', 'utf-8' ):
+  with codecs.open( INLINED_PARSER_FILE, 'w+', 'utf-8' ) as f:
     f.write( output )
 
 if __name__ == "__main__":
