@@ -27,8 +27,8 @@ install_manifest.txt
 pip-log.txt
 
 # custom
-play
 main
 test
+nailed
 tree.txt
 

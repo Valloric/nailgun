@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+
+import os.path as p
+import fabricate as fab
+import subprocess as sub
+import os
+
+TEST_SOURCES = [ 'parser.rs', 'unescape.rs' ]
+MAIN_FILE = 'main.rs'
+MAIN_SOURCES = [ 'inlined_parser.rs', MAIN_FILE ]
+OUT_DIR = '/tmp/nailed'
+BINARY_NAME = 'nailed'
+
+
+def _dropExtension( filename ):
+  return p.splitext( filename )[ 0 ]
+
+
+def _getBuiltFilepath( filename ):
+  return p.join( OUT_DIR, _dropExtension( filename ) )
+
+
+def _rustc( filename, extra_args = None, optimize = False ):
+  if not extra_args:
+    extra_args = []
+  if optimize:
+    extra_args += ['-O']
+  fab.run( 'rustc', extra_args, '--out-dir', OUT_DIR, '-L', OUT_DIR, filename )
+
+
+def _testFile( filename ):
+  _rustc( filename, extra_args = [ '--test' ] )
+  sub.check_call( _getBuiltFilepath( filename ) )
+
+
+def build():
+  for filename in MAIN_SOURCES:
+    _rustc( filename, optimize = True )
+  fab.run( 'cp', _getBuiltFilepath( MAIN_FILE ), BINARY_NAME )
+
+
+def test():
+  for filename in TEST_SOURCES:
+    _testFile( filename )
+
+
+def _main():
+  if not p.exists( OUT_DIR ):
+    os.makedirs( OUT_DIR )
+  fab.main()
+
+
+if __name__ == "__main__":
+  _main()
