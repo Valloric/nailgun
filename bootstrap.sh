@@ -10,6 +10,7 @@ apt-get install -yqq python-software-properties
 apt-get update
 
 add-apt-repository -y ppa:hansjorg/rust
+apt-get update
 
 apt-get install -yqq rust-nightly
 apt-get install -yqq git
