@@ -41,7 +41,6 @@ pub fn codeForNode( node: &Node ) -> ~str {
 fn codeForNodeContents( node: &Node ) -> ~str {
   match node.contents {
     Children( ref children ) => {
-      // TODO: use StrBuf here somehow when it's merged in
       children.iter().map( codeForNode ).collect::<Vec<~str>>().concat()
     }
     Data( data ) => str::from_utf8( data ).unwrap().to_owned(),

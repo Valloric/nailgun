@@ -36,7 +36,7 @@ def _testFile( filename ):
 def build():
   for filename in MAIN_SOURCES:
     _rustc( filename, optimize = True )
-  fab.run( 'cp', _getBuiltFilepath( MAIN_FILE ), BINARY_NAME )
+  sub.check_call( [ 'cp', _getBuiltFilepath( MAIN_FILE ), BINARY_NAME ] )
 
 
 def test():

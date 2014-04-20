@@ -3,9 +3,9 @@
 extern crate getopts;
 extern crate inlined_parser;
 
-use getopts::{optflag, getopts};
+use getopts::{optflag, getopts, optopt};
 use std::os;
-use std::io;
+use std::io::File;
 use std::path::Path;
 use self::prelude::PRELUDE;
 use inlined_parser::parse;
@@ -14,8 +14,11 @@ mod generator;
 mod prelude;
 
 
-fn stdin() -> Vec<u8> {
-  io::stdin().read_to_end().unwrap()
+fn inputFromFile( input_file: &str ) -> Vec<u8> {
+  match File::open( &Path::new( input_file ) ).read_to_end() {
+    Ok( x ) => x,
+    _ => fail!( "Couldn't read input file: {}", input_file )
+  }
 }
 
 
@@ -35,8 +38,8 @@ fn printUsage( opts: &[getopts::OptGroup] ) {
 }
 
 
-fn printCode() {
-  match parse( stdin().as_slice() ) {
+fn printCode( input: &[u8] ) {
+  match parse( input ) {
     Some( ref node ) => {
       let parse_rules = indentLines( generator::codeForNode( node ), 2 );
       let output = [ PRELUDE.slice_to( PRELUDE.len() -1 ),
@@ -56,8 +59,10 @@ fn main() {
     optflag( "h", "help", "Print this help menu." ),
     // TODO: Should actually take a PEG grammar file and input, and then print
     // parsed tree of input.
-    optflag( "p", "print-tree", "Print parsed tree." ),
-    optflag( "g", "generate", "Generate parser code for given PEG grammar." )
+    optopt( "p", "print-tree", "Print parsed tree.", "FILE" ),
+    optopt( "g", "generate", "Generate parser code for given PEG grammar.",
+            "FILE" )
+
   ];
 
   let args = os::args();
@@ -72,14 +77,16 @@ fn main() {
   }
 
   if matches.opt_present( "p" ) {
-    match parse( stdin().as_slice() ) {
+    match parse( inputFromFile( matches.opt_str( "p" ).unwrap() ).as_slice() ) {
       Some( ref node ) => println!( "{}", node ),
       _ => println!( "Couldn't parse input." )
-    }
+    };
+    return;
   }
 
   if matches.opt_present( "g" ) {
-    printCode()
+    printCode( inputFromFile( matches.opt_str( "g" ).unwrap() ).as_slice() );
+    return;
   }
 }
 
