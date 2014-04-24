@@ -22,6 +22,15 @@ def StripComments( contents ):
                  contents,
                  flags = re.MULTILINE )
 
+# We remove the crate_id attribute because the user might want to link several
+# different generated parsers; also, our crate_id doesn't make much sense for
+# the user's parser.
+def StripCrateId( contents ):
+  return re.sub( ur'^#!\[crate_id.*?$\n',
+                 u'',
+                 contents,
+                 flags = re.MULTILINE )
+
 
 def StripTests( contents ):
   while True:
@@ -121,6 +130,7 @@ def Main():
   prelude = InlineModules( DEV_PARSER_FILE, prelude )
   prelude = StripTests( prelude )
   prelude = StripComments( prelude )
+  prelude = StripCrateId( prelude )
   prelude = StripExtraWhitespace( prelude )
   prelude = PreludeWrap( prelude )
 
