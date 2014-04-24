@@ -17,7 +17,10 @@ def StripRules( contents ):
 
 
 def StripComments( contents ):
-  return re.sub( ur'\s*//.*$', u'', contents, flags = re.MULTILINE )
+  return re.sub( ur'\s*(?<!/)//(?!(/|!)).*$',
+                 u'',
+                 contents,
+                 flags = re.MULTILINE )
 
 
 def StripTests( contents ):
