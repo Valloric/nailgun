@@ -127,9 +127,9 @@ def Main():
   with codecs.open( PRELUDE_FILE, 'w+', 'utf-8' ) as f:
     f.write( prelude )
 
+  subprocess.check_output( [ './build', '-c' ] )
   inlined_parser = subprocess.check_output(
-    ['./run.sh', '-g' ],
-    stdin = open( INPUT_PEG_FILE, 'r+' ) )
+    [ './nailed', '-g', INPUT_PEG_FILE ] )
 
   with codecs.open( INLINED_PARSER_FILE, 'w+', 'utf-8' ) as f:
     f.write( inlined_parser )
