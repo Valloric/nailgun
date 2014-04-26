@@ -7,16 +7,31 @@ static NO_NAME : &'static str = "<none>";
 
 #[deriving(Show, Eq)]
 pub enum NodeContents<'a> {
+  /// A `&[u8]` byte slice this node matched in the parse input. Only leaf nodes
+  /// have `Data` contents.
   Data( &'a [u8] ),
+
+  /// Children of the node, if any. Only non-leaf nodes have `Children`
+  /// contents.
   Children( Vec<Node<'a>> )
 }
 
 
 #[deriving(Eq)]
 pub struct Node<'a> {
+  /// The name of the node.
   pub name: &'static str,
+
+  /// The (inclusive) start index of the range this node matches. It's the byte
+  /// (NOT char) offset of the parse input.
   pub start: uint,
+
+  /// The (exclusive) end index of the range this node matches. It's the byte
+  /// (NOT char) offset of the parse input.
   pub end: uint,
+
+  /// The contents of the node; this can be either children nodes or a matched
+  /// `&[u8]` slice.
   pub contents: NodeContents<'a>
 }
 
@@ -62,6 +77,7 @@ impl<'a> Node<'a> {
     Ok(())
   }
 
+  /// The node name if set, or "<none>" if unset.
   pub fn displayName( &self ) -> &'static str {
     if !self.name.is_empty() {
       self.name
@@ -70,11 +86,14 @@ impl<'a> Node<'a> {
     }
   }
 
+  /// Creates a `Node` with an empty name.
   pub fn noName( start: uint, end: uint, contents: NodeContents<'a> )
       -> Node<'a> {
     Node { name: EMPTY, start: start, end: end, contents: contents }
   }
 
+  /// Creates a `Node` with the provided `name` and makes it a parent of the
+  /// provided `children`.
   pub fn newParent( name: &'static str, mut children: Vec<Node<'a>> )
       -> Node<'a> {
     // In case 'children' has only one node with an empty name, our new Node
