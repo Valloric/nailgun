@@ -25,14 +25,11 @@ macro_rules! rule(
       use std::clone::Clone;
       use std::option::{Some, None};
 
-      #[allow(dead_code)]
-      static node_name : &'static str = stringify!( $name );
-
       match $body.apply( parse_state ) {
         Some( result ) => {
           let state = result.parse_state.clone();
           Some( ParseResult::oneNode(
-              Node::newParent( node_name, result.nodes ), state ) )
+              Node::newParent( stringify!( $name ), result.nodes ), state ) )
         }
         _ => None
       }
