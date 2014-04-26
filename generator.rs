@@ -18,7 +18,7 @@ macro_rules! node_children( ( $node:expr ) => ( {
 
 pub fn codeForNode( node: &Node ) -> ~str {
   match node.name {
-    "Definition" => wrapChildrenOutput( ~"rule!( ", node, ~" )\n" ),
+    "Definition" => wrapChildrenOutput( "rule!( ", node, " )\n" ),
     "Expression" => expressionOutput( node ),
     "Sequence" => sequenceOutput( node ),
     "Literal" => literalOutput( node ),
@@ -48,20 +48,24 @@ fn codeForNodeContents( node: &Node ) -> ~str {
 }
 
 
-fn wrapChildrenOutput( before: ~str, node: &Node, after: ~str ) -> ~str {
-  [ before, codeForNodeContents( node ), after ].concat()
+fn wrapChildrenOutput( before: &str, node: &Node, after: &str ) -> ~str {
+  [ before.into_maybe_owned(),
+    codeForNodeContents( node ).into_maybe_owned(),
+    after.into_maybe_owned() ].concat()
 }
 
 
-fn wrapNodeOutput( before: ~str, node: &Node, after: ~str ) -> ~str {
-  [ before, codeForNode( node ), after ].concat()
+fn wrapNodeOutput( before: &str, node: &Node, after: &str ) -> ~str {
+  [ before.into_maybe_owned(),
+    codeForNode( node ).into_maybe_owned(),
+    after.into_maybe_owned() ].concat()
 }
 
 
 fn expressionOutput( node: &Node ) -> ~str {
   let children = node_children!( node );
   if children.len() > 1 {
-    wrapChildrenOutput( ~"or!( ", node , ~" )" )
+    wrapChildrenOutput( "or!( ", node , " )" )
   } else {
     codeForNodeContents( node )
   }
@@ -118,7 +122,7 @@ fn prefixOutput( node: &Node ) -> ~str {
 fn primaryOutput( node: &Node ) -> ~str {
   let children = node_children!( node );
   if children.len() == 1 && children.get( 0 ).name == "Identifier" {
-    wrapNodeOutput( ~"ex!( ", children.get( 0 ), ~" )" )
+    wrapNodeOutput( "ex!( ", children.get( 0 ), " )" )
   } else {
     codeForNodeContents( node )
   }
