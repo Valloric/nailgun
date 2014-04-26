@@ -44,16 +44,31 @@ mod base {
 
     #[deriving(Show, Eq)]
     pub enum NodeContents<'a> {
+      /// A `&[u8]` byte slice this node matched in the parse input. Only leaf nodes
+      /// have `Data` contents.
       Data( &'a [u8] ),
+
+      /// Children of the node, if any. Only non-leaf nodes have `Children`
+      /// contents.
       Children( Vec<Node<'a>> )
     }
 
 
     #[deriving(Eq)]
     pub struct Node<'a> {
+      /// The name of the node.
       pub name: &'static str,
+
+      /// The (inclusive) start index of the range this node matches. It's the byte
+      /// (NOT char) offset of the parse input.
       pub start: uint,
+
+      /// The (exclusive) end index of the range this node matches. It's the byte
+      /// (NOT char) offset of the parse input.
       pub end: uint,
+
+      /// The contents of the node; this can be either children nodes or a matched
+      /// `&[u8]` slice.
       pub contents: NodeContents<'a>
     }
 
@@ -99,6 +114,7 @@ mod base {
         Ok(())
       }
 
+      /// The node name if set, or "<none>" if unset.
       pub fn displayName( &self ) -> &'static str {
         if !self.name.is_empty() {
           self.name
@@ -107,11 +123,14 @@ mod base {
         }
       }
 
+      /// Creates a `Node` with an empty name.
       pub fn noName( start: uint, end: uint, contents: NodeContents<'a> )
           -> Node<'a> {
         Node { name: EMPTY, start: start, end: end, contents: contents }
       }
 
+      /// Creates a `Node` with the provided `name` and makes it a parent of the
+      /// provided `children`.
       pub fn newParent( name: &'static str, mut children: Vec<Node<'a>> )
           -> Node<'a> {
         if children.len() == 1 && children.get( 0 ).name.is_empty() {
@@ -689,6 +708,7 @@ mod base {
   }
 
 
+  #[doc(hidden)]
   #[deriving(Show, Clone, Eq)]
   pub struct ParseState<'a> {
     pub input: &'a [u8],
@@ -718,6 +738,7 @@ mod base {
     }
   }
 
+  #[doc(hidden)]
   pub struct ParseResult<'a> {
     pub nodes: Vec< Node<'a> >,
     pub parse_state: ParseState<'a>
@@ -756,14 +777,11 @@ macro_rules! rule(
       use std::clone::Clone;
       use std::option::{Some, None};
 
-      #[allow(dead_code)]
-      static node_name : &'static str = stringify!( $name );
-
       match $body.apply( parse_state ) {
         Some( result ) => {
           let state = result.parse_state.clone();
           Some( ParseResult::oneNode(
-              Node::newParent( node_name, result.nodes ), state ) )
+              Node::newParent( stringify!( $name ), result.nodes ), state ) )
         }
         _ => None
       }
