@@ -41,6 +41,7 @@ mod wrap;
 mod unicode;
 
 
+#[doc(hidden)]
 #[deriving(Show, Clone, Eq)]
 pub struct ParseState<'a> {
   pub input: &'a [u8],  // Unconsumed input from "main" slice.
@@ -70,6 +71,7 @@ impl<'a> ParseState<'a> {
   }
 }
 
+#[doc(hidden)]
 pub struct ParseResult<'a> {
   // TODO: can this be just one node instead of a vector?
   pub nodes: Vec< Node<'a> >,
