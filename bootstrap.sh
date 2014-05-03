@@ -20,7 +20,7 @@ apt-get install -yqq tmux
 # apt-get install -yqq python-setuptools
 # apt-get install -yqq curl
 
-# curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+# curl -O -L https://raw.githubusercontent.com/pypa/pip/master/contrib/get-pip.py
 # python get-pip.py
 #
 # pip install httpie
