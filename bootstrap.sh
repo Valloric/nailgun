@@ -6,22 +6,16 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 
 # needed for add-apt-repository
-apt-get install -yqq python-software-properties
+apt-get install -y python-software-properties
 apt-get update
 
+add-apt-repository -y ppa:ubuntu-toolchain-r/test
 add-apt-repository -y ppa:hansjorg/rust
 apt-get update
 
-apt-get install -yqq rust-nightly
-apt-get install -yqq git
-apt-get install -yqq tmux
+apt-get install -y g++-4.9
+apt-get install -y rust-nightly
 
-# apt-get install -yqq python-dev
-# apt-get install -yqq python-setuptools
-# apt-get install -yqq curl
+apt-get install -y git
+apt-get install -y tmux
 
-# curl -O -L https://raw.githubusercontent.com/pypa/pip/master/contrib/get-pip.py
-# python get-pip.py
-#
-# pip install httpie
-# pip install ipython
