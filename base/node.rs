@@ -5,6 +5,31 @@ use std::fmt::{Result};
 static EMPTY : &'static str = "";
 static NO_NAME : &'static str = "<none>";
 
+// NOTE: Uncomment when https://github.com/mozilla/rust/issues/13703 is fixed.
+// pub struct PreOrderNodes<'a, 'b> {
+//   queue: Vec<&'a Node<'b>>
+// }
+//
+// impl<'a, 'b> Iterator<&'a Node<'b>> for PreOrderNodes<'a, 'b> {
+//   fn next( &mut self ) -> Option<&'a Node<'b>> {
+//     match self.queue.pop() {
+//       ex @ Some( node ) => {
+//         match node.contents {
+//           Children( ref x ) => {
+//             for child in x.as_slice().rev_iter() {
+//               self.queue.push( child )
+//             }
+//           }
+//           _ => ()
+//         };
+//         ex
+//       }
+//       _ => None
+//     }
+//   }
+// }
+
+
 #[deriving(Show, Eq)]
 pub enum NodeContents<'a> {
   /// A `&[u8]` byte slice this node matched in the parse input. Only leaf nodes
@@ -86,12 +111,14 @@ impl<'a> Node<'a> {
     }
   }
 
+  // TODO: rename this to withoutName?
   /// Creates a `Node` with an empty name.
   pub fn noName( start: uint, end: uint, contents: NodeContents<'a> )
       -> Node<'a> {
     Node { name: EMPTY, start: start, end: end, contents: contents }
   }
 
+  // TODO: rename this to withChildren?
   /// Creates a `Node` with the provided `name` and makes it a parent of the
   /// provided `children`.
   pub fn newParent( name: &'static str, mut children: Vec<Node<'a>> )
@@ -125,6 +152,40 @@ impl<'a> Node<'a> {
            contents: Children( children ) }
   }
 
+
+  /// Traverses the tree rooted at the node with pre-order traversal. `visitor`
+  /// is called on every node and traversal stops when `visitor` returns `false`.
+  ///
+  /// Normally this function would return an iterator instead of taking a
+  /// visitor function, but a `rustc` bug is preventing that implementation.
+  #[allow(dead_code)]
+  pub fn preOrder( &self, visitor: |&Node| -> bool ) {
+    fn inner( node: &Node, visitor: |&Node| -> bool ) -> bool {
+      if !visitor( node ) {
+        return false;
+      }
+
+      match node.contents {
+        Children( ref x ) => {
+          for node in x.iter() {
+            if !inner( node, |x| visitor( x ) ) {
+              return false;
+            }
+          }
+        }
+        _ => ()
+      };
+
+      return true;
+    }
+    inner( self, visitor );
+  }
+
+  // NOTE: Uncomment when https://github.com/mozilla/rust/issues/13703 is fixed.
+  // pub fn preOrder<'b>( &'b self ) -> PreOrderNodes<'b, 'a> {
+  //   PreOrderNodes { queue: vec!( self ) }
+  // }
+
   #[allow(dead_code)]
   fn matchedData( &self ) -> Vec<u8> {
     match self.contents {
@@ -147,3 +208,50 @@ impl<'a> fmt::Show for Node<'a> {
 }
 
 
+#[cfg(test)]
+mod tests {
+  use super::{Node, Data};
+
+  fn nameOnly( name: &'static str ) -> Node {
+    Node { name: name, start: 0, end: 0, contents: data!( "" ) }
+  }
+
+
+  fn testTree() -> Node {
+    // Tree looks like the following:
+    //        a
+    //   b    c    d
+    //  e f   g
+    Node::newParent( "a", vec!(
+        Node::newParent( "b", vec!( nameOnly( "e" ), nameOnly( "f" ) ) ),
+        Node::newParent( "c", vec!( nameOnly( "g" ) ) ),
+        nameOnly( "d" ) ) )
+  }
+
+
+  #[test]
+  fn preOrder_FullIteration() {
+    let root = testTree();
+    let mut names : Vec<char> = vec!();
+    root.preOrder( |ref x| {
+      names.push( x.name.char_at( 0 ) );
+      true
+    });
+
+    assert_eq!( names, vec!( 'a', 'b', 'e', 'f', 'c', 'g', 'd' ) )
+  }
+
+
+  #[test]
+  fn preOrder_PartialIteration() {
+    let root = testTree();
+    let mut names : Vec<char> = vec!();
+    root.preOrder( |ref x| {
+      let ch =  x.name.char_at( 0 );
+      names.push( ch );
+      if ch == 'f' { false } else { true }
+    });
+
+    assert_eq!( names, vec!( 'a', 'b', 'e', 'f' ) )
+  }
+}
