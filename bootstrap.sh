@@ -9,13 +9,9 @@ apt-get update
 apt-get install -y python-software-properties
 apt-get update
 
-add-apt-repository -y ppa:ubuntu-toolchain-r/test
-add-apt-repository -y ppa:hansjorg/rust
-apt-get update
-
-apt-get install -y g++-4.9
-apt-get install -y rust-nightly
-
 apt-get install -y git
 apt-get install -y tmux
 
+apt-get dist-upgrade
+
+curl -s http://www.rust-lang.org/rustup.sh | sh
