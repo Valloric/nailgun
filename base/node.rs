@@ -63,7 +63,7 @@ pub struct Node<'a> {
 fn indent( formatter: &mut fmt::Formatter, indent_spaces: int )
     -> fmt::Result {
   for _ in range( 0, indent_spaces ) {
-    try!( write!( formatter.buf, " " ) )
+    try!( write!( formatter, " " ) )
   }
   Ok(())
 }
@@ -72,7 +72,7 @@ impl<'a> Node<'a> {
   fn format( &self, formatter: &mut fmt::Formatter, indent_spaces: int )
       -> fmt::Result {
     try!( indent( formatter, indent_spaces ) );
-    try!( write!( formatter.buf,
+    try!( write!( formatter,
                   "Node \\{name: {0}, start: {1}, end: {2}",
                   self.displayName(), self.start, self.end ) );
 
@@ -80,19 +80,19 @@ impl<'a> Node<'a> {
       Data( data ) => {
         match str::from_utf8( data ) {
           Some( string ) => {
-            try!( writeln!( formatter.buf,
+            try!( writeln!( formatter,
                             ", contents: \"{0}\" \\}",
                             string ) );
           }
           _ => {
-            try!( writeln!( formatter.buf,
+            try!( writeln!( formatter,
                             ", contents: \"{0}\" \\}",
                             data ) );
           }
         }
       }
       Children( ref children ) => {
-        try!( writeln!( formatter.buf, " \\}" ) );
+        try!( writeln!( formatter, " \\}" ) );
         for child in children.iter() {
           try!( child.format( formatter, indent_spaces + 1) )
         }
