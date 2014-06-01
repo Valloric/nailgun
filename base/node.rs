@@ -30,7 +30,7 @@ static NO_NAME : &'static str = "<none>";
 // }
 
 
-#[deriving(Show, Eq)]
+#[deriving(Show, PartialEq)]
 pub enum NodeContents<'a> {
   /// A `&[u8]` byte slice this node matched in the parse input. Only leaf nodes
   /// have `Data` contents.
@@ -42,7 +42,7 @@ pub enum NodeContents<'a> {
 }
 
 
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 pub struct Node<'a> {
   /// The name of the node.
   pub name: &'static str,

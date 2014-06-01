@@ -42,7 +42,7 @@ mod unicode;
 
 
 #[doc(hidden)]
-#[deriving(Show, Clone, Eq)]
+#[deriving(Show, Clone, PartialEq)]
 pub struct ParseState<'a> {
   pub input: &'a [u8],  // Unconsumed input from "main" slice.
   pub offset: uint  // Offset of 'input' from start of "main" slice.

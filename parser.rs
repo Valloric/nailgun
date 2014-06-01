@@ -1,6 +1,7 @@
 #![crate_id = "nailed#0.1.0"]
 #![crate_type = "lib"]
 #![feature(macro_rules)]
+#![allow(non_snake_case_functions)]
 
 #[cfg(not(test))]
 pub use base::{Node, ParseState, Data, Children, NodeContents};
