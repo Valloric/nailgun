@@ -1,3 +1,5 @@
+#![allow(non_snake_case_functions)]
+
 use std::u8;
 use std::str::from_utf8;
 use std::char::from_u32;
@@ -62,8 +64,8 @@ pub fn unescape( input: &[u8] ) -> Vec<u8> {
 }
 
 
-pub fn unescapeString( input: &str ) -> ~str {
-  from_utf8( unescape( input.as_bytes() ).as_slice() ).unwrap().to_owned()
+pub fn unescapeString( input: &str ) -> String {
+  from_utf8( unescape( input.as_bytes() ).as_slice() ).unwrap().to_string()
 }
 
 

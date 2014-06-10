@@ -101,7 +101,7 @@ mod rules {
         {
           use base::ParseResult;
           use std::option::Some;
-          use std::container::Container;
+          use std::collections::Collection;
 
           match $name( &input_state!( $input ) ) {
             Some( ParseResult{ nodes: _,
