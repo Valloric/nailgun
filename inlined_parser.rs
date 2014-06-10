@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![crate_type = "lib"]
 #![feature(macro_rules)]
+#![allow(non_snake_case_functions)]
 
 #[cfg(not(test))]
 pub use base::{Node, ParseState, Data, Children, NodeContents};
@@ -42,7 +43,7 @@ mod base {
     static EMPTY : &'static str = "";
     static NO_NAME : &'static str = "<none>";
 
-    #[deriving(Show, Eq)]
+    #[deriving(Show, PartialEq)]
     pub enum NodeContents<'a> {
       /// A `&[u8]` byte slice this node matched in the parse input. Only leaf nodes
       /// have `Data` contents.
@@ -54,7 +55,7 @@ mod base {
     }
 
 
-    #[deriving(Eq)]
+    #[deriving(PartialEq)]
     pub struct Node<'a> {
       /// The name of the node.
       pub name: &'static str,
@@ -75,7 +76,7 @@ mod base {
     fn indent( formatter: &mut fmt::Formatter, indent_spaces: int )
         -> fmt::Result {
       for _ in range( 0, indent_spaces ) {
-        try!( write!( formatter.buf, " " ) )
+        try!( write!( formatter, " " ) )
       }
       Ok(())
     }
@@ -84,7 +85,7 @@ mod base {
       fn format( &self, formatter: &mut fmt::Formatter, indent_spaces: int )
           -> fmt::Result {
         try!( indent( formatter, indent_spaces ) );
-        try!( write!( formatter.buf,
+        try!( write!( formatter,
                       "Node \\{name: {0}, start: {1}, end: {2}",
                       self.displayName(), self.start, self.end ) );
 
@@ -92,19 +93,19 @@ mod base {
           Data( data ) => {
             match str::from_utf8( data ) {
               Some( string ) => {
-                try!( writeln!( formatter.buf,
+                try!( writeln!( formatter,
                                 ", contents: \"{0}\" \\}",
                                 string ) );
               }
               _ => {
-                try!( writeln!( formatter.buf,
+                try!( writeln!( formatter,
                                 ", contents: \"{0}\" \\}",
                                 data ) );
               }
             }
           }
           Children( ref children ) => {
-            try!( writeln!( formatter.buf, " \\}" ) );
+            try!( writeln!( formatter, " \\}" ) );
             for child in children.iter() {
               try!( child.format( formatter, indent_spaces + 1) )
             }
@@ -709,7 +710,7 @@ mod base {
 
 
   #[doc(hidden)]
-  #[deriving(Show, Clone, Eq)]
+  #[deriving(Show, Clone, PartialEq)]
   pub struct ParseState<'a> {
     pub input: &'a [u8],
     pub offset: uint
@@ -835,5 +836,5 @@ mod rules {
   rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
   rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
   rule!( EndOfFile <- not!( base::Dot ) )
-  
+
 }

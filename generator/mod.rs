@@ -1,4 +1,3 @@
-
 use std::str;
 use inlined_parser::{Node, Children, Data};
 use self::unescape::unescapeString;
@@ -16,7 +15,7 @@ macro_rules! node_children( ( $node:expr ) => ( {
   } } ) )
 
 
-pub fn codeForNode( node: &Node ) -> ~str {
+pub fn codeForNode( node: &Node ) -> String {
   match node.name {
     "Definition" => wrapChildrenOutput( "rule!( ", node, " )\n" ),
     "Expression" => expressionOutput( node ),
@@ -26,43 +25,43 @@ pub fn codeForNode( node: &Node ) -> ~str {
     "Suffix" => suffixOutput( node ),
     "Prefix" => prefixOutput( node ),
     "Primary" => primaryOutput( node ),
-    "DOT" => ~"base::Dot",
-    "LEFTARROW" => ~" <- ",
-    "SLASH" => ~", ",
-    "Spacing" => ~"",
-    "EndOfLine" => ~"",
-    "OPEN" => ~"",
-    "CLOSE" => ~"",
+    "DOT" => String::from_str( "base::Dot" ),
+    "LEFTARROW" => String::from_str( " <- " ),
+    "SLASH" => String::from_str( ", " ),
+    "Spacing" => String::new(),
+    "EndOfLine" => String::new(),
+    "OPEN" => String::new(),
+    "CLOSE" => String::new(),
     _ => codeForNodeContents( node )
   }
 }
 
 
-fn codeForNodeContents( node: &Node ) -> ~str {
+fn codeForNodeContents( node: &Node ) -> String {
   match node.contents {
     Children( ref children ) => {
-      children.iter().map( codeForNode ).collect::<Vec<~str>>().concat()
+      children.iter().map( codeForNode ).collect::<Vec<String>>().concat()
     }
-    Data( data ) => str::from_utf8( data ).unwrap().to_owned(),
+    Data( data ) => str::from_utf8( data ).unwrap().to_string(),
   }
 }
 
 
-fn wrapChildrenOutput( before: &str, node: &Node, after: &str ) -> ~str {
+fn wrapChildrenOutput( before: &str, node: &Node, after: &str ) -> String {
   [ before.into_maybe_owned(),
     codeForNodeContents( node ).into_maybe_owned(),
     after.into_maybe_owned() ].concat()
 }
 
 
-fn wrapNodeOutput( before: &str, node: &Node, after: &str ) -> ~str {
+fn wrapNodeOutput( before: &str, node: &Node, after: &str ) -> String {
   [ before.into_maybe_owned(),
     codeForNode( node ).into_maybe_owned(),
     after.into_maybe_owned() ].concat()
 }
 
 
-fn expressionOutput( node: &Node ) -> ~str {
+fn expressionOutput( node: &Node ) -> String {
   let children = node_children!( node );
   if children.len() > 1 {
     wrapChildrenOutput( "or!( ", node , " )" )
@@ -72,54 +71,61 @@ fn expressionOutput( node: &Node ) -> ~str {
 }
 
 
-fn sequenceOutput( node: &Node ) -> ~str {
+fn sequenceOutput( node: &Node ) -> String {
   let children = node_children!( node );
   if children.len() > 1 {
-    let mut output = StrBuf::from_str( "seq!( " );
+    let mut output = String::from_str( "seq!( " );
     for i in range( 0, children.len() ) {
-      output.push_str( codeForNode( children.get( i ) ) );
+      output.push_str( codeForNode( children.get( i ) ).as_slice() );
       if i != children.len() -1 {
         output.push_str( ", " );
       }
     }
     output.push_str( " )" );
-    output.into_owned()
+    output.into_string()
   } else {
     codeForNodeContents( node )
   }
 }
 
 
-fn suffixOutput( node: &Node ) -> ~str {
+fn suffixOutput( node: &Node ) -> String {
   let children = node_children!( node );
   if children.len() == 2 {
     let macro_name = match children.get( 1 ).name {
-      "QUESTION" => ~"opt",
-      "STAR" => ~"star",
-      "PLUS" => ~"plus",
+      "QUESTION" => "opt",
+      "STAR" => "star",
+      "PLUS" => "plus",
       _ => fail!( "Bad second child." )
     };
 
-    [ macro_name, ~"!( ", codeForNode( children.get( 0 ) ), ~" )" ].concat()
+    [ macro_name,
+      "!( ",
+      codeForNode( children.get( 0 ) ).as_slice(),
+      " )" ].concat()
   } else {
     codeForNodeContents( node )
   }
 }
 
 
-fn prefixOutput( node: &Node ) -> ~str {
+fn prefixOutput( node: &Node ) -> String {
   let children = node_children!( node );
   if children.len() == 2 {
     let macro_name = children.get( 0 ).name.chars()
-      .map( |x| x.to_lowercase() ).collect();
-    [ macro_name, ~"!( ", codeForNode( children.get( 1 ) ), ~" )" ].concat()
+      .map( |x| x.to_lowercase() ).collect::<String>();
+
+    [ macro_name.as_slice(),
+      "!( ",
+      codeForNode( children.get( 1 ) ).as_slice(),
+      " )" ].concat()
   } else {
     codeForNodeContents( node )
   }
 }
 
 
-fn primaryOutput( node: &Node ) -> ~str {
+fn primaryOutput( node: &Node ) -> String {
   let children = node_children!( node );
   if children.len() == 1 && children.get( 0 ).name == "Identifier" {
     wrapNodeOutput( "ex!( ", children.get( 0 ), " )" )
@@ -129,22 +135,22 @@ fn primaryOutput( node: &Node ) -> ~str {
 }
 
 
-fn literalOutput( node: &Node ) -> ~str {
+fn literalOutput( node: &Node ) -> String {
   stringBasedRule( node, "lit" )
 }
 
 
-fn classOutput( node: &Node ) -> ~str {
+fn classOutput( node: &Node ) -> String {
   stringBasedRule( node, "class" )
     .replace( r"\\]", r"]" )
     .replace( r"\\[", r"[" )
 }
 
 
-fn stringBasedRule( node: &Node, rule_name: &str ) -> ~str {
+fn stringBasedRule( node: &Node, rule_name: &str ) -> String {
   let full = codeForNodeContents( node );
   // TODO: write escape func
-  let content = unescapeString( full.slice_chars( 1, full.len() - 1 ) )
+  let content = unescapeString( full.as_slice().slice_chars( 1, full.len() - 1 ) )
     .replace( r"\", r"\\" )
     .replace( "\n", r"\n" )
     .replace( "\t", r"\t" )

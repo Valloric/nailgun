@@ -1,4 +1,5 @@
 #![feature(macro_rules)]
+#![allow(non_snake_case_functions)]
 
 extern crate getopts;
 extern crate inlined_parser;
@@ -22,18 +23,18 @@ fn inputFromFile( input_file: &str ) -> Vec<u8> {
 }
 
 
-fn indentLines( input: &str, num_spaces: uint ) -> ~str {
+fn indentLines( input: &str, num_spaces: uint ) -> String {
   let indent = " ".repeat( num_spaces );
   input.split( '\n' ).map(
     |x| [ indent.as_slice(), x, "\n" ].concat() )
-    .collect::<Vec<~str>>().concat()
+    .collect::<Vec<String>>().concat()
 }
 
 
 fn printUsage( opts: &[getopts::OptGroup] ) {
-  let program = Path::new( os::args()[ 0 ] );
+  let program = Path::new( os::args().get( 0 ).as_slice() );
   let short = getopts::short_usage( program.filename_str().unwrap(), opts );
-  let usage = getopts::usage( short, opts );
+  let usage = getopts::usage( short.as_slice(), opts );
   println!( "{}", usage );
 }
 
@@ -41,7 +42,8 @@ fn printUsage( opts: &[getopts::OptGroup] ) {
 fn printCode( input: &[u8] ) {
   match parse( input ) {
     Some( ref node ) => {
-      let parse_rules = indentLines( generator::codeForNode( node ), 2 );
+      let parse_rules = indentLines( generator::codeForNode( node ).as_slice(),
+                                     2 );
       let output = [ PRELUDE.slice_to( PRELUDE.len() -1 ),
                      "\n",
                      parse_rules.as_slice(),
@@ -77,7 +79,8 @@ fn main() {
   }
 
   if matches.opt_present( "p" ) {
-    match parse( inputFromFile( matches.opt_str( "p" ).unwrap() ).as_slice() ) {
+    match parse( inputFromFile(
+        matches.opt_str( "p" ).unwrap().as_slice() ).as_slice() ) {
       Some( ref node ) => println!( "{}", node ),
       _ => println!( "Couldn't parse input." )
     };
@@ -85,7 +88,8 @@ fn main() {
   }
 
   if matches.opt_present( "g" ) {
-    printCode( inputFromFile( matches.opt_str( "g" ).unwrap() ).as_slice() );
+    printCode( inputFromFile(
+        matches.opt_str( "g" ).unwrap().as_slice() ).as_slice() );
     return;
   }
 }
