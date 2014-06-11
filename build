@@ -5,7 +5,7 @@ import fabricate as fab
 import subprocess as sub
 import os
 
-TEST_SOURCES = [ 'parser.rs', 'unescape.rs' ]
+TEST_SOURCES = [ 'parser.rs', 'generator/unescape.rs' ]
 MAIN_FILE = 'main.rs'
 MAIN_SOURCES = [ 'inlined_parser.rs', MAIN_FILE ]
 OUT_DIR = '/tmp/nailed'
@@ -17,7 +17,7 @@ def _dropExtension( filename ):
 
 
 def _getBuiltFilepath( filename ):
-  return p.join( OUT_DIR, _dropExtension( filename ) )
+  return p.join( OUT_DIR, _dropExtension( p.basename( filename ) ) )
 
 
 def _rustc( filename, extra_args = None, optimize = False ):
