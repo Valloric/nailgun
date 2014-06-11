@@ -6,6 +6,6 @@ set -e
 
 rustc --test -o /tmp/test parser.rs \
   && /tmp/test \
-  && rustc --test -o /tmp/test unescape.rs \
+  && rustc --test -o /tmp/test generator/unescape.rs \
   && /tmp/test
 

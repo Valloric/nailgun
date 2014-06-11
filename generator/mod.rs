@@ -2,8 +2,6 @@ use std::str;
 use inlined_parser::{Node, Children, Data};
 use self::unescape::unescapeString;
 
-#[macro_escape]
-mod macros;
 mod unescape;
 
 // TODO: figure out how to write this as a function on Node; the borrow checker
