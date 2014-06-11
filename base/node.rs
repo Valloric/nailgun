@@ -16,7 +16,7 @@ static NO_NAME : &'static str = "<none>";
 //       ex @ Some( node ) => {
 //         match node.contents {
 //           Children( ref x ) => {
-//             for child in x.as_slice().rev_iter() {
+//             for child in x.as_slice().iter().rev() {
 //               self.queue.push( child )
 //             }
 //           }
