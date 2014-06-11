@@ -43,6 +43,7 @@ mod base {
     static EMPTY : &'static str = "";
     static NO_NAME : &'static str = "<none>";
 
+
     #[deriving(Show, PartialEq)]
     pub enum NodeContents<'a> {
       /// A `&[u8]` byte slice this node matched in the parse input. Only leaf nodes
@@ -123,13 +124,11 @@ mod base {
           NO_NAME
         }
       }
-
       /// Creates a `Node` with an empty name.
       pub fn noName( start: uint, end: uint, contents: NodeContents<'a> )
           -> Node<'a> {
         Node { name: EMPTY, start: start, end: end, contents: contents }
       }
-
       /// Creates a `Node` with the provided `name` and makes it a parent of the
       /// provided `children`.
       pub fn newParent( name: &'static str, mut children: Vec<Node<'a>> )
@@ -159,6 +158,35 @@ mod base {
                start: start,
                end: end,
                contents: Children( children ) }
+      }
+
+
+      /// Traverses the tree rooted at the node with pre-order traversal. `visitor`
+      /// is called on every node and traversal stops when `visitor` returns `false`.
+      ///
+      /// Normally this function would return an iterator instead of taking a
+      /// visitor function, but a `rustc` bug is preventing that implementation.
+      #[allow(dead_code)]
+      pub fn preOrder( &self, visitor: |&Node| -> bool ) {
+        fn inner( node: &Node, visitor: |&Node| -> bool ) -> bool {
+          if !visitor( node ) {
+            return false;
+          }
+
+          match node.contents {
+            Children( ref x ) => {
+              for node in x.iter() {
+                if !inner( node, |x| visitor( x ) ) {
+                  return false;
+                }
+              }
+            }
+            _ => ()
+          };
+
+          return true;
+        }
+        inner( self, visitor );
       }
 
       #[allow(dead_code)]
@@ -836,5 +864,5 @@ mod rules {
   rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
   rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
   rule!( EndOfFile <- not!( base::Dot ) )
-
+  
 }
