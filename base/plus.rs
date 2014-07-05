@@ -47,8 +47,8 @@ mod tests {
 
   #[test]
   fn Plus_Match() {
-    let orig_state = input_state!( "aaa" );
-    match plus!( lit!( "a" ) ).apply( &orig_state ) {
+    let orig_state = input_state!( b"aaa" );
+    match plus!( lit!( b"a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -65,8 +65,8 @@ mod tests {
 
   #[test]
   fn Plus_Match_JustOne() {
-    let orig_state = input_state!( "abb" );
-    match plus!( lit!( "a" ) ).apply( &orig_state ) {
+    let orig_state = input_state!( b"abb" );
+    match plus!( lit!( b"a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -80,8 +80,8 @@ mod tests {
 
   #[test]
   fn Plus_NoMatch() {
-    let orig_state = input_state!( "y" );
-    match plus!( lit!( "x" ) ).apply( &orig_state ) {
+    let orig_state = input_state!( b"y" );
+    match plus!( lit!( b"x" ) ).apply( &orig_state ) {
       None => (),
       _ => fail!( "Should not match." ),
     }

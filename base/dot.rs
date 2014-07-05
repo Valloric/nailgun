@@ -28,7 +28,7 @@ mod tests {
 
   #[test]
   fn Dot_Match_InputOneChar() {
-    match Dot.apply( &input_state!( "x" ) ) {
+    match Dot.apply( &input_state!( b"x" ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -42,7 +42,7 @@ mod tests {
 
   #[test]
   fn Dot_Match_InputOneWideChar() {
-    match Dot.apply( &input_state!( "葉" ) ) {
+    match Dot.apply( &input_state!( "葉".as_bytes() ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -56,7 +56,7 @@ mod tests {
 
   #[test]
   fn Dot_Match_InputSeveralChars() {
-    match Dot.apply( &input_state!( "xb" ) ) {
+    match Dot.apply( &input_state!( b"xb" ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( *nodes.get( 0 ) ==
@@ -71,6 +71,6 @@ mod tests {
 
   #[test]
   fn Dot_NoMatch() {
-    assert!( Dot.apply( &input_state!( "" ) ).is_none() )
+    assert!( Dot.apply( &input_state!( b"" ) ).is_none() )
   }
 }

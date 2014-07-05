@@ -202,8 +202,7 @@ mod base {
 
     macro_rules! input_state( ( $ex:expr ) => ( {
           use base::ParseState;
-          use std::str::StrSlice;
-          ParseState { input: $ex.as_bytes(), offset: 0 }
+          ParseState { input: $ex, offset: 0 }
         } ) )
   }
 

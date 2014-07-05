@@ -40,8 +40,8 @@ mod tests {
 
   #[test]
   fn Star_Match() {
-    let orig_state = input_state!( "aaa" );
-    match star!( lit!( "a" ) ).apply( &orig_state ) {
+    let orig_state = input_state!( b"aaa" );
+    match star!( lit!( b"a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -58,8 +58,8 @@ mod tests {
 
   #[test]
   fn Star_Match_JustOne() {
-    let orig_state = input_state!( "abb" );
-    match star!( lit!( "a" ) ).apply( &orig_state ) {
+    let orig_state = input_state!( b"abb" );
+    match star!( lit!( b"a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -73,8 +73,8 @@ mod tests {
 
   #[test]
   fn Star_Match_Empty() {
-    let orig_state = input_state!( "y" );
-    match star!( lit!( "x" ) ).apply( &orig_state ) {
+    let orig_state = input_state!( b"y" );
+    match star!( lit!( b"x" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );

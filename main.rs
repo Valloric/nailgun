@@ -70,7 +70,7 @@ fn main() {
   let args = os::args();
   let matches = match getopts( args.tail(), opts ) {
     Ok( m ) => m,
-    Err( erorr ) => fail!( erorr.to_err_msg() )
+    Err( erorr ) => fail!( erorr )
   };
 
   if matches.opt_present( "h" ) {

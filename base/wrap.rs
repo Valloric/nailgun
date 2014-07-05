@@ -29,7 +29,7 @@ mod tests {
 
   #[test]
   fn WrapEx_ReturnsSome() {
-    assert!( ex!( advancesToOne ).apply( &input_state!( "foo" ) ).is_some() );
+    assert!( ex!( advancesToOne ).apply( &input_state!( b"foo" ) ).is_some() );
   }
 }
 
