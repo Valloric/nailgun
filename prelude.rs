@@ -87,7 +87,7 @@ mod base {
           -> fmt::Result {
         try!( indent( formatter, indent_spaces ) );
         try!( write!( formatter,
-                      "Node \\{name: {0}, start: {1}, end: {2}",
+                      "Node {{name: {0}, start: {1}, end: {2}",
                       self.displayName(), self.start, self.end ) );
 
         match self.contents {
@@ -95,18 +95,18 @@ mod base {
             match str::from_utf8( data ) {
               Some( string ) => {
                 try!( writeln!( formatter,
-                                ", contents: \"{0}\" \\}",
+                                ", contents: \"{0}\" }}",
                                 string ) );
               }
               _ => {
                 try!( writeln!( formatter,
-                                ", contents: \"{0}\" \\}",
+                                ", contents: \"{0}\" }}",
                                 data ) );
               }
             }
           }
           Children( ref children ) => {
-            try!( writeln!( formatter, " \\}" ) );
+            try!( writeln!( formatter, " }}" ) );
             for child in children.iter() {
               try!( child.format( formatter, indent_spaces + 1) )
             }
@@ -552,7 +552,7 @@ mod base {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
         let mut final_result = ParseResult::fromParseState( *parse_state );
-        let mut num_matches = 0;
+        let mut num_matches = 0u;
         loop {
           match self.expr.apply( &final_result.parse_state ) {
             Some( result ) => {
