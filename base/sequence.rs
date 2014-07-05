@@ -45,9 +45,9 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node::noName( 0, 1, data!( "a" ) ) );
+                    Node::noName( 0, 1, Data( b"a" ) ) );
         assert_eq!( *nodes.get( 1 ),
-                    Node::noName( 1, 2, data!( "b" ) ) );
+                    Node::noName( 1, 2, Data( b"b" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 2 ) );
       }
       _ => fail!( "No match." )

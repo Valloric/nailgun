@@ -213,7 +213,7 @@ mod tests {
   use super::{Node, Data};
 
   fn nameOnly( name: &'static str ) -> Node {
-    Node { name: name, start: 0, end: 0, contents: data!( "" ) }
+    Node { name: name, start: 0, end: 0, contents: Data( b"" ) }
   }
 
 

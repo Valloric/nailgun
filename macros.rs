@@ -6,8 +6,4 @@ macro_rules! byte_var(
   );
 )
 
-macro_rules! data( ( $ex:expr ) => ( {
-      byte_var!( input = $ex )
-      Data( input )
-    } ) )
 
