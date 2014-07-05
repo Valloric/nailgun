@@ -153,32 +153,32 @@ mod tests {
 
   #[test]
   fn CharClass_Match() {
-    assert!( charClassMatch( class!( "a"          ), bytes!( "a" ) ) );
-    assert!( charClassMatch( class!( "abcdef"     ), bytes!( "e" ) ) );
-    assert!( charClassMatch( class!( "a-z"        ), bytes!( "a" ) ) );
-    assert!( charClassMatch( class!( "a-z"        ), bytes!( "c" ) ) );
-    assert!( charClassMatch( class!( "a-z"        ), bytes!( "z" ) ) );
-    assert!( charClassMatch( class!( "0-9"        ), bytes!( "2" ) ) );
-    assert!( charClassMatch( class!( "α-ω"        ), bytes!( "η" ) ) );
-    assert!( charClassMatch( class!( "-"          ), bytes!( "-" ) ) );
-    assert!( charClassMatch( class!( "a-"         ), bytes!( "-" ) ) );
-    assert!( charClassMatch( class!( "-a"         ), bytes!( "-" ) ) );
-    assert!( charClassMatch( class!( "a-zA-Z-"    ), bytes!( "-" ) ) );
-    assert!( charClassMatch( class!( "aa-zA-Z-a"  ), bytes!( "-" ) ) );
-    assert!( charClassMatch( class!( "a-zA-Z-"    ), bytes!( "z" ) ) );
-    assert!( charClassMatch( class!( "aa-zA-Z-0"  ), bytes!( "0" ) ) );
-    assert!( charClassMatch( class!( "a-cdefgh-k" ), bytes!( "e" ) ) );
-    assert!( charClassMatch( class!( "---"        ), bytes!( "-" ) ) );
-    assert!( charClassMatch( class!( "a-a"        ), bytes!( "a" ) ) );
+    assert!( charClassMatch( class!( "a"          ), b"a" ) );
+    assert!( charClassMatch( class!( "abcdef"     ), b"e" ) );
+    assert!( charClassMatch( class!( "a-z"        ), b"a" ) );
+    assert!( charClassMatch( class!( "a-z"        ), b"c" ) );
+    assert!( charClassMatch( class!( "a-z"        ), b"z" ) );
+    assert!( charClassMatch( class!( "0-9"        ), b"2" ) );
+    assert!( charClassMatch( class!( "α-ω"        ), "η".as_bytes() ) );
+    assert!( charClassMatch( class!( "-"          ), b"-" ) );
+    assert!( charClassMatch( class!( "a-"         ), b"-" ) );
+    assert!( charClassMatch( class!( "-a"         ), b"-" ) );
+    assert!( charClassMatch( class!( "a-zA-Z-"    ), b"-" ) );
+    assert!( charClassMatch( class!( "aa-zA-Z-a"  ), b"-" ) );
+    assert!( charClassMatch( class!( "a-zA-Z-"    ), b"z" ) );
+    assert!( charClassMatch( class!( "aa-zA-Z-0"  ), b"0" ) );
+    assert!( charClassMatch( class!( "a-cdefgh-k" ), b"e" ) );
+    assert!( charClassMatch( class!( "---"        ), b"-" ) );
+    assert!( charClassMatch( class!( "a-a"        ), b"a" ) );
   }
 
   // TODO: Use these tests for the char-class unescape code that will be written
   // in the code generator.
   // #[test]
   // fn CharClass_Match_ClassEscapedChars() {
-  //   assert!( charClassMatch( class!( r"\]" ), bytes!( "]" ) ) );
-  //   assert!( charClassMatch( class!( r"\\" ), bytes!( r"\" ) ) );
-  //   assert!( !charClassMatch( class!( r"\]" ), bytes!( r"\" ) ) );
+  //   assert!( charClassMatch( class!( r"\]" ), b"]" ) );
+  //   assert!( charClassMatch( class!( r"\\" ),  br"\" ) );
+  //   assert!( !charClassMatch( class!( r"\]" ), br"\" ) );
   // }
 
   #[test]
@@ -189,12 +189,12 @@ mod tests {
 
   #[test]
   fn CharClass_NoMatch() {
-    assert!( !charClassMatch( class!( "a"   ), bytes!( "b" ) ) );
-    assert!( !charClassMatch( class!( "-"   ), bytes!( "a" ) ) );
-    assert!( !charClassMatch( class!( "z-a" ), bytes!( "a" ) ) );
-    assert!( !charClassMatch( class!( "z-a" ), bytes!( "b" ) ) );
-    assert!( !charClassMatch( class!( "a-z" ), bytes!( "0" ) ) );
-    assert!( !charClassMatch( class!( "a-z" ), bytes!( "A" ) ) );
+    assert!( !charClassMatch( class!( "a"   ), b"b" ) );
+    assert!( !charClassMatch( class!( "-"   ), b"a" ) );
+    assert!( !charClassMatch( class!( "z-a" ), b"a" ) );
+    assert!( !charClassMatch( class!( "z-a" ), b"b" ) );
+    assert!( !charClassMatch( class!( "a-z" ), b"0" ) );
+    assert!( !charClassMatch( class!( "a-z" ), b"A" ) );
   }
 
 

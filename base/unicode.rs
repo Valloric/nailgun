@@ -79,13 +79,13 @@ mod tests {
 
   #[test]
   fn readCodepoint_Roundtrip_SimpleAscii() {
-    assert_eq!( 'a', readCodepoint( bytes!( 'a' ) ).unwrap() );
-    assert_eq!( 'z', readCodepoint( bytes!( 'z' ) ).unwrap() );
-    assert_eq!( 'A', readCodepoint( bytes!( 'A' ) ).unwrap() );
-    assert_eq!( '9', readCodepoint( bytes!( '9' ) ).unwrap() );
-    assert_eq!( '*', readCodepoint( bytes!( '*' ) ).unwrap() );
-    assert_eq!( '\n', readCodepoint( bytes!( '\n' ) ).unwrap() );
-    assert_eq!( '\0', readCodepoint( bytes!( '\0' ) ).unwrap() );
+    assert_eq!( 'a', readCodepoint( b"a" ).unwrap() );
+    assert_eq!( 'z', readCodepoint( b"z" ).unwrap() );
+    assert_eq!( 'A', readCodepoint( b"A" ).unwrap() );
+    assert_eq!( '9', readCodepoint( b"9" ).unwrap() );
+    assert_eq!( '*', readCodepoint( b"*" ).unwrap() );
+    assert_eq!( '\n', readCodepoint( b"\n" ).unwrap() );
+    assert_eq!( '\0', readCodepoint( b"\0" ).unwrap() );
   }
 
 

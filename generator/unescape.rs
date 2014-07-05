@@ -164,68 +164,68 @@ mod tests {
 
   #[test]
   fn unescape_Nothing() {
-    assert_eq!( unescape( bytes!( "foobar" ) ), vecBytes( "foobar" ) );
-    assert_eq!( unescape( bytes!( "123" )    ), vecBytes( "123" )    );
-    assert_eq!( unescape( bytes!( "葉" )     ), vecBytes( "葉" )     );
-    assert_eq!( unescape( bytes!( "a葉8" )   ), vecBytes( "a葉8" )   );
+    assert_eq!( unescape( b"foobar" ),         vecBytes( "foobar" ) );
+    assert_eq!( unescape( b"123"    ),         vecBytes( "123" )    );
+    assert_eq!( unescape( "葉".as_bytes() ),   vecBytes( "葉" )     );
+    assert_eq!( unescape( "a葉8".as_bytes() ), vecBytes( "a葉8" )   );
   }
 
   #[test]
   fn unescape_LooksLikeEscapeButNot() {
-    assert_eq!( unescape( bytes!( "\\z" ) ), vecBytes( "\\z" ) );
-    assert_eq!( unescape( bytes!( "a\\zg" ) ), vecBytes( "a\\zg" ) );
+    assert_eq!( unescape( b"\\z" ), vecBytes( "\\z" ) );
+    assert_eq!( unescape( b"a\\zg" ), vecBytes( "a\\zg" ) );
   }
 
   #[test]
   fn unescape_SingleCharEscapeCodes() {
-    assert_eq!( unescape( bytes!( "\\a" )  ), vecBytes( "\x07" ) );
-    assert_eq!( unescape( bytes!( "\\b" )  ), vecBytes( "\x08" ) );
-    assert_eq!( unescape( bytes!( "\\f" )  ), vecBytes( "\x0c" ) );
-    assert_eq!( unescape( bytes!( "\\n" )  ), vecBytes( "\n" )   );
-    assert_eq!( unescape( bytes!( "\\r" )  ), vecBytes( "\r" )   );
-    assert_eq!( unescape( bytes!( "\\t" )  ), vecBytes( "\t" )   );
-    assert_eq!( unescape( bytes!( "\\v" )  ), vecBytes( "\x0b" ) );
-    assert_eq!( unescape( bytes!( "\\0" )  ), vecBytes( "\0" )   );
-    assert_eq!( unescape( bytes!( "\\'" )  ), vecBytes( "\'" )   );
-    assert_eq!( unescape( bytes!( "\\\"" ) ), vecBytes( "\"" )   );
-    assert_eq!( unescape( bytes!( "\\\\" ) ), vecBytes( "\\" )   );
+    assert_eq!( unescape( b"\\a"  ), vecBytes( "\x07" ) );
+    assert_eq!( unescape( b"\\b"  ), vecBytes( "\x08" ) );
+    assert_eq!( unescape( b"\\f"  ), vecBytes( "\x0c" ) );
+    assert_eq!( unescape( b"\\n"  ), vecBytes( "\n" )   );
+    assert_eq!( unescape( b"\\r"  ), vecBytes( "\r" )   );
+    assert_eq!( unescape( b"\\t"  ), vecBytes( "\t" )   );
+    assert_eq!( unescape( b"\\v"  ), vecBytes( "\x0b" ) );
+    assert_eq!( unescape( b"\\0"  ), vecBytes( "\0" )   );
+    assert_eq!( unescape( b"\\'"  ), vecBytes( "\'" )   );
+    assert_eq!( unescape( b"\\\"" ), vecBytes( "\"" )   );
+    assert_eq!( unescape( b"\\\\" ), vecBytes( "\\" )   );
   }
 
   #[test]
   fn unescape_MultipleSingleCharEscapeCodes() {
-    assert_eq!( unescape( bytes!( "\\r\\n" ) ), vecBytes( "\r\n" ) );
-    assert_eq!( unescape( bytes!( "\\\\\\\\" ) ), vecBytes( "\\\\" ) );
+    assert_eq!( unescape( b"\\r\\n" ), vecBytes( "\r\n" ) );
+    assert_eq!( unescape( b"\\\\\\\\" ), vecBytes( "\\\\" ) );
   }
 
   #[test]
   fn unescape_HexEscape() {
-    assert_eq!( unescape( bytes!( "\\x4E" ) ), vecBytes( "N" ) );
-    assert_eq!( unescape( bytes!( "\\x4e" ) ), vecBytes( "N" ) );
-    assert_eq!( unescape( bytes!( "\\x00\\x01" ) ), vec!( 0, 1 ) );
+    assert_eq!( unescape( b"\\x4E" ), vecBytes( "N" ) );
+    assert_eq!( unescape( b"\\x4e" ), vecBytes( "N" ) );
+    assert_eq!( unescape( b"\\x00\\x01" ), vec!( 0, 1 ) );
   }
 
   #[test]
   fn unescape_HexEscape_Bad() {
-    assert_eq!( unescape( bytes!( "\\x" ) ), vecBytes( "\\x" ) );
-    assert_eq!( unescape( bytes!( "\\xgg" ) ), vecBytes( "\\xgg" ) );
+    assert_eq!( unescape( b"\\x" ), vecBytes( "\\x" ) );
+    assert_eq!( unescape( b"\\xgg" ), vecBytes( "\\xgg" ) );
   }
 
   #[test]
   fn unescape_UnicodeEscape() {
-    assert_eq!( unescape( bytes!( "\\u0106" ) ), vecBytes( "Ć" ) );
-    assert_eq!( unescape( bytes!( "\\u0106\\u04E8" ) ), vecBytes( "ĆӨ" ) );
-    assert_eq!( unescape( bytes!( "\\u81EA\\u7531" ) ), vecBytes( "自由" ) );
+    assert_eq!( unescape( b"\\u0106" ), vecBytes( "Ć" ) );
+    assert_eq!( unescape( b"\\u0106\\u04E8" ), vecBytes( "ĆӨ" ) );
+    assert_eq!( unescape( b"\\u81EA\\u7531" ), vecBytes( "自由" ) );
   }
 
   #[test]
   fn unescape_UnicodeEscape_Bad() {
-    assert_eq!( unescape( bytes!( "\\u" ) ), vecBytes( "\\u" ) );
-    assert_eq!( unescape( bytes!( "\\u01x" ) ), vecBytes( "\\u01x" ) );
+    assert_eq!( unescape( b"\\u" ), vecBytes( "\\u" ) );
+    assert_eq!( unescape( b"\\u01x" ), vecBytes( "\\u01x" ) );
   }
 
   #[test]
   fn unescape_OctalEscape() {
-    assert_eq!( unescape( bytes!( "\\001" ) ), vec!( 1 ) );
-    assert_eq!( unescape( bytes!( "\\157" ) ), vec!( 111 ) );
+    assert_eq!( unescape( b"\\001" ), vec!( 1 ) );
+    assert_eq!( unescape( b"\\157" ), vec!( 111 ) );
   }
 }

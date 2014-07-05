@@ -61,7 +61,7 @@ mod tests {
                          parse_state: parse_state } ) => {
         assert!( *nodes.get( 0 ) ==
                  Node::noName( 0, 1, Data( b"x" ) ) );
-        assert_eq!( parse_state, ParseState{ input: bytes!( "b" ),
+        assert_eq!( parse_state, ParseState{ input: b"b",
                                              offset: 1 } );
       }
       _ => fail!( "No match!" )
