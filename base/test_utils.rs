@@ -6,6 +6,6 @@ pub fn ToParseState<'a>( bytes: &'a [u8] ) -> ParseState<'a> {
 
 macro_rules! input_state( ( $ex:expr ) => ( {
       use base::ParseState;
-      byte_var!( input = $ex )
-      ParseState { input: input, offset: 0 }
+      use std::str::StrSlice;
+      ParseState { input: $ex.as_bytes(), offset: 0 }
     } ) )

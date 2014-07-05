@@ -11,10 +11,6 @@ use std::path::Path;
 use self::prelude::PRELUDE;
 use inlined_parser::parse;
 
-// macro_escape makes macros from annotated module visible in the "super"
-// module... and thus in the children of the "super" module as well.
-#[macro_escape]
-mod macros;
 mod generator;
 mod prelude;
 

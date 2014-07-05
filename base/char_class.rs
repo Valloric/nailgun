@@ -3,8 +3,7 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! class( ( $ex:expr ) => ( {
       use base;
-      byte_var!( input = $ex )
-      base::CharClass::new( input )
+      base::CharClass::new( $ex )
     } ) )
 
 

@@ -5,21 +5,6 @@ pub static PRELUDE : &'static str = r###"#![allow(dead_code)]
 
 #[cfg(not(test))]
 pub use base::{Node, ParseState, Data, Children, NodeContents};
-#[macro_escape]
-mod macros {
-  macro_rules! byte_var(
-    (
-      $name:ident = $literal:expr
-    ) => (
-      static $name: &'static [u8] = bytes!( $literal );
-    );
-  )
-
-  macro_rules! data( ( $ex:expr ) => ( {
-        byte_var!( input = $ex )
-        Data( input )
-      } ) )
-}
 
 #[macro_escape]
 mod base {
@@ -217,8 +202,8 @@ mod base {
 
     macro_rules! input_state( ( $ex:expr ) => ( {
           use base::ParseState;
-          byte_var!( input = $ex )
-          ParseState { input: input, offset: 0 }
+          use std::str::StrSlice;
+          ParseState { input: $ex.as_bytes(), offset: 0 }
         } ) )
   }
 
@@ -228,8 +213,7 @@ mod base {
 
     macro_rules! lit( ( $ex:expr ) => ( {
           use base;
-          byte_var!( input = $ex )
-          base::Literal::new( input )
+          base::Literal::new( $ex )
         } ) )
 
 
@@ -264,8 +248,7 @@ mod base {
 
     macro_rules! class( ( $ex:expr ) => ( {
           use base;
-          byte_var!( input = $ex )
-          base::CharClass::new( input )
+          base::CharClass::new( $ex )
         } ) )
 
 
