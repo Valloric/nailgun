@@ -96,9 +96,8 @@ mod rules {
           use base::ParseResult;
           use std::option::Some;
           use std::collections::Collection;
-          use std::str::StrSlice;
 
-          match $name( &input_state!( $input.as_bytes() ) ) {
+          match $name( &input_state!( $input ) ) {
             Some( ParseResult{ nodes: _,
                               parse_state: parse_state } ) => {
               parse_state.input.is_empty()
@@ -113,10 +112,7 @@ mod rules {
       (
         $name:ident, $input:expr
       ) => (
-        {
-          use std::str::StrSlice;
-          $name( &input_state!( $input.as_bytes() ) ).is_some()
-        }
+        $name( &input_state!( $input ) ).is_some()
       );
     )
 

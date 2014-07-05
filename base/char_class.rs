@@ -3,7 +3,8 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! class( ( $ex:expr ) => ( {
       use base;
-      base::CharClass::new( $ex )
+      use std::str::StrSlice;
+      base::CharClass::new( $ex.as_bytes() )
     } ) )
 
 
