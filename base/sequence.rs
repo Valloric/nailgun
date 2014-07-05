@@ -40,8 +40,8 @@ mod tests {
 
   #[test]
   fn Sequence_Match() {
-    let orig_state = input_state!( b"ab" );
-    match seq!( lit!( b"a" ), lit!( b"b" ) ).apply( &orig_state ) {
+    let orig_state = input_state!( "ab" );
+    match seq!( lit!( "a" ), lit!( "b" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -56,7 +56,7 @@ mod tests {
 
   #[test]
   fn Sequence_NoMatch() {
-    assert!( seq!( lit!( b"a" ), lit!( b"b" ) ).apply(
-        &input_state!( b"aa" ) ).is_none() )
+    assert!( seq!( lit!( "a" ), lit!( "b" ) ).apply(
+        &input_state!( "aa" ) ).is_none() )
   }
 }

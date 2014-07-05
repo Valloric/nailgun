@@ -33,8 +33,8 @@ mod tests {
 
   #[test]
   fn NotEx_Match_WithLiteral() {
-    let orig_state = input_state!( b"zoo" );
-    match not!( lit!( b"foo" ) ).apply( &orig_state ) {
+    let orig_state = input_state!( "zoo" );
+    match not!( lit!( "foo" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -47,8 +47,8 @@ mod tests {
 
   #[test]
   fn NotEx_Match_WithCharClass() {
-    let orig_state = input_state!( b"0" );
-    match not!( class!( b"a-z" ) ).apply( &orig_state ) {
+    let orig_state = input_state!( "0" );
+    match not!( class!( "a-z" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                         parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -61,7 +61,7 @@ mod tests {
 
   #[test]
   fn NotEx_NoMatch() {
-    assert!( not!( class!( b"a-z" ) ).apply( &input_state!( b"b" ) ).is_none() )
-    assert!( not!( lit!( b"x" ) ).apply( &input_state!( b"x" ) ).is_none() )
+    assert!( not!( class!( "a-z" ) ).apply( &input_state!( "b" ) ).is_none() )
+    assert!( not!( lit!( "x" ) ).apply( &input_state!( "x" ) ).is_none() )
   }
 }

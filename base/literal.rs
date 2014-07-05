@@ -38,8 +38,8 @@ mod tests {
 
   #[test]
   fn Literal_Match() {
-    let expr = lit!( b"foo" );
-    match expr.apply( &input_state!( b"foobar" ) ) {
+    let expr = lit!( "foo" );
+    match expr.apply( &input_state!( "foobar" ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
@@ -54,8 +54,8 @@ mod tests {
 
   #[test]
   fn Literal_NoMatch() {
-    let expr = lit!( b"zoo" );
-    assert!( expr.apply( &input_state!( b"foobar" ) ).is_none() );
-    assert!( expr.apply( &input_state!( b"" ) ).is_none() );
+    let expr = lit!( "zoo" );
+    assert!( expr.apply( &input_state!( "foobar" ) ).is_none() );
+    assert!( expr.apply( &input_state!( "" ) ).is_none() );
   }
 }

@@ -202,7 +202,8 @@ mod base {
 
     macro_rules! input_state( ( $ex:expr ) => ( {
           use base::ParseState;
-          ParseState { input: $ex, offset: 0 }
+          use std::str::StrSlice;
+          ParseState { input: $ex.as_bytes(), offset: 0 }
         } ) )
   }
 
@@ -212,7 +213,8 @@ mod base {
 
     macro_rules! lit( ( $ex:expr ) => ( {
           use base;
-          base::Literal::new( $ex )
+          use std::str::StrSlice;
+          base::Literal::new( $ex.as_bytes() )
         } ) )
 
 
@@ -247,7 +249,8 @@ mod base {
 
     macro_rules! class( ( $ex:expr ) => ( {
           use base;
-          base::CharClass::new( $ex )
+          use std::str::StrSlice;
+          base::CharClass::new( $ex.as_bytes() )
         } ) )
 
 
@@ -825,26 +828,26 @@ mod rules {
   rule!( Suffix <- seq!( ex!( Primary ), opt!( or!( ex!( QUESTION ), ex!( STAR ), ex!( PLUS ) ) ) ) )
   rule!( Primary <- or!( seq!( ex!( Identifier ), not!( ex!( LEFTARROW ) ) ), seq!( ex!( OPEN ), ex!( Expression ), ex!( CLOSE ) ), ex!( Literal ), ex!( Class ), ex!( DOT ) ) )
   rule!( Identifier <- seq!( ex!( IdentStart ), star!( ex!( IdentCont ) ), ex!( Spacing ) ) )
-  rule!( IdentStart <- class!( b"a-zA-Z_" ) )
-  rule!( IdentCont <- or!( ex!( IdentStart ), class!( b"0-9" ) ) )
-  rule!( Literal <- or!( seq!( class!( b"'" ), star!( seq!( not!( class!( b"'" ) ), ex!( Char ) ) ), class!( b"'" ), ex!( Spacing ) ), seq!( class!( b"\"" ), star!( seq!( not!( class!( b"\"" ) ), ex!( Char ) ) ), class!( b"\"" ), ex!( Spacing ) ) ) )
-  rule!( Class <- seq!( lit!( b"[" ), star!( seq!( not!( lit!( b"]" ) ), ex!( Range ) ) ), lit!( b"]" ), ex!( Spacing ) ) )
-  rule!( Range <- or!( seq!( ex!( Char ), lit!( b"-" ), ex!( Char ) ), ex!( Char ) ) )
-  rule!( Char <- or!( seq!( lit!( b"\\" ), class!( b"nrt'\"[]\\" ) ), seq!( lit!( b"\\" ), class!( b"0-2" ), class!( b"0-7" ), class!( b"0-7" ) ), seq!( lit!( b"\\" ), class!( b"0-7" ), opt!( class!( b"0-7" ) ) ), seq!( not!( lit!( b"\\" ) ), base::Dot ) ) )
-  rule!( LEFTARROW <- seq!( lit!( b"<-" ), ex!( Spacing ) ) )
-  rule!( SLASH <- seq!( lit!( b"/" ), ex!( Spacing ) ) )
-  rule!( AND <- seq!( lit!( b"&" ), ex!( Spacing ) ) )
-  rule!( NOT <- seq!( lit!( b"!" ), ex!( Spacing ) ) )
-  rule!( QUESTION <- seq!( lit!( b"?" ), ex!( Spacing ) ) )
-  rule!( STAR <- seq!( lit!( b"*" ), ex!( Spacing ) ) )
-  rule!( PLUS <- seq!( lit!( b"+" ), ex!( Spacing ) ) )
-  rule!( OPEN <- seq!( lit!( b"(" ), ex!( Spacing ) ) )
-  rule!( CLOSE <- seq!( lit!( b")" ), ex!( Spacing ) ) )
-  rule!( DOT <- seq!( lit!( b"." ), ex!( Spacing ) ) )
+  rule!( IdentStart <- class!( "a-zA-Z_" ) )
+  rule!( IdentCont <- or!( ex!( IdentStart ), class!( "0-9" ) ) )
+  rule!( Literal <- or!( seq!( class!( "'" ), star!( seq!( not!( class!( "'" ) ), ex!( Char ) ) ), class!( "'" ), ex!( Spacing ) ), seq!( class!( "\"" ), star!( seq!( not!( class!( "\"" ) ), ex!( Char ) ) ), class!( "\"" ), ex!( Spacing ) ) ) )
+  rule!( Class <- seq!( lit!( "[" ), star!( seq!( not!( lit!( "]" ) ), ex!( Range ) ) ), lit!( "]" ), ex!( Spacing ) ) )
+  rule!( Range <- or!( seq!( ex!( Char ), lit!( "-" ), ex!( Char ) ), ex!( Char ) ) )
+  rule!( Char <- or!( seq!( lit!( "\\" ), class!( "nrt'\"[]\\" ) ), seq!( lit!( "\\" ), class!( "0-2" ), class!( "0-7" ), class!( "0-7" ) ), seq!( lit!( "\\" ), class!( "0-7" ), opt!( class!( "0-7" ) ) ), seq!( not!( lit!( "\\" ) ), base::Dot ) ) )
+  rule!( LEFTARROW <- seq!( lit!( "<-" ), ex!( Spacing ) ) )
+  rule!( SLASH <- seq!( lit!( "/" ), ex!( Spacing ) ) )
+  rule!( AND <- seq!( lit!( "&" ), ex!( Spacing ) ) )
+  rule!( NOT <- seq!( lit!( "!" ), ex!( Spacing ) ) )
+  rule!( QUESTION <- seq!( lit!( "?" ), ex!( Spacing ) ) )
+  rule!( STAR <- seq!( lit!( "*" ), ex!( Spacing ) ) )
+  rule!( PLUS <- seq!( lit!( "+" ), ex!( Spacing ) ) )
+  rule!( OPEN <- seq!( lit!( "(" ), ex!( Spacing ) ) )
+  rule!( CLOSE <- seq!( lit!( ")" ), ex!( Spacing ) ) )
+  rule!( DOT <- seq!( lit!( "." ), ex!( Spacing ) ) )
   rule!( Spacing <- star!( or!( ex!( Space ), ex!( Comment ) ) ) )
-  rule!( Comment <- seq!( lit!( b"#" ), star!( seq!( not!( ex!( EndOfLine ) ), base::Dot ) ), ex!( EndOfLine ) ) )
-  rule!( Space <- or!( lit!( b" " ), lit!( b"\t" ), ex!( EndOfLine ) ) )
-  rule!( EndOfLine <- or!( lit!( b"\r\n" ), lit!( b"\n" ), lit!( b"\r" ) ) )
+  rule!( Comment <- seq!( lit!( "#" ), star!( seq!( not!( ex!( EndOfLine ) ), base::Dot ) ), ex!( EndOfLine ) ) )
+  rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
+  rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
   rule!( EndOfFile <- not!( base::Dot ) )
   
 }

@@ -154,5 +154,5 @@ fn stringBasedRule( node: &Node, rule_name: &str ) -> String {
     .replace( "\t", r"\t" )
     .replace( "\r", r"\r" )
     .replace( "\"", r#"\""# );
-  format!( "{}!( b\"{}\" )", rule_name, content )
+  format!( "{}!( \"{}\" )", rule_name, content )
 }

@@ -36,8 +36,8 @@ mod tests {
 
   #[test]
   fn And_Match_WithLiteral() {
-    let orig_state = input_state!( b"foo" );
-    match and!( lit!( b"foo" ) ).apply( &orig_state ) {
+    let orig_state = input_state!( "foo" );
+    match and!( lit!( "foo" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -50,8 +50,8 @@ mod tests {
 
   #[test]
   fn And_Match_WithCharClass() {
-    let orig_state = input_state!( b"c" );
-    match and!( class!( b"a-z" ) ).apply( &orig_state ) {
+    let orig_state = input_state!( "c" );
+    match and!( class!( "a-z" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( nodes.is_empty() );
@@ -64,8 +64,8 @@ mod tests {
 
   #[test]
   fn And_NoMatch() {
-    assert!( and!( class!( b"a-z" ) ).apply( &input_state!( b"0" ) ).is_none() )
-    assert!( and!( lit!( b"x" ) ).apply( &input_state!( b"y" ) ).is_none() )
+    assert!( and!( class!( "a-z" ) ).apply( &input_state!( "0" ) ).is_none() )
+    assert!( and!( lit!( "x" ) ).apply( &input_state!( "y" ) ).is_none() )
   }
 }
 
