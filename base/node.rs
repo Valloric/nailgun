@@ -114,7 +114,7 @@ impl<'a> Node<'a> {
   /// Creates a `Node` with an empty name.
   pub fn noName( start: uint, end: uint, contents: NodeContents<'a> )
       -> Node<'a> {
-    Node { name: b"", start: start, end: end, contents: contents }
+    Node { name: "", start: start, end: end, contents: contents }
   }
 
   // TODO: rename this to withChildren?

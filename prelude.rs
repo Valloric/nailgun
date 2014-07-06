@@ -25,7 +25,6 @@ mod base {
     use std::str;
     use std::fmt::{Result};
 
-    static EMPTY : &'static str = "";
     static NO_NAME : &'static str = "<none>";
 
 
@@ -112,7 +111,7 @@ mod base {
       /// Creates a `Node` with an empty name.
       pub fn noName( start: uint, end: uint, contents: NodeContents<'a> )
           -> Node<'a> {
-        Node { name: EMPTY, start: start, end: end, contents: contents }
+        Node { name: "", start: start, end: end, contents: contents }
       }
       /// Creates a `Node` with the provided `name` and makes it a parent of the
       /// provided `children`.
