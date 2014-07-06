@@ -73,7 +73,6 @@ impl<'a> ParseState<'a> {
 
 #[doc(hidden)]
 pub struct ParseResult<'a> {
-  // TODO: can this be just one node instead of a vector?
   pub nodes: Vec< Node<'a> >,
   pub parse_state: ParseState<'a>
 }

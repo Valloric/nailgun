@@ -69,13 +69,6 @@ pub fn unescapeString( input: &str ) -> String {
 }
 
 
-// TODO: move to somewhere more generic
-#[cfg(test)]
-pub fn vecBytes( input: &'static str ) -> Vec<u8> {
-  Vec::from_slice( input.as_bytes() )
-}
-
-
 fn isOctal( byte: u8 ) -> bool {
   char::is_digit_radix( byte as char, 8 )
 }
@@ -160,7 +153,11 @@ fn addEscapedByte( mut input: Vec<u8>, byte: u8 ) -> Vec<u8> {
 
 #[cfg(test)]
 mod tests {
-  use super::{unescape, vecBytes};
+  use super::{unescape};
+
+  fn vecBytes( input: &'static str ) -> Vec<u8> {
+    Vec::from_slice( input.as_bytes() )
+  }
 
   #[test]
   fn unescape_Nothing() {
