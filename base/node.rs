@@ -173,7 +173,7 @@ impl<'a> Node<'a> {
         _ => ()
       };
 
-      return true;
+      true
     }
     inner( self, visitor );
   }
