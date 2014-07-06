@@ -1,5 +1,4 @@
 #![allow(dead_code)]
-#![crate_type = "lib"]
 #![feature(macro_rules)]
 #![allow(non_snake_case_functions)]
 
