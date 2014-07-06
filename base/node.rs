@@ -116,10 +116,9 @@ impl<'a> Node<'a> {
     Node { name: "", start: start, end: end, contents: contents }
   }
 
-  // TODO: rename this to withChildren?
   /// Creates a `Node` with the provided `name` and makes it a parent of the
   /// provided `children`.
-  pub fn newParent( name: &'static str, mut children: Vec<Node<'a>> )
+  pub fn withChildren( name: &'static str, mut children: Vec<Node<'a>> )
       -> Node<'a> {
     // In case 'children' has only one node with an empty name, our new Node
     // will take the guts of the child with the new 'name'.
@@ -220,9 +219,9 @@ mod tests {
     //        a
     //   b    c    d
     //  e f   g
-    Node::newParent( "a", vec!(
-        Node::newParent( "b", vec!( nameOnly( "e" ), nameOnly( "f" ) ) ),
-        Node::newParent( "c", vec!( nameOnly( "g" ) ) ),
+    Node::withChildren( "a", vec!(
+        Node::withChildren( "b", vec!( nameOnly( "e" ), nameOnly( "f" ) ) ),
+        Node::withChildren( "c", vec!( nameOnly( "g" ) ) ),
         nameOnly( "d" ) ) )
   }
 

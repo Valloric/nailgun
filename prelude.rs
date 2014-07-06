@@ -115,7 +115,7 @@ mod base {
       }
       /// Creates a `Node` with the provided `name` and makes it a parent of the
       /// provided `children`.
-      pub fn newParent( name: &'static str, mut children: Vec<Node<'a>> )
+      pub fn withChildren( name: &'static str, mut children: Vec<Node<'a>> )
           -> Node<'a> {
         if children.len() == 1 && children.get( 0 ).name.is_empty() {
           match children.pop() {
@@ -794,7 +794,7 @@ macro_rules! rule(
         Some( result ) => {
           let state = result.parse_state.clone();
           Some( ParseResult::oneNode(
-              Node::newParent( stringify!( $name ), result.nodes ), state ) )
+              Node::withChildren( stringify!( $name ), result.nodes ), state ) )
         }
         _ => None
       }
@@ -807,7 +807,7 @@ pub fn parse<'a>( input: &'a [u8] ) -> Option< Node<'a> > {
   static root_name : &'static str = "NailedRoot";
   let parse_state = ParseState { input: input, offset: 0 };
   match rules::Grammar( &parse_state ) {
-    Some( result ) => Some( Node::newParent( root_name, result.nodes ) ),
+    Some( result ) => Some( Node::withChildren( root_name, result.nodes ) ),
     _ => None
   }
 }
