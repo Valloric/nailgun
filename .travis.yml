@@ -3,6 +3,10 @@ before_install:
   - sudo apt-get update
 install:
   - sudo apt-get install rust-nightly
+  - git clone --recursive https://github.com/rust-lang/cargo
+  - cd cargo
+  - make && sudo make install
+  - cd -
 script:
   - cargo build
   - ./test.sh
