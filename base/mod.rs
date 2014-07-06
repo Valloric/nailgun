@@ -64,7 +64,7 @@ impl<'a> ParseState<'a> {
   fn offsetToResult( &self, new_offset: uint )
       -> Option< ParseResult<'a> > {
     Some( ParseResult::oneNode(
-            Node::noName( self.offset,
+            Node::withoutName( self.offset,
                           new_offset,
                           Data( self.sliceTo( new_offset ) ) ),
           self.advanceTo( new_offset ) ) )

@@ -142,7 +142,7 @@ mod tests {
                           parse_state: parse_state } ) => {
         let bytes_read = bytesRead( input );
         assert_eq!( *nodes.get( 0 ),
-                    Node::noName( 0, bytes_read, Data( input ) ) );
+                    Node::withoutName( 0, bytes_read, Data( input ) ) );
         assert_eq!( parse_state, ParseState{ input: &[], offset: bytes_read } );
         true
       }

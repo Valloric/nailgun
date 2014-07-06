@@ -41,7 +41,7 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node::noName( 0, 1, Data( b"a" ) ) );
+                    Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }
       _ => fail!( "No match." )
@@ -55,7 +55,7 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node::noName( 0, 1, Data( b"a" ) ) );
+                    Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }
       _ => fail!( "No match." )
@@ -69,7 +69,7 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node::noName( 0, 1, Data( b"a" ) ) );
+                    Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }
       _ => fail!( "No match." )

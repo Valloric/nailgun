@@ -52,11 +52,11 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node::noName( 0, 1, Data( b"a" ) ) );
+                    Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( *nodes.get( 1 ),
-                    Node::noName( 1, 2, Data( b"a" ) ) );
+                    Node::withoutName( 1, 2, Data( b"a" ) ) );
         assert_eq!( *nodes.get( 2 ),
-                    Node::noName( 2, 3, Data( b"a" ) ) );
+                    Node::withoutName( 2, 3, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 3 ) );
       }
       _ => fail!( "No match." )
@@ -70,7 +70,7 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node::noName( 0, 1, Data( b"a" ) ) );
+                    Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }
       _ => fail!( "No match." )

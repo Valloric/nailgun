@@ -32,7 +32,7 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node::noName( 0, 1, Data( b"x" ) ) );
+                    Node::withoutName( 0, 1, Data( b"x" ) ) );
         assert_eq!( parse_state, ParseState{ input: &[], offset: 1 } );
       }
       _ => fail!( "No match!" )
@@ -46,7 +46,7 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert_eq!( *nodes.get( 0 ),
-                    Node::noName( 0, 3, Data( "葉".as_bytes() ) ) );
+                    Node::withoutName( 0, 3, Data( "葉".as_bytes() ) ) );
         assert_eq!( parse_state, ParseState{ input: &[], offset: 3 } );
       }
       _ => fail!( "No match!" )
@@ -60,7 +60,7 @@ mod tests {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
         assert!( *nodes.get( 0 ) ==
-                 Node::noName( 0, 1, Data( b"x" ) ) );
+                 Node::withoutName( 0, 1, Data( b"x" ) ) );
         assert_eq!( parse_state, ParseState{ input: b"b",
                                              offset: 1 } );
       }
