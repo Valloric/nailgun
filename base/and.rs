@@ -1,6 +1,3 @@
-// TODO: Remove this in the future.
-#![allow(dead_code)]
-
 use super::{Expression, ParseState, ParseResult};
 
 macro_rules! and( ( $ex:expr ) => ( {
