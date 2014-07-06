@@ -6,23 +6,6 @@ use std::char::from_u32;
 use std::char;
 use std::u32;
 
-// TODO: Fix this when the following issue is fixed:
-//   https://github.com/mozilla/rust/issues/4334
-static X_U8: u8 = 'x' as u8;
-static A_U8: u8 = 'a' as u8;
-static B_U8: u8 = 'b' as u8;
-static F_U8: u8 = 'f' as u8;
-static N_U8: u8 = 'n' as u8;
-static R_U8: u8 = 'r' as u8;
-static T_U8: u8 = 't' as u8;
-static U_U8: u8 = 'u' as u8;
-static V_U8: u8 = 'v' as u8;
-static ZERO_U8: u8 = '0' as u8;
-static SINGLE_QUOTE_U8: u8 = '\'' as u8;
-static DOUBLE_QUOTE_U8: u8 = '"' as u8;
-static SLASH_U8: u8 = '\\' as u8;
-
-
 // See:
 //   http://en.wikipedia.org/wiki/Escape_sequences_in_C
 //   http://en.cppreference.com/w/cpp/language/escape
@@ -33,22 +16,22 @@ pub fn unescape( input: &[u8] ) -> Vec<u8> {
   loop {
     // TODO: support \u12345678, not just \u1234
     match input.slice_from( index ) {
-      [ SLASH_U8, U_U8, c1, c2, c3, c4, .. ]
+      [ b'\\', b'u', c1, c2, c3, c4, .. ]
           if isHex( c1 ) && isHex( c2 ) && isHex( c3 ) && isHex( c4 ) => {
         final_bytes = addFourBytesAsCodepoint( final_bytes, [c1, c2, c3, c4] );
         index += 6;
       }
-      [ SLASH_U8, X_U8, c1, c2, .. ]
+      [ b'\\', b'x', c1, c2, .. ]
           if isHex( c1 ) && isHex( c2 ) => {
         final_bytes = addTwoBytesAsHex( final_bytes, [c1, c2] );
         index += 4;
       }
-      [ SLASH_U8, c1, c2, c3, .. ]
+      [ b'\\', c1, c2, c3, .. ]
           if isOctal( c1 ) && isOctal( c2 ) && isOctal( c3 ) => {
         final_bytes = addThreeBytesAsOctal( final_bytes, [c1, c2, c3] );
         index += 4;
       }
-      [ SLASH_U8, c, .. ] => {
+      [ b'\\', c, .. ] => {
         final_bytes = addEscapedByte( final_bytes, c );
         index += 2;
       }
@@ -91,7 +74,7 @@ fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8, ..4] ) -> Vec<u8> {
       },
       _ => fail!( "Invalid unicode code point: {}", x )
     },
-    _ => fail!( "Invalid unicode escape sequence: \\\\u{}{}{}{}",
+    _ => fail!( r"Invalid unicode escape sequence: \u{}{}{}{}",
                 bytes.get( 0 ).unwrap(),
                 bytes.get( 1 ).unwrap(),
                 bytes.get( 2 ).unwrap(),
@@ -104,7 +87,7 @@ fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8, ..4] ) -> Vec<u8> {
 fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8, ..2] ) -> Vec<u8> {
   match u8::parse_bytes( bytes, 16 ) {
     Some( byte ) => input.push( byte ),
-    _ => fail!( "Invalid hex escape sequence: \\\\x{}{}",
+    _ => fail!( r"Invalid hex escape sequence: \x{}{}",
                 bytes.get( 0 ).unwrap(),
                 bytes.get( 1 ).unwrap() )
   }
@@ -115,7 +98,7 @@ fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8, ..2] ) -> Vec<u8> {
 fn addThreeBytesAsOctal( mut input: Vec<u8>, bytes: [u8, ..3] ) -> Vec<u8> {
   match u8::parse_bytes( bytes, 8 ) {
     Some( byte ) => input.push( byte ),
-    _ => fail!( "Invalid octal escape sequence: \\\\{}{}{}",
+    _ => fail!( r"Invalid octal escape sequence: \{}{}{}",
                 bytes.get( 0 ).unwrap(),
                 bytes.get( 1 ).unwrap(),
                 bytes.get( 2 ).unwrap() )
@@ -126,24 +109,24 @@ fn addThreeBytesAsOctal( mut input: Vec<u8>, bytes: [u8, ..3] ) -> Vec<u8> {
 
 fn addEscapedByte( mut input: Vec<u8>, byte: u8 ) -> Vec<u8> {
   let unescaped_char = match byte {
-    A_U8            => Some( '\x07' as u8 ),
-    B_U8            => Some( '\x08' as u8 ),
-    F_U8            => Some( '\x0c' as u8 ),
-    N_U8            => Some( '\n' as u8   ),
-    R_U8            => Some( '\r' as u8   ),
-    T_U8            => Some( '\t' as u8   ),
-    V_U8            => Some( '\x0b' as u8 ),
-    ZERO_U8         => Some( '\0' as u8   ),
-    SINGLE_QUOTE_U8 => Some( '\'' as u8   ),
-    DOUBLE_QUOTE_U8 => Some( '"' as u8    ),
-    SLASH_U8        => Some( '\\' as u8   ),
-    _               => None
+    b'a'  => Some( b'\x07' ),
+    b'b'  => Some( b'\x08' ),
+    b'f'  => Some( b'\x0c' ),
+    b'n'  => Some( b'\n'   ),
+    b'r'  => Some( b'\r'   ),
+    b't'  => Some( b'\t'   ),
+    b'v'  => Some( b'\x0b' ),
+    b'0'  => Some( b'\0'   ),
+    b'\'' => Some( b'\''   ),
+    b'"'  => Some( b'"'    ),
+    b'\\' => Some( b'\\'   ),
+    _     => None
   };
 
   match unescaped_char {
     Some( x ) => input.push( x ),
     None => {
-      input.push( '\\' as u8 );
+      input.push( b'\\' );
       input.push( byte )
     }
   };
