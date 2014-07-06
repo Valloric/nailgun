@@ -2,7 +2,6 @@ use std::fmt;
 use std::str;
 use std::fmt::{Result};
 
-static EMPTY : &'static str = "";
 static NO_NAME : &'static str = "<none>";
 
 // NOTE: Uncomment when https://github.com/mozilla/rust/issues/13703 is fixed.
@@ -115,7 +114,7 @@ impl<'a> Node<'a> {
   /// Creates a `Node` with an empty name.
   pub fn noName( start: uint, end: uint, contents: NodeContents<'a> )
       -> Node<'a> {
-    Node { name: EMPTY, start: start, end: end, contents: contents }
+    Node { name: b"", start: start, end: end, contents: contents }
   }
 
   // TODO: rename this to withChildren?

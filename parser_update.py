@@ -137,9 +137,9 @@ def Main():
   with codecs.open( PRELUDE_FILE, 'w+', 'utf-8' ) as f:
     f.write( prelude )
 
-  subprocess.check_output( [ './build', '-c' ] )
+  subprocess.check_output( [ 'cargo', 'build' ] )
   inlined_parser = subprocess.check_output(
-    [ './nailed', '-g', INPUT_PEG_FILE ] )
+    [ './target/nailed', '-g', INPUT_PEG_FILE ] )
 
   with codecs.open( INLINED_PARSER_FILE, 'w+', 'utf-8' ) as f:
     f.write( inlined_parser )

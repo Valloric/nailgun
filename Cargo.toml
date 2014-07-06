@@ -1,0 +1,15 @@
+[package]
+
+name = "nailed"
+version = "0.1.0"
+authors = [ "val@markovic.io" ]
+
+[[bin]]
+
+name = "nailed"
+path = "nailed.rs"
+
+[[lib]]
+
+name = "inlined_parser"
+path = "inlined_parser.rs"

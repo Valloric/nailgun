@@ -33,4 +33,5 @@ nailed
 tree.txt
 doc/
 rustup.sh
+target/
 
