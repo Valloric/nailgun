@@ -145,14 +145,20 @@ fn classOutput( node: &Node ) -> String {
 }
 
 
-fn stringBasedRule( node: &Node, rule_name: &str ) -> String {
-  let full = codeForNodeContents( node );
-  // TODO: write escape func
-  let content = unescapeString( full.as_slice().slice_chars( 1, full.len() - 1 ) )
+fn escapeToRustLiteral( input: &str ) -> String {
+  input.to_string()
     .replace( r"\", r"\\" )
     .replace( "\n", r"\n" )
     .replace( "\t", r"\t" )
     .replace( "\r", r"\r" )
-    .replace( "\"", r#"\""# );
+    .replace( "\"", r#"\""# )
+}
+
+
+fn stringBasedRule( node: &Node, rule_name: &str ) -> String {
+  let full = codeForNodeContents( node );
+  let content = escapeToRustLiteral(
+    unescapeString(
+      full.as_slice().slice_chars( 1, full.len() - 1 ) ).as_slice() );
   format!( "{}!( \"{}\" )", rule_name, content )
 }
