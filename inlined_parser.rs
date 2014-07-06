@@ -108,11 +108,13 @@ mod base {
           NO_NAME
         }
       }
+
       /// Creates a `Node` with an empty name.
       pub fn withoutName( start: uint, end: uint, contents: NodeContents<'a> )
           -> Node<'a> {
         Node { name: "", start: start, end: end, contents: contents }
       }
+
       /// Creates a `Node` with the provided `name` and makes it a parent of the
       /// provided `children`.
       pub fn withChildren( name: &'static str, mut children: Vec<Node<'a>> )
@@ -168,7 +170,7 @@ mod base {
             _ => ()
           };
 
-          return true;
+          true
         }
         inner( self, visitor );
       }
@@ -392,8 +394,6 @@ mod base {
   }
   #[macro_escape]
   mod and {
-    #![allow(dead_code)]
-
     use super::{Expression, ParseState, ParseResult};
 
     macro_rules! and( ( $ex:expr ) => ( {
