@@ -12,3 +12,6 @@ env:
   global:
     - LD_LIBRARY_PATH=/usr/lib/rust/rust-nightly/lib
     - DYLD_LIBRARY_PATH=/usr/lib/rust/rust-nightly/lib
+os:
+  - linux
+  - osx
