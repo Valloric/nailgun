@@ -15,3 +15,7 @@ apt-get install -y tmux
 apt-get dist-upgrade
 
 curl -s http://www.rust-lang.org/rustup.sh | sh
+
+# need to add:
+#   export LD_LIBRARY_PATH="/usr/local/lib"
+# to .bashrc for rust library loading
