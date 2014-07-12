@@ -6,5 +6,5 @@ install:
   - sudo apt-get install rust-nightly
   - sudo apt-get install cargo
 script:
-  - cargo build
+  - LD_LIBRARY_PATH="/usr/local/lib" cargo build
   - ./test.sh
