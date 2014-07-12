@@ -5,13 +5,10 @@ before_install:
 install:
   - sudo apt-get install rust-nightly
   - sudo apt-get install cargo
+  - rustc --version
 script:
   - cargo build
   - ./test.sh
 env:
   global:
     - LD_LIBRARY_PATH=/usr/lib/rust/rust-nightly/lib
-    - DYLD_LIBRARY_PATH=/usr/lib/rust/rust-nightly/lib
-os:
-  - linux
-  - osx
