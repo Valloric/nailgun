@@ -29,7 +29,7 @@ pip-log.txt
 # custom
 main
 test
-nailed
+nailgun
 tree.txt
 doc/
 rustup.sh

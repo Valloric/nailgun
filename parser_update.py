@@ -139,7 +139,7 @@ def Main():
 
   subprocess.check_output( [ 'cargo', 'build' ] )
   inlined_parser = subprocess.check_output(
-    [ './target/nailed', '-g', INPUT_PEG_FILE ] )
+    [ './target/nailgun', '-g', INPUT_PEG_FILE ] )
 
   with codecs.open( INLINED_PARSER_FILE, 'w+', 'utf-8' ) as f:
     f.write( inlined_parser )
