@@ -803,7 +803,7 @@ macro_rules! rule(
 
 #[cfg(not(test))]
 pub fn parse<'a>( input: &'a [u8] ) -> Option< Node<'a> > {
-  static root_name : &'static str = "NailedRoot";
+  static root_name : &'static str = "NailgunRoot";
   let parse_state = ParseState { input: input, offset: 0 };
   match rules::Grammar( &parse_state ) {
     Some( result ) => Some( Node::withChildren( root_name, result.nodes ) ),
