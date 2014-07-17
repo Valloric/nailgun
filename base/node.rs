@@ -183,13 +183,18 @@ impl<'a> Node<'a> {
   //   PreOrderNodes { queue: vec!( self ) }
   // }
 
+  /// Concatenates and returns all `&[u8]` data in the leaf nodes beneath
+  /// the current node.
   #[allow(dead_code)]
   fn matchedData( &self ) -> Vec<u8> {
     match self.contents {
       Data( x ) => Vec::from_slice( x ),
-      Children( _ ) => {
-        // TODO: implement
-        vec!()
+      Children( ref children ) => {
+        let mut out : Vec<u8> = vec!();
+        for child in children.iter() {
+          out.push_all( child.matchedData().as_slice() );
+        }
+        out
       }
     }
   }
@@ -213,6 +218,9 @@ mod tests {
     Node { name: name, start: 0, end: 0, contents: Data( b"" ) }
   }
 
+  fn contentsOnly( contents: &'static [u8] ) -> Node {
+    Node { name: "", start: 0, end: 0, contents: Data( contents ) }
+  }
 
   fn testTree() -> Node {
     // Tree looks like the following:
@@ -223,6 +231,18 @@ mod tests {
         Node::withChildren( "b", vec!( nameOnly( "e" ), nameOnly( "f" ) ) ),
         Node::withChildren( "c", vec!( nameOnly( "g" ) ) ),
         nameOnly( "d" ) ) )
+  }
+
+  fn testTreeWithContents() -> Node {
+    // Tree looks like the following (nodes with ' have contents):
+    //          a
+    //    b     c     'd
+    // 'e  'f  'g
+    Node::withChildren( "a", vec!(
+        Node::withChildren(
+          "b", vec!( contentsOnly( b"e" ), contentsOnly( b"f" ) ) ),
+        Node::withChildren( "c", vec!( contentsOnly( b"g" ) ) ),
+        contentsOnly( b"d" ) ) )
   }
 
 
@@ -250,5 +270,11 @@ mod tests {
     });
 
     assert_eq!( names, vec!( 'a', 'b', 'e', 'f' ) )
+  }
+
+  #[test]
+  fn matchedData_FullTree() {
+    let root = testTreeWithContents();
+    assert_eq!( b"efgd", root.matchedData().as_slice() )
   }
 }
