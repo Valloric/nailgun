@@ -6,7 +6,6 @@ extern crate inlined_parser;
 
 use getopts::{optflag, getopts, optopt};
 use std::os;
-use std::str;
 use std::io::File;
 use std::io::TempDir;
 use std::io::Command;
@@ -87,7 +86,7 @@ fn printParseTree( grammar_code: &str, input_path: &str ) {
     Err( e ) => fail!( "Failed to execute process: {}", e ),
   };
 
-  println!( "{}", str::from_utf8_lossy( output.as_slice() ) );
+  println!( "{}", String::from_utf8_lossy( output.as_slice() ) );
 }
 
 
