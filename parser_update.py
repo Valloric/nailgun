@@ -93,6 +93,11 @@ def InlineModules( filename, contents ):
   return contents
 
 
+def PutPlaceholderForTopRule( contents ):
+  return contents.replace( u'match rules::Grammar(',
+                           u'match rules::NGTOP_LEVEL_RULE(' )
+
+
 def PreludeWrap( contents ):
   return ''.join( [
     # We add allow(dead_code) so that the user doesn't get warnings if their
@@ -132,6 +137,7 @@ def Main():
   prelude = StripComments( prelude )
   prelude = StripCrateId( prelude )
   prelude = StripExtraWhitespace( prelude )
+  prelude = PutPlaceholderForTopRule( prelude )
   prelude = PreludeWrap( prelude )
 
   with codecs.open( PRELUDE_FILE, 'w+', 'utf-8' ) as f:

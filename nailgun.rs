@@ -12,11 +12,14 @@ use std::io::Command;
 use std::path::Path;
 use self::prelude::PRELUDE;
 use self::printer::PRINTER_MAIN;
-use inlined_parser::parse;
+use inlined_parser::{parse, Node};
+use std::str;
 
 mod generator;
 mod prelude;
 mod printer;
+
+static TOP_LEVEL_RULE : &'static str = "NGTOP_LEVEL_RULE";
 
 
 fn inputFromFile( input_file: &str ) -> Vec<u8> {
@@ -43,12 +46,25 @@ fn printUsage( opts: &[getopts::OptGroup] ) {
 }
 
 
+fn nameOfFirstRule<'a>( root: &'a Node<'a> ) -> String {
+  str::from_utf8(
+    root.preOrder().find( |x| x.name == "Definition" ).unwrap()
+        .preOrder().find( |x| x.name == "Identifier" ).unwrap()
+        .matchedData().as_slice() ).unwrap().trim_chars(' ').to_string()
+}
+
+
 fn codeForGrammar( input: &[u8] ) -> Option<String> {
   match parse( input ) {
     Some( ref node ) => {
       let parse_rules = indentLines( generator::codeForNode( node ).as_slice(),
                                      2 );
-      Some( [ PRELUDE.slice_to( PRELUDE.len() -1 ),
+      let prepared_prelude = str::replace(
+        PRELUDE.slice_to( PRELUDE.len() -1 ),
+        TOP_LEVEL_RULE,
+        nameOfFirstRule( node ).as_slice() );
+
+      Some( [ prepared_prelude.as_slice(),
               "\n",
               parse_rules.as_slice(),
               "}" ].concat() )

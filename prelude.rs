@@ -26,6 +26,29 @@ mod base {
 
     static NO_NAME : &'static str = "<none>";
 
+    pub struct PreOrderNodes<'a, 'b> {
+      queue: Vec<&'a Node<'b>>
+    }
+
+    impl<'a> Iterator<&'a Node<'a>> for PreOrderNodes<'a, 'a> {
+      fn next( &mut self ) -> Option<&'a Node<'a>> {
+        match self.queue.pop() {
+          ex @ Some( node ) => {
+            match node.contents {
+              Children( ref x ) => {
+                for child in x.as_slice().iter().rev() {
+                  self.queue.push( child )
+                }
+              }
+              _ => ()
+            };
+            ex
+          }
+          _ => None
+        }
+      }
+    }
+
 
     #[deriving(Show, PartialEq)]
     pub enum NodeContents<'a> {
@@ -57,6 +80,7 @@ mod base {
       pub contents: NodeContents<'a>
     }
 
+
     fn indent( formatter: &mut fmt::Formatter, indent_spaces: int )
         -> fmt::Result {
       for _ in range( 0, indent_spaces ) {
@@ -64,6 +88,7 @@ mod base {
       }
       Ok(())
     }
+
 
     impl<'a> Node<'a> {
       fn format( &self, formatter: &mut fmt::Formatter, indent_spaces: int )
@@ -146,40 +171,26 @@ mod base {
       }
 
 
-      /// Traverses the tree rooted at the node with pre-order traversal. `visitor`
-      /// is called on every node and traversal stops when `visitor` returns `false`.
-      ///
-      /// Normally this function would return an iterator instead of taking a
-      /// visitor function, but a `rustc` bug is preventing that implementation.
+      /// Traverses the tree rooted at the node with pre-order traversal. Includes
+      /// the `self` node as the first node.
       #[allow(dead_code)]
-      pub fn preOrder( &self, visitor: |&Node| -> bool ) {
-        fn inner( node: &Node, visitor: |&Node| -> bool ) -> bool {
-          if !visitor( node ) {
-            return false;
-          }
-
-          match node.contents {
-            Children( ref x ) => {
-              for node in x.iter() {
-                if !inner( node, |x| visitor( x ) ) {
-                  return false;
-                }
-              }
-            }
-            _ => ()
-          };
-
-          true
-        }
-        inner( self, visitor );
+      pub fn preOrder<'b>( &'b self ) -> PreOrderNodes<'b, 'a> {
+        PreOrderNodes { queue: vec!( self ) }
       }
 
+
+      /// Concatenates and returns all `&[u8]` data in the leaf nodes beneath
+      /// the current node.
       #[allow(dead_code)]
-      fn matchedData( &self ) -> Vec<u8> {
+      pub fn matchedData( &self ) -> Vec<u8> {
         match self.contents {
           Data( x ) => Vec::from_slice( x ),
-          Children( _ ) => {
-            vec!()
+          Children( ref children ) => {
+            let mut out : Vec<u8> = vec!();
+            for child in children.iter() {
+              out.push_all( child.matchedData().as_slice() );
+            }
+            out
           }
         }
       }
@@ -805,7 +816,7 @@ macro_rules! rule(
 pub fn parse<'a>( input: &'a [u8] ) -> Option< Node<'a> > {
   static root_name : &'static str = "NailgunRoot";
   let parse_state = ParseState { input: input, offset: 0 };
-  match rules::Grammar( &parse_state ) {
+  match rules::NGTOP_LEVEL_RULE( &parse_state ) {
     Some( result ) => Some( Node::withChildren( root_name, result.nodes ) ),
     _ => None
   }

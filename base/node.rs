@@ -58,6 +58,7 @@ pub struct Node<'a> {
   pub contents: NodeContents<'a>
 }
 
+
 fn indent( formatter: &mut fmt::Formatter, indent_spaces: int )
     -> fmt::Result {
   for _ in range( 0, indent_spaces ) {
@@ -65,6 +66,7 @@ fn indent( formatter: &mut fmt::Formatter, indent_spaces: int )
   }
   Ok(())
 }
+
 
 impl<'a> Node<'a> {
   fn format( &self, formatter: &mut fmt::Formatter, indent_spaces: int )
@@ -156,10 +158,11 @@ impl<'a> Node<'a> {
     PreOrderNodes { queue: vec!( self ) }
   }
 
+
   /// Concatenates and returns all `&[u8]` data in the leaf nodes beneath
   /// the current node.
   #[allow(dead_code)]
-  fn matchedData( &self ) -> Vec<u8> {
+  pub fn matchedData( &self ) -> Vec<u8> {
     match self.contents {
       Data( x ) => Vec::from_slice( x ),
       Children( ref children ) => {
