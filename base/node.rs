@@ -4,29 +4,28 @@ use std::fmt::{Result};
 
 static NO_NAME : &'static str = "<none>";
 
-// NOTE: Uncomment when https://github.com/mozilla/rust/issues/13703 is fixed.
-// pub struct PreOrderNodes<'a, 'b> {
-//   queue: Vec<&'a Node<'b>>
-// }
-//
-// impl<'a, 'b> Iterator<&'a Node<'b>> for PreOrderNodes<'a, 'b> {
-//   fn next( &mut self ) -> Option<&'a Node<'b>> {
-//     match self.queue.pop() {
-//       ex @ Some( node ) => {
-//         match node.contents {
-//           Children( ref x ) => {
-//             for child in x.as_slice().iter().rev() {
-//               self.queue.push( child )
-//             }
-//           }
-//           _ => ()
-//         };
-//         ex
-//       }
-//       _ => None
-//     }
-//   }
-// }
+pub struct PreOrderNodes<'a, 'b> {
+  queue: Vec<&'a Node<'b>>
+}
+
+impl<'a> Iterator<&'a Node<'a>> for PreOrderNodes<'a, 'a> {
+  fn next( &mut self ) -> Option<&'a Node<'a>> {
+    match self.queue.pop() {
+      ex @ Some( node ) => {
+        match node.contents {
+          Children( ref x ) => {
+            for child in x.as_slice().iter().rev() {
+              self.queue.push( child )
+            }
+          }
+          _ => ()
+        };
+        ex
+      }
+      _ => None
+    }
+  }
+}
 
 
 #[deriving(Show, PartialEq)]
@@ -150,38 +149,12 @@ impl<'a> Node<'a> {
   }
 
 
-  /// Traverses the tree rooted at the node with pre-order traversal. `visitor`
-  /// is called on every node and traversal stops when `visitor` returns `false`.
-  ///
-  /// Normally this function would return an iterator instead of taking a
-  /// visitor function, but a `rustc` bug is preventing that implementation.
+  /// Traverses the tree rooted at the node with pre-order traversal. Includes
+  /// the `self` node as the first node.
   #[allow(dead_code)]
-  pub fn preOrder( &self, visitor: |&Node| -> bool ) {
-    fn inner( node: &Node, visitor: |&Node| -> bool ) -> bool {
-      if !visitor( node ) {
-        return false;
-      }
-
-      match node.contents {
-        Children( ref x ) => {
-          for node in x.iter() {
-            if !inner( node, |x| visitor( x ) ) {
-              return false;
-            }
-          }
-        }
-        _ => ()
-      };
-
-      true
-    }
-    inner( self, visitor );
+  pub fn preOrder<'b>( &'b self ) -> PreOrderNodes<'b, 'a> {
+    PreOrderNodes { queue: vec!( self ) }
   }
-
-  // NOTE: Uncomment when https://github.com/mozilla/rust/issues/13703 is fixed.
-  // pub fn preOrder<'b>( &'b self ) -> PreOrderNodes<'b, 'a> {
-  //   PreOrderNodes { queue: vec!( self ) }
-  // }
 
   /// Concatenates and returns all `&[u8]` data in the leaf nodes beneath
   /// the current node.
@@ -249,28 +222,11 @@ mod tests {
   #[test]
   fn preOrder_FullIteration() {
     let root = testTree();
-    let mut names : Vec<char> = vec!();
-    root.preOrder( |ref x| {
-      names.push( x.name.char_at( 0 ) );
-      true
-    });
-
+    let names =
+      root.preOrder().map( |x| x.name.char_at( 0 ) ).collect::<Vec<_>>();
     assert_eq!( names, vec!( 'a', 'b', 'e', 'f', 'c', 'g', 'd' ) )
   }
 
-
-  #[test]
-  fn preOrder_PartialIteration() {
-    let root = testTree();
-    let mut names : Vec<char> = vec!();
-    root.preOrder( |ref x| {
-      let ch =  x.name.char_at( 0 );
-      names.push( ch );
-      if ch == 'f' { false } else { true }
-    });
-
-    assert_eq!( names, vec!( 'a', 'b', 'e', 'f' ) )
-  }
 
   #[test]
   fn matchedData_FullTree() {
