@@ -1,0 +1,21 @@
+# Correctly parses the following string: 2+5*3*(2*8+6)
+# Note that spaces between numbers/operators are currently not supported by this
+# example grammar.
+Expr     <- Factor AddExpr*
+AddExpr  <- ( '+' / '-' ) Factor
+Factor   <- Primary MulExpr*
+MulExpr  <- ( '*' / '/' ) Primary
+Primary  <- '(' Expr ')'
+          / Number
+          / Variable
+          / '-' Primary
+
+Number   <- [0-9]+
+Variable <- identifier
+
+lowerCase  <- [a-z]
+upperCase  <- [A-Z]
+digit      <- [0-9]
+underscore <- '_'
+identifier <- (lowerCase / upperCase / underscore) (lowerCase / upperCase / underscore / digit)*
+
