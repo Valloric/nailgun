@@ -95,7 +95,7 @@ mod base {
           -> fmt::Result {
         try!( indent( formatter, indent_spaces ) );
         try!( write!( formatter,
-                      "Node {{name: {0}, start: {1}, end: {2}",
+                      "{0} [{1}, {2}>",
                       self.displayName(), self.start, self.end ) );
 
         match self.contents {
@@ -103,18 +103,18 @@ mod base {
             match str::from_utf8( data ) {
               Some( string ) => {
                 try!( writeln!( formatter,
-                                ", contents: \"{0}\" }}",
+                                ": \"{0}\"",
                                 string ) );
               }
               _ => {
                 try!( writeln!( formatter,
-                                ", contents: \"{0}\" }}",
+                                ": \"{0}\"",
                                 data ) );
               }
             }
           }
           Children( ref children ) => {
-            try!( writeln!( formatter, " }}" ) );
+            try!( writeln!( formatter, "" ) );
             for child in children.iter() {
               try!( child.format( formatter, indent_spaces + 1) )
             }
