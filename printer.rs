@@ -23,7 +23,10 @@ fn main() {
   let args = std::os::args();
   match parse( inputFromFile( args.get( 1 ).as_slice() ).as_slice() ) {
     Some( ref node ) => println!( "{}", node ),
-    _ => println!( "Couldn't parse input." )
+    _ => {
+      println!( "Couldn't parse input." );
+      std::os::set_exit_status( 1 );
+    }
   };
 }
 "###;

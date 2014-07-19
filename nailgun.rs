@@ -22,6 +22,7 @@ use std::os;
 use std::io::File;
 use std::io::TempDir;
 use std::io::Command;
+use std::io::process::ExitStatus;
 use std::path::Path;
 use self::prelude::PRELUDE;
 use self::printer::PRINTER_MAIN;
@@ -109,13 +110,19 @@ fn printParseTree( grammar_code: &str, input_path: &str ) {
   };
 
   let printer = temp_dir.path().join( "printer" );
-  let output = match Command::new(
-      printer.as_str().unwrap() ).arg( input_path ).output() {
-    Ok( output ) => output.output,
+  let command_output = Command::new(
+      printer.as_str().unwrap() ).arg( input_path ).output();
+
+  match command_output {
+    Ok( output ) => {
+      println!( "{}", String::from_utf8_lossy( output.output.as_slice() ) );
+      os::set_exit_status( match output.status {
+        ExitStatus( code ) => code,
+        _ => 1
+      } );
+    },
     Err( e ) => fail!( "Failed to execute process: {}", e ),
   };
-
-  println!( "{}", String::from_utf8_lossy( output.as_slice() ) );
 }
 
 
