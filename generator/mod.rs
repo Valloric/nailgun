@@ -74,7 +74,7 @@ fn sequenceOutput( node: &Node ) -> String {
   if children.len() > 1 {
     let mut output = String::from_str( "seq!( " );
     for i in range( 0, children.len() ) {
-      output.push_str( codeForNode( children.get( i ) ).as_slice() );
+      output.push_str( codeForNode( &children[ i ] ).as_slice() );
       if i != children.len() -1 {
         output.push_str( ", " );
       }
@@ -90,7 +90,7 @@ fn sequenceOutput( node: &Node ) -> String {
 fn suffixOutput( node: &Node ) -> String {
   let children = node_children!( node );
   if children.len() == 2 {
-    let macro_name = match children.get( 1 ).name {
+    let macro_name = match children[ 1 ].name {
       "QUESTION" => "opt",
       "STAR" => "star",
       "PLUS" => "plus",
@@ -99,7 +99,7 @@ fn suffixOutput( node: &Node ) -> String {
 
     [ macro_name,
       "!( ",
-      codeForNode( children.get( 0 ) ).as_slice(),
+      codeForNode( &children[ 0 ] ).as_slice(),
       " )" ].concat()
   } else {
     codeForNodeContents( node )
@@ -110,12 +110,12 @@ fn suffixOutput( node: &Node ) -> String {
 fn prefixOutput( node: &Node ) -> String {
   let children = node_children!( node );
   if children.len() == 2 {
-    let macro_name = children.get( 0 ).name.chars()
+    let macro_name = children[ 0 ].name.chars()
       .map( |x| x.to_lowercase() ).collect::<String>();
 
     [ macro_name.as_slice(),
       "!( ",
-      codeForNode( children.get( 1 ) ).as_slice(),
+      codeForNode( &children[ 1 ] ).as_slice(),
       " )" ].concat()
   } else {
     codeForNodeContents( node )
@@ -125,8 +125,8 @@ fn prefixOutput( node: &Node ) -> String {
 
 fn primaryOutput( node: &Node ) -> String {
   let children = node_children!( node );
-  if children.len() == 1 && children.get( 0 ).name == "Identifier" {
-    wrapNodeOutput( "ex!( ", children.get( 0 ), " )" )
+  if children.len() == 1 && children[ 0 ].name == "Identifier" {
+    wrapNodeOutput( "ex!( ", &children[ 0 ], " )" )
   } else {
     codeForNodeContents( node )
   }
