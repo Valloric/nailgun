@@ -3,7 +3,7 @@
 #![allow(non_snake_case_functions)]
 
 #[cfg(not(test))]
-pub use base::{Node, ParseState, Data, Children, NodeContents};
+pub use base::{Node, ParseState, Data, Children, NodeContents, PreOrderNodes};
 
 #[macro_escape]
 mod base {
