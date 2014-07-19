@@ -13,6 +13,7 @@
 // limitations under the License.
 pub use self::not::NotEx;
 pub use self::and::And;
+pub use self::fuse::Fuse;
 pub use self::char_class::CharClass;
 pub use self::literal::Literal;
 pub use self::dot::Dot;
@@ -48,6 +49,8 @@ mod plus;
 #[macro_escape]
 mod or;
 #[macro_escape]
+mod fuse;
+#[macro_escape]
 mod sequence;
 #[macro_escape]
 mod wrap;
@@ -78,9 +81,9 @@ impl<'a> ParseState<'a> {
       -> Option< ParseResult<'a> > {
     Some( ParseResult::oneNode(
             Node::withoutName( self.offset,
-                          new_offset,
-                          Data( self.sliceTo( new_offset ) ) ),
-          self.advanceTo( new_offset ) ) )
+                               new_offset,
+                               Data( self.sliceTo( new_offset ) ) ),
+            self.advanceTo( new_offset ) ) )
   }
 }
 
