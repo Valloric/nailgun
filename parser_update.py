@@ -22,7 +22,7 @@ import os.path as p
 DEV_PARSER_FILE = './parser.rs'
 PRELUDE_FILE = './prelude.rs'
 INLINED_PARSER_FILE = './inlined_parser.rs'
-INPUT_PEG_FILE = './examples/original_peg_grammar.peg'
+INPUT_PEG_FILE = './examples/nailgun.peg'
 
 COPYRIGHT_HEADER = """
 // Copyright 2014 Strahinja Val Markovic
