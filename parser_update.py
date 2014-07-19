@@ -1,4 +1,18 @@
 #!/usr/bin/env python
+#
+# Copyright 2014 Strahinja Val Markovic
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import codecs
 import re
@@ -10,6 +24,21 @@ PRELUDE_FILE = './prelude.rs'
 INLINED_PARSER_FILE = './inlined_parser.rs'
 INPUT_PEG_FILE = './examples/original_peg_grammar.peg'
 
+COPYRIGHT_HEADER = """
+// Copyright 2014 Strahinja Val Markovic
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+"""
 
 def StripRules( contents ):
   return re.sub( ur'// RULES START.*?// RULES END', u'', contents,
@@ -100,6 +129,7 @@ def PutPlaceholderForTopRule( contents ):
 
 def PreludeWrap( contents ):
   return ''.join( [
+    COPYRIGHT_HEADER,
     # We add allow(dead_code) so that the user doesn't get warnings if their
     # generated grammar only uses some features of PEG (and thus only some of
     # the generated code) and not all.
