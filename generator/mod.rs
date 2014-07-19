@@ -28,7 +28,7 @@ macro_rules! node_children( ( $node:expr ) => ( {
 
 pub fn codeForNode( node: &Node ) -> String {
   match node.name {
-    "Definition" => wrapChildrenOutput( "rule!( ", node, " )\n" ),
+    "Definition" => definitionOutput( node ),
     "Expression" => expressionOutput( node ),
     "Sequence" => sequenceOutput( node ),
     "Literal" => literalOutput( node ),
@@ -37,12 +37,9 @@ pub fn codeForNode( node: &Node ) -> String {
     "Prefix" => prefixOutput( node ),
     "Primary" => primaryOutput( node ),
     "DOT" => String::from_str( "base::Dot" ),
-    "LEFTARROW" => String::from_str( " <- " ),
+    "ARROW" => String::from_str( " <- " ),
     "SLASH" => String::from_str( ", " ),
-    "Spacing" => String::new(),
-    "EndOfLine" => String::new(),
-    "OPEN" => String::new(),
-    "CLOSE" => String::new(),
+    "Spacing" | "EndOfLine" | "OPEN" | "CLOSE" => String::new(),
     _ => codeForNodeContents( node )
   }
 }
@@ -69,6 +66,37 @@ fn wrapNodeOutput( before: &str, node: &Node, after: &str ) -> String {
   [ before.into_maybe_owned(),
     codeForNode( node ).into_maybe_owned(),
     after.into_maybe_owned() ].concat()
+}
+
+
+fn definitionOutput( node: &Node ) -> String {
+  fn arrowName( node: &Node ) -> &str {
+    match node.contents {
+      Children( ref nodes ) => {
+        match nodes[ 1 ].contents {
+          Children( ref nodes2 ) => {
+            nodes2[ 0 ].name
+          },
+          _ => fail!( "No children in node.")
+        }
+      },
+      _ => fail!( "No children in node.")
+    }
+  }
+
+  let children = node_children!( node );
+  let inner_code = match arrowName( node ) {
+    "FUSEARROW" => {
+      [ codeForNode( &children[ 0 ] ).as_slice(),
+        codeForNode( &children[ 1 ] ).as_slice(),
+        "fuse!( ",
+        codeForNode( &children[ 2 ] ).as_slice(),
+        " )" ].concat()
+    },
+    _ => codeForNodeContents( node )
+  };
+
+  [ "rule!( ", inner_code.as_slice(), " )\n" ].concat()
 }
 
 

@@ -62,8 +62,7 @@ fn printUsage( opts: &[getopts::OptGroup] ) {
 
 fn nameOfFirstRule<'a>( root: &'a Node<'a> ) -> String {
   str::from_utf8(
-    root.preOrder().find( |x| x.name == "Definition" ).unwrap()
-        .preOrder().find( |x| x.name == "Identifier" ).unwrap()
+    root.preOrder().find( |x| x.name == "Identifier" ).unwrap()
         .matchedData().as_slice() ).unwrap().trim_chars(' ').to_string()
 }
 
