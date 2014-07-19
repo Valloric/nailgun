@@ -11,12 +11,12 @@ Primary    <- Identifier !LEFTARROW
             / Literal / Class / DOT
 
 # Lexical syntax
-Identifier <- IdentStart IdentCont* Spacing
+Identifier <- ~( IdentStart IdentCont* ) Spacing
 IdentStart <- [a-zA-Z_]
 IdentCont  <- IdentStart / [0-9]
 
-Literal <- ['] (!['] Char)* ['] Spacing
-         / ["] (!["] Char)* ["] Spacing
+Literal <- ~( ['] (!['] Char)* [']
+            / ["] (!["] Char)* ["] ) Spacing
 
 Class <- '[' (!']' Range)* ']' Spacing
 Range <- Char '-' Char / Char
@@ -36,8 +36,11 @@ CLOSE     <- ')' Spacing
 DOT       <- '.' Spacing
 FUSE      <- '~' Spacing
 
-Spacing   <- (Space / Comment)*
-Comment   <- '#' (!EndOfLine .)* EndOfLine
+# TODO: convert to <~ when that's implemented
+Spacing   <- ~( (Space / Comment)* )
+
+# TODO: convert to <~ when that's implemented
+Comment   <- ~( '#' (!EndOfLine .)* EndOfLine )
 Space     <- ' ' / '\t' / EndOfLine
 EndOfLine <- '\r\n' / '\n' / '\r'
 EndOfFile <- !.
