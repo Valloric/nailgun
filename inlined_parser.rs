@@ -18,7 +18,7 @@ mod base {
   pub use self::or::Or;
   pub use self::sequence::Sequence;
   pub use self::wrap::WrapEx;
-  pub use self::node::{Node, NodeContents, Data, Children};
+  pub use self::node::{Node, NodeContents, Data, Children, PreOrderNodes};
   mod node {
     use std::fmt;
     use std::str;
@@ -143,7 +143,7 @@ mod base {
       /// provided `children`.
       pub fn withChildren( name: &'static str, mut children: Vec<Node<'a>> )
           -> Node<'a> {
-        if children.len() == 1 && children.get( 0 ).name.is_empty() {
+        if children.len() == 1 && children[ 0 ].name.is_empty() {
           match children.pop() {
             Some( mut child ) => {
               child.name = name;
@@ -154,7 +154,7 @@ mod base {
         }
 
         let start = if children.len() != 0 {
-          children.get( 0 ).start
+          children[ 0 ].start
         } else {
           0
         };
@@ -322,7 +322,7 @@ mod base {
               if index >= chars.len() {
                 break
               }
-              char_class.single_chars.push( *chars.get( index ) );
+              char_class.single_chars.push( chars[ index ] );
               index += 1;
             }
           };
@@ -858,5 +858,5 @@ mod rules {
   rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
   rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
   rule!( EndOfFile <- not!( base::Dot ) )
-  
+
 }
