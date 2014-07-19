@@ -1,3 +1,4 @@
+
 // Copyright 2014 Strahinja Val Markovic
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,11 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 pub static PRELUDE : &'static str = r###"#![allow(dead_code)]
+
 #![feature(macro_rules)]
 #![allow(non_snake_case_functions)]
 
 #[cfg(not(test))]
-pub use base::{Node, ParseState, Data, Children, NodeContents};
+pub use base::{Node, ParseState, Data, Children, NodeContents, PreOrderNodes};
 
 #[macro_escape]
 mod base {
@@ -417,6 +419,7 @@ mod base {
   }
   #[macro_escape]
   mod and {
+
     use super::{Expression, ParseState, ParseResult};
 
     macro_rules! and( ( $ex:expr ) => ( {
@@ -827,10 +830,9 @@ macro_rules! rule(
 
 #[cfg(not(test))]
 pub fn parse<'a>( input: &'a [u8] ) -> Option< Node<'a> > {
-  static root_name : &'static str = "NailgunRoot";
   let parse_state = ParseState { input: input, offset: 0 };
   match rules::NGTOP_LEVEL_RULE( &parse_state ) {
-    Some( result ) => Some( Node::withChildren( root_name, result.nodes ) ),
+    Some( result ) => Some( result.nodes.move_iter().next().unwrap() ),
     _ => None
   }
 }

@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+
 #![feature(macro_rules)]
 #![allow(non_snake_case_functions)]
 
@@ -404,6 +405,7 @@ mod base {
   }
   #[macro_escape]
   mod and {
+
     use super::{Expression, ParseState, ParseResult};
 
     macro_rules! and( ( $ex:expr ) => ( {
@@ -814,10 +816,9 @@ macro_rules! rule(
 
 #[cfg(not(test))]
 pub fn parse<'a>( input: &'a [u8] ) -> Option< Node<'a> > {
-  static root_name : &'static str = "NailgunRoot";
   let parse_state = ParseState { input: input, offset: 0 };
   match rules::Grammar( &parse_state ) {
-    Some( result ) => Some( Node::withChildren( root_name, result.nodes ) ),
+    Some( result ) => Some( result.nodes.move_iter().next().unwrap() ),
     _ => None
   }
 }
@@ -858,5 +859,5 @@ mod rules {
   rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
   rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
   rule!( EndOfFile <- not!( base::Dot ) )
-
+  
 }
