@@ -42,7 +42,7 @@ mod tests {
     match expr.apply( &input_state!( "foobar" ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ),
+        assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 3, Data( b"foo" ) ) );
         assert_eq!( parse_state, ParseState{ input: b"bar",
                                              offset: 3 } );

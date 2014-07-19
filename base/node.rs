@@ -123,7 +123,7 @@ impl<'a> Node<'a> {
       -> Node<'a> {
     // In case 'children' has only one node with an empty name, our new Node
     // will take the guts of the child with the new 'name'.
-    if children.len() == 1 && children.get( 0 ).name.is_empty() {
+    if children.len() == 1 && children[ 0 ].name.is_empty() {
       match children.pop() {
         Some( mut child ) => {
           child.name = name;
@@ -134,7 +134,7 @@ impl<'a> Node<'a> {
     }
 
     let start = if children.len() != 0 {
-      children.get( 0 ).start
+      children[ 0 ].start
     } else {
       0
     };

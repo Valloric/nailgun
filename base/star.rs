@@ -44,11 +44,11 @@ mod tests {
     match star!( lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ),
+        assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 1, Data( b"a" ) ) );
-        assert_eq!( *nodes.get( 1 ),
+        assert_eq!( nodes[ 1 ],
                     Node::withoutName( 1, 2, Data( b"a" ) ) );
-        assert_eq!( *nodes.get( 2 ),
+        assert_eq!( nodes[ 2 ],
                     Node::withoutName( 2, 3, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 3 ) );
       }
@@ -62,7 +62,7 @@ mod tests {
     match star!( lit!( "a" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ),
+        assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }

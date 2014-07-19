@@ -37,7 +37,7 @@ mod tests {
     match opt!( lit!( "foo" ) ).apply( &orig_state ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ),
+        assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 3, Data( b"foo" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 3 ) );
       }

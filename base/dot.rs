@@ -31,7 +31,7 @@ mod tests {
     match Dot.apply( &input_state!( "x" ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ),
+        assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 1, Data( b"x" ) ) );
         assert_eq!( parse_state, ParseState{ input: &[], offset: 1 } );
       }
@@ -45,7 +45,7 @@ mod tests {
     match Dot.apply( &input_state!( "葉" ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert_eq!( *nodes.get( 0 ),
+        assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 3, Data( "葉".as_bytes() ) ) );
         assert_eq!( parse_state, ParseState{ input: &[], offset: 3 } );
       }
@@ -59,7 +59,7 @@ mod tests {
     match Dot.apply( &input_state!( "xb" ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
-        assert!( *nodes.get( 0 ) ==
+        assert!( nodes[ 0 ] ==
                  Node::withoutName( 0, 1, Data( b"x" ) ) );
         assert_eq!( parse_state, ParseState{ input: b"b",
                                              offset: 1 } );

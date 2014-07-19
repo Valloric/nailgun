@@ -39,7 +39,7 @@ fn indentLines( input: &str, num_spaces: uint ) -> String {
 
 
 fn printUsage( opts: &[getopts::OptGroup] ) {
-  let program = Path::new( os::args().get( 0 ).as_slice() );
+  let program = Path::new( os::args()[ 0 ].as_slice() );
   let short = getopts::short_usage( program.filename_str().unwrap(), opts );
   let usage = getopts::usage( short.as_slice(), opts );
   println!( "{}", usage );

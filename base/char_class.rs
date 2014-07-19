@@ -71,7 +71,7 @@ impl CharClass {
           if index >= chars.len() {
             break
           }
-          char_class.single_chars.push( *chars.get( index ) );
+          char_class.single_chars.push( chars[ index ] );
           index += 1;
         }
       };
@@ -141,7 +141,7 @@ mod tests {
       Some( ParseResult { nodes: nodes,
                           parse_state: parse_state } ) => {
         let bytes_read = bytesRead( input );
-        assert_eq!( *nodes.get( 0 ),
+        assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, bytes_read, Data( input ) ) );
         assert_eq!( parse_state, ParseState{ input: &[], offset: bytes_read } );
         true
