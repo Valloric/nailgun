@@ -1,0 +1,9 @@
+# Parses the following:
+#   +123E-12, 123, DEADBEEF, 0123456789abcdef etc
+Number     <- ( Scientific / Hexa )
+Scientific <- Floating ( ('e' / 'E' ) Integer )?
+Floating   <- Integer ('.' Unsigned )?
+Unsigned   <- [0-9]+
+Integer    <- Sign? Unsigned
+Hexa       <- [0-9a-fA-F]+
+Sign       <- '-' / '+'
