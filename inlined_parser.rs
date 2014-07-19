@@ -10,6 +10,7 @@ pub use base::{Node, ParseState, Data, Children, NodeContents, PreOrderNodes};
 mod base {
   pub use self::not::NotEx;
   pub use self::and::And;
+  pub use self::fuse::Fuse;
   pub use self::char_class::CharClass;
   pub use self::literal::Literal;
   pub use self::dot::Dot;
@@ -602,6 +603,38 @@ mod base {
     }
   }
   #[macro_escape]
+  mod fuse {
+    use super::{Expression, ParseState, ParseResult};
+
+    macro_rules! fuse( ( $ex:expr ) => ( {
+        use base;
+        base::Fuse::new(& $ex) } ); )
+
+    pub struct Fuse<'a> {
+      expr: &'a Expression
+    }
+
+
+    impl<'a> Fuse<'a> {
+      pub fn new<'a>( expr: &'a Expression ) -> Fuse<'a> {
+        Fuse { expr: expr }
+      }
+    }
+
+
+    impl<'a> Expression for Fuse<'a> {
+      fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
+          Option< ParseResult<'a> > {
+        match self.expr.apply( parse_state ) {
+          Some( result ) => {
+            parse_state.offsetToResult( result.parse_state.offset )
+          },
+          _ => None
+        }
+      }
+    }
+  }
+  #[macro_escape]
   mod sequence {
     use super::{Expression, ParseState, ParseResult};
 
@@ -757,9 +790,9 @@ mod base {
         -> Option< ParseResult<'a> > {
       Some( ParseResult::oneNode(
               Node::withoutName( self.offset,
-                            new_offset,
-                            Data( self.sliceTo( new_offset ) ) ),
-            self.advanceTo( new_offset ) ) )
+                                 new_offset,
+                                 Data( self.sliceTo( new_offset ) ) ),
+              self.advanceTo( new_offset ) ) )
     }
   }
 
@@ -834,7 +867,7 @@ mod rules {
   rule!( Definition <- seq!( ex!( Identifier ), ex!( LEFTARROW ), ex!( Expression ) ) )
   rule!( Expression <- seq!( ex!( Sequence ), star!( seq!( ex!( SLASH ), ex!( Sequence ) ) ) ) )
   rule!( Sequence <- star!( ex!( Prefix ) ) )
-  rule!( Prefix <- seq!( opt!( or!( ex!( AND ), ex!( NOT ) ) ), ex!( Suffix ) ) )
+  rule!( Prefix <- seq!( opt!( or!( ex!( AND ), ex!( NOT ), ex!( FUSE ) ) ), ex!( Suffix ) ) )
   rule!( Suffix <- seq!( ex!( Primary ), opt!( or!( ex!( QUESTION ), ex!( STAR ), ex!( PLUS ) ) ) ) )
   rule!( Primary <- or!( seq!( ex!( Identifier ), not!( ex!( LEFTARROW ) ) ), seq!( ex!( OPEN ), ex!( Expression ), ex!( CLOSE ) ), ex!( Literal ), ex!( Class ), ex!( DOT ) ) )
   rule!( Identifier <- seq!( ex!( IdentStart ), star!( ex!( IdentCont ) ), ex!( Spacing ) ) )
@@ -854,6 +887,7 @@ mod rules {
   rule!( OPEN <- seq!( lit!( "(" ), ex!( Spacing ) ) )
   rule!( CLOSE <- seq!( lit!( ")" ), ex!( Spacing ) ) )
   rule!( DOT <- seq!( lit!( "." ), ex!( Spacing ) ) )
+  rule!( FUSE <- seq!( lit!( "~" ), ex!( Spacing ) ) )
   rule!( Spacing <- star!( or!( ex!( Space ), ex!( Comment ) ) ) )
   rule!( Comment <- seq!( lit!( "#" ), star!( seq!( not!( ex!( EndOfLine ) ), base::Dot ) ), ex!( EndOfLine ) ) )
   rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )

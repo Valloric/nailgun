@@ -24,6 +24,7 @@ pub use base::{Node, ParseState, Data, Children, NodeContents, PreOrderNodes};
 mod base {
   pub use self::not::NotEx;
   pub use self::and::And;
+  pub use self::fuse::Fuse;
   pub use self::char_class::CharClass;
   pub use self::literal::Literal;
   pub use self::dot::Dot;
@@ -616,6 +617,38 @@ mod base {
     }
   }
   #[macro_escape]
+  mod fuse {
+    use super::{Expression, ParseState, ParseResult};
+
+    macro_rules! fuse( ( $ex:expr ) => ( {
+        use base;
+        base::Fuse::new(& $ex) } ); )
+
+    pub struct Fuse<'a> {
+      expr: &'a Expression
+    }
+
+
+    impl<'a> Fuse<'a> {
+      pub fn new<'a>( expr: &'a Expression ) -> Fuse<'a> {
+        Fuse { expr: expr }
+      }
+    }
+
+
+    impl<'a> Expression for Fuse<'a> {
+      fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
+          Option< ParseResult<'a> > {
+        match self.expr.apply( parse_state ) {
+          Some( result ) => {
+            parse_state.offsetToResult( result.parse_state.offset )
+          },
+          _ => None
+        }
+      }
+    }
+  }
+  #[macro_escape]
   mod sequence {
     use super::{Expression, ParseState, ParseResult};
 
@@ -771,9 +804,9 @@ mod base {
         -> Option< ParseResult<'a> > {
       Some( ParseResult::oneNode(
               Node::withoutName( self.offset,
-                            new_offset,
-                            Data( self.sliceTo( new_offset ) ) ),
-            self.advanceTo( new_offset ) ) )
+                                 new_offset,
+                                 Data( self.sliceTo( new_offset ) ) ),
+              self.advanceTo( new_offset ) ) )
     }
   }
 
