@@ -9,7 +9,7 @@ authors = [ "val@markovic.io" ]
 name = "nailgun"
 path = "nailgun.rs"
 
-[[lib]]
+[lib]
 
 name = "inlined_parser"
 path = "inlined_parser.rs"
