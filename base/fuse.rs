@@ -18,7 +18,7 @@ macro_rules! fuse( ( $ex:expr ) => ( {
     base::Fuse::new(& $ex) } ); )
 
 pub struct Fuse<'a> {
-  expr: &'a Expression
+  expr: &'a Expression + 'a
 }
 
 

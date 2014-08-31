@@ -18,7 +18,7 @@ macro_rules! opt( ( $ex:expr ) => ( {
     base::OptionEx::new( & $ex ) } ); )
 
 pub struct OptionEx<'a> {
-  expr: &'a Expression
+  expr: &'a Expression + 'a
 }
 
 

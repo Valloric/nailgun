@@ -17,12 +17,12 @@ use std::fmt::{Result};
 
 static NO_NAME : &'static str = "<none>";
 
-pub struct PreOrderNodes<'a, 'b> {
+pub struct PreOrderNodes<'a, 'b:'a> {
   queue: Vec<&'a Node<'b>>
 }
 
-impl<'a> Iterator<&'a Node<'a>> for PreOrderNodes<'a, 'a> {
-  fn next( &mut self ) -> Option<&'a Node<'a>> {
+impl<'a, 'b:'a> Iterator<&'a Node<'b>> for PreOrderNodes<'a, 'b> {
+  fn next( &mut self ) -> Option<&'a Node<'b>> {
     match self.queue.pop() {
       ex @ Some( node ) => {
         match node.contents {
@@ -211,7 +211,7 @@ mod tests {
     Node { name: "", start: 0, end: 0, contents: Data( contents ) }
   }
 
-  fn testTree() -> Node {
+  fn testTree() -> Node<'static> {
     // Tree looks like the following:
     //        a
     //   b    c    d
@@ -222,7 +222,7 @@ mod tests {
         nameOnly( "d" ) ) )
   }
 
-  fn testTreeWithContents() -> Node {
+  fn testTreeWithContents() -> Node<'static> {
     // Tree looks like the following (nodes with ' have contents):
     //          a
     //    b     c     'd
