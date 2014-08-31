@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #![feature(macro_rules)]
-#![allow(non_snake_case_functions)]
+#![allow(non_snake_case)]
 
 #[cfg(not(test))]
 pub use base::{Node, ParseState, Data, Children, NodeContents, PreOrderNodes};

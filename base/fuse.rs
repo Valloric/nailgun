@@ -15,7 +15,7 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! fuse( ( $ex:expr ) => ( {
     use base;
-    base::Fuse::new(& $ex) } ); )
+    base::Fuse::new(& $ex) as base::Expression } ); )
 
 pub struct Fuse<'a> {
   expr: &'a Expression + 'a

@@ -15,7 +15,7 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! star( ( $ex:expr ) => ( {
     use base;
-    base::Star::new( & $ex ) } ); )
+    base::Star::new( & $ex ) as base::Expression } ); )
 
 pub struct Star<'a> {
   expr: &'a Expression + 'a

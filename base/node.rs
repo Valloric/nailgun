@@ -24,7 +24,7 @@ pub struct PreOrderNodes<'a, 'b:'a> {
 impl<'a, 'b:'a> Iterator<&'a Node<'b>> for PreOrderNodes<'a, 'b> {
   fn next( &mut self ) -> Option<&'a Node<'b>> {
     match self.queue.pop() {
-      ex @ Some( node ) => {
+      Some( node ) => {
         match node.contents {
           Children( ref x ) => {
             for child in x.as_slice().iter().rev() {
@@ -33,7 +33,7 @@ impl<'a, 'b:'a> Iterator<&'a Node<'b>> for PreOrderNodes<'a, 'b> {
           }
           _ => ()
         };
-        ex
+        Some( node )
       }
       _ => None
     }

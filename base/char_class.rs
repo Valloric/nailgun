@@ -17,8 +17,7 @@ use super::{Expression, ParseState, ParseResult};
 macro_rules! class( ( $ex:expr ) => ( {
       use base;
       use std::str::StrSlice;
-      base::CharClass::new( $ex.as_bytes() )
-    } ) )
+      base::CharClass::new( $ex.as_bytes() ) as base::Expression } ) )
 
 
 fn toU32Vector( input: &[u8] ) -> Vec<u32> {
@@ -142,7 +141,7 @@ mod tests {
   use base::unicode::bytesFollowing;
   use super::{CharClass};
 
-  fn charClassMatch( char_class: CharClass, input: &[u8] ) -> bool {
+  fn charClassMatch( char_class: &Expression, input: &[u8] ) -> bool {
     fn bytesRead( input: &[u8] ) -> uint {
       match bytesFollowing( input[ 0 ] ) {
         Some( num_following ) => num_following + 1,
@@ -166,48 +165,48 @@ mod tests {
 
   #[test]
   fn CharClass_Match() {
-    assert!( charClassMatch( class!( "a"          ), b"a" ) );
-    assert!( charClassMatch( class!( "abcdef"     ), b"e" ) );
-    assert!( charClassMatch( class!( "a-z"        ), b"a" ) );
-    assert!( charClassMatch( class!( "a-z"        ), b"c" ) );
-    assert!( charClassMatch( class!( "a-z"        ), b"z" ) );
-    assert!( charClassMatch( class!( "0-9"        ), b"2" ) );
-    assert!( charClassMatch( class!( "α-ω"        ), "η".as_bytes() ) );
-    assert!( charClassMatch( class!( "-"          ), b"-" ) );
-    assert!( charClassMatch( class!( "a-"         ), b"-" ) );
-    assert!( charClassMatch( class!( "-a"         ), b"-" ) );
-    assert!( charClassMatch( class!( "a-zA-Z-"    ), b"-" ) );
-    assert!( charClassMatch( class!( "aa-zA-Z-a"  ), b"-" ) );
-    assert!( charClassMatch( class!( "a-zA-Z-"    ), b"z" ) );
-    assert!( charClassMatch( class!( "aa-zA-Z-0"  ), b"0" ) );
-    assert!( charClassMatch( class!( "a-cdefgh-k" ), b"e" ) );
-    assert!( charClassMatch( class!( "---"        ), b"-" ) );
-    assert!( charClassMatch( class!( "a-a"        ), b"a" ) );
+    assert!( charClassMatch( &class!( "a"          ), b"a" ) );
+    assert!( charClassMatch( &class!( "abcdef"     ), b"e" ) );
+    assert!( charClassMatch( &class!( "a-z"        ), b"a" ) );
+    assert!( charClassMatch( &class!( "a-z"        ), b"c" ) );
+    assert!( charClassMatch( &class!( "a-z"        ), b"z" ) );
+    assert!( charClassMatch( &class!( "0-9"        ), b"2" ) );
+    assert!( charClassMatch( &class!( "α-ω"        ), "η".as_bytes() ) );
+    assert!( charClassMatch( &class!( "-"          ), b"-" ) );
+    assert!( charClassMatch( &class!( "a-"         ), b"-" ) );
+    assert!( charClassMatch( &class!( "-a"         ), b"-" ) );
+    assert!( charClassMatch( &class!( "a-zA-Z-"    ), b"-" ) );
+    assert!( charClassMatch( &class!( "aa-zA-Z-a"  ), b"-" ) );
+    assert!( charClassMatch( &class!( "a-zA-Z-"    ), b"z" ) );
+    assert!( charClassMatch( &class!( "aa-zA-Z-0"  ), b"0" ) );
+    assert!( charClassMatch( &class!( "a-cdefgh-k" ), b"e" ) );
+    assert!( charClassMatch( &class!( "---"        ), b"-" ) );
+    assert!( charClassMatch( &class!( "a-a"        ), b"a" ) );
   }
 
   // TODO: Use these tests for the char-class unescape code that will be written
   // in the code generator.
   // #[test]
   // fn CharClass_Match_ClassEscapedChars() {
-  //   assert!( charClassMatch( class!( r"\]" ), b"]" ) );
-  //   assert!( charClassMatch( class!( r"\\" ),  br"\" ) );
-  //   assert!( !charClassMatch( class!( r"\]" ), br"\" ) );
+  //   assert!( charClassMatch( &class!( r"\]" ), b"]" ) );
+  //   assert!( charClassMatch( &class!( r"\\" ),  br"\" ) );
+  //   assert!( !charClassMatch( &class!( r"\]" ), br"\" ) );
   // }
 
   #[test]
   fn CharClass_Match_NonUnicode() {
-    assert!( charClassMatch( CharClass::new( [255] ), [255] ) );
+    assert!( charClassMatch( &CharClass::new( [255] ), [255] ) );
   }
 
 
   #[test]
   fn CharClass_NoMatch() {
-    assert!( !charClassMatch( class!( "a"   ), b"b" ) );
-    assert!( !charClassMatch( class!( "-"   ), b"a" ) );
-    assert!( !charClassMatch( class!( "z-a" ), b"a" ) );
-    assert!( !charClassMatch( class!( "z-a" ), b"b" ) );
-    assert!( !charClassMatch( class!( "a-z" ), b"0" ) );
-    assert!( !charClassMatch( class!( "a-z" ), b"A" ) );
+    assert!( !charClassMatch( &class!( "a"   ), b"b" ) );
+    assert!( !charClassMatch( &class!( "-"   ), b"a" ) );
+    assert!( !charClassMatch( &class!( "z-a" ), b"a" ) );
+    assert!( !charClassMatch( &class!( "z-a" ), b"b" ) );
+    assert!( !charClassMatch( &class!( "a-z" ), b"0" ) );
+    assert!( !charClassMatch( &class!( "a-z" ), b"A" ) );
   }
 
 
