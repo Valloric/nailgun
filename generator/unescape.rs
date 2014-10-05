@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#![allow(non_snake_case_functions)]
+#![allow(non_snake_case)]
 
 use std::u8;
 use std::str::from_utf8;
@@ -152,7 +152,7 @@ mod tests {
   use super::{unescape};
 
   fn vecBytes( input: &'static str ) -> Vec<u8> {
-    Vec::from_slice( input.as_bytes() )
+    input.as_bytes().into_vec()
   }
 
   #[test]

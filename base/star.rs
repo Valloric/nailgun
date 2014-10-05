@@ -37,7 +37,7 @@ impl<'a> Expression for Star<'a> {
       match self.expr.apply( &final_result.parse_state ) {
         Some( result ) => {
           final_result.parse_state = result.parse_state;
-          final_result.nodes.push_all_move( result.nodes );
+          final_result.nodes.extend( result.nodes.into_iter() );
         }
         _ => break
       }
