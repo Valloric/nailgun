@@ -88,7 +88,8 @@ fn codeForGrammar( input: &[u8] ) -> Option<String> {
 
 
 fn printParseTree( grammar_code: &str, input_path: &str ) {
-  let final_code = grammar_code.to_string().append( PRINTER_MAIN );
+  let mut final_code = grammar_code.to_string();
+  final_code.push_str( PRINTER_MAIN );
   let temp_dir = TempDir::new( "temp" ).unwrap();
   let code_file = temp_dir.path().join( "printer.rs" );
   let printer = temp_dir.path().join( "printer" );

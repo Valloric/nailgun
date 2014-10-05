@@ -70,7 +70,7 @@ fn wrapNodeOutput( before: &str, node: &Node, after: &str ) -> String {
 
 
 fn definitionOutput( node: &Node ) -> String {
-  fn arrowName( node: &Node ) -> &str {
+  fn arrowName( node: &Node ) -> &'static str {
     match node.contents {
       Children( ref nodes ) => {
         match nodes[ 1 ].contents {
