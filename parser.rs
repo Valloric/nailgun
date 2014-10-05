@@ -48,7 +48,7 @@ macro_rules! rule(
 pub fn parse<'a>( input: &'a [u8] ) -> Option< Node<'a> > {
   let parse_state = ParseState { input: input, offset: 0 };
   match rules::Grammar( &parse_state ) {
-    Some( result ) => Some( result.nodes.move_iter().next().unwrap() ),
+    Some( result ) => Some( result.nodes.into_iter().next().unwrap() ),
     _ => None
   }
 }

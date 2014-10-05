@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 #![feature(macro_rules)]
-#![allow(non_snake_case_functions)]
+#![allow(non_snake_case)]
 
 #[cfg(not(test))]
 pub use base::{Node, ParseState, Data, Children, NodeContents, PreOrderNodes};
@@ -28,14 +28,14 @@ mod base {
 
     static NO_NAME : &'static str = "<none>";
 
-    pub struct PreOrderNodes<'a, 'b> {
+    pub struct PreOrderNodes<'a, 'b:'a> {
       queue: Vec<&'a Node<'b>>
     }
 
-    impl<'a> Iterator<&'a Node<'a>> for PreOrderNodes<'a, 'a> {
-      fn next( &mut self ) -> Option<&'a Node<'a>> {
+    impl<'a, 'b:'a> Iterator<&'a Node<'b>> for PreOrderNodes<'a, 'b> {
+      fn next( &mut self ) -> Option<&'a Node<'b>> {
         match self.queue.pop() {
-          ex @ Some( node ) => {
+          Some( node ) => {
             match node.contents {
               Children( ref x ) => {
                 for child in x.as_slice().iter().rev() {
@@ -44,7 +44,7 @@ mod base {
               }
               _ => ()
             };
-            ex
+            Some( node )
           }
           _ => None
         }
@@ -186,7 +186,7 @@ mod base {
       #[allow(dead_code)]
       pub fn matchedData( &self ) -> Vec<u8> {
         match self.contents {
-          Data( x ) => Vec::from_slice( x ),
+          Data( x ) => x.into_vec(),
           Children( ref children ) => {
             let mut out : Vec<u8> = vec!();
             for child in children.iter() {
@@ -227,8 +227,7 @@ mod base {
     macro_rules! lit( ( $ex:expr ) => ( {
           use base;
           use std::str::StrSlice;
-          base::Literal::new( $ex.as_bytes() )
-        } ) )
+          &base::Literal::new( $ex.as_bytes() ) } ) )
 
 
     pub struct Literal {
@@ -263,8 +262,7 @@ mod base {
     macro_rules! class( ( $ex:expr ) => ( {
           use base;
           use std::str::StrSlice;
-          base::CharClass::new( $ex.as_bytes() )
-        } ) )
+          &base::CharClass::new( $ex.as_bytes() ) } ) )
 
 
     fn toU32Vector( input: &[u8] ) -> Vec<u32> {
@@ -380,10 +378,10 @@ mod base {
 
     macro_rules! not( ( $ex:expr ) => ( {
         use base;
-        base::NotEx::new(& $ex) } ); )
+        &base::NotEx::new($ex) } ); )
 
     pub struct NotEx<'a> {
-      expr: &'a Expression
+      expr: &'a Expression + 'a
     }
 
 
@@ -411,10 +409,10 @@ mod base {
 
     macro_rules! and( ( $ex:expr ) => ( {
         use base;
-        base::And::new( & $ex ) } ); )
+        &base::And::new( $ex ) } ); )
 
     pub struct And<'a> {
-      expr: &'a Expression
+      expr: &'a Expression + 'a
     }
 
 
@@ -464,10 +462,10 @@ mod base {
 
     macro_rules! opt( ( $ex:expr ) => ( {
         use base;
-        base::OptionEx::new( & $ex ) } ); )
+        &base::OptionEx::new( $ex ) } ); )
 
     pub struct OptionEx<'a> {
-      expr: &'a Expression
+      expr: &'a Expression + 'a
     }
 
 
@@ -494,10 +492,10 @@ mod base {
 
     macro_rules! star( ( $ex:expr ) => ( {
         use base;
-        base::Star::new( & $ex ) } ); )
+        &base::Star::new( $ex ) } ); )
 
     pub struct Star<'a> {
-      expr: &'a Expression
+      expr: &'a Expression + 'a
     }
 
 
@@ -516,7 +514,7 @@ mod base {
           match self.expr.apply( &final_result.parse_state ) {
             Some( result ) => {
               final_result.parse_state = result.parse_state;
-              final_result.nodes.push_all_move( result.nodes );
+              final_result.nodes.extend( result.nodes.into_iter() );
             }
             _ => break
           }
@@ -531,10 +529,10 @@ mod base {
 
     macro_rules! plus( ( $ex:expr ) => ( {
         use base;
-        base::Plus::new( & $ex ) } ); )
+        &base::Plus::new( $ex ) } ); )
 
     pub struct Plus<'a> {
-      expr: &'a Expression
+      expr: &'a Expression + 'a
     }
 
 
@@ -554,7 +552,7 @@ mod base {
           match self.expr.apply( &final_result.parse_state ) {
             Some( result ) => {
               final_result.parse_state = result.parse_state;
-              final_result.nodes.push_all_move( result.nodes );
+              final_result.nodes.extend( result.nodes.into_iter() );
               num_matches += 1;
             }
             _ => break
@@ -575,10 +573,10 @@ mod base {
 
     macro_rules! or( ( $( $ex:expr ),* ) => ( {
         use base;
-        base::Or::new( &[ $( & $ex as &base::Expression ),* ] ) } ); )
+        &base::Or::new( &[ $( $ex ),* ] ) } ); )
 
     pub struct Or<'a> {
-      exprs: &'a [&'a Expression]
+      exprs: &'a [&'a Expression + 'a]
     }
 
 
@@ -608,10 +606,10 @@ mod base {
 
     macro_rules! fuse( ( $ex:expr ) => ( {
         use base;
-        base::Fuse::new(& $ex) } ); )
+        &base::Fuse::new( $ex ) } ); )
 
     pub struct Fuse<'a> {
-      expr: &'a Expression
+      expr: &'a Expression + 'a
     }
 
 
@@ -640,10 +638,10 @@ mod base {
 
     macro_rules! seq( ( $( $ex:expr ),* ) => ( {
         use base;
-        base::Sequence::new( &[ $( & $ex as &base::Expression ),* ] ) } ); )
+        &base::Sequence::new( &[ $( $ex ),* ] ) } ); )
 
     pub struct Sequence<'a> {
-      exprs: &'a [&'a Expression]
+      exprs: &'a [&'a Expression + 'a]
     }
 
 
@@ -662,7 +660,7 @@ mod base {
           match expr.apply( &final_result.parse_state ) {
             Some( result ) => {
               final_result.parse_state = result.parse_state;
-              final_result.nodes.push_all_move( result.nodes );
+              final_result.nodes.extend( result.nodes.into_iter() );
             }
             _ => return None
           }
@@ -677,7 +675,7 @@ mod base {
 
     macro_rules! ex( ( $ex:expr ) => ( {
         use base;
-        base::WrapEx{ rule: $ex } } ); )
+        &base::WrapEx{ rule: $ex } } ); )
 
     pub struct WrapEx {
       pub rule: Rule
@@ -851,7 +849,7 @@ macro_rules! rule(
 pub fn parse<'a>( input: &'a [u8] ) -> Option< Node<'a> > {
   let parse_state = ParseState { input: input, offset: 0 };
   match rules::Grammar( &parse_state ) {
-    Some( result ) => Some( result.nodes.move_iter().next().unwrap() ),
+    Some( result ) => Some( result.nodes.into_iter().next().unwrap() ),
     _ => None
   }
 }
@@ -876,7 +874,7 @@ mod rules {
   rule!( Literal <- seq!( fuse!( or!( seq!( class!( "'" ), star!( seq!( not!( class!( "'" ) ), ex!( Char ) ) ), class!( "'" ) ), seq!( class!( "\"" ), star!( seq!( not!( class!( "\"" ) ), ex!( Char ) ) ), class!( "\"" ) ) ) ), ex!( Spacing ) ) )
   rule!( Class <- seq!( lit!( "[" ), star!( seq!( not!( lit!( "]" ) ), ex!( Range ) ) ), lit!( "]" ), ex!( Spacing ) ) )
   rule!( Range <- or!( seq!( ex!( Char ), lit!( "-" ), ex!( Char ) ), ex!( Char ) ) )
-  rule!( Char <- or!( seq!( lit!( "\\" ), class!( "nrt'\"[]\\" ) ), seq!( lit!( "\\" ), class!( "0-2" ), class!( "0-7" ), class!( "0-7" ) ), seq!( lit!( "\\" ), class!( "0-7" ), opt!( class!( "0-7" ) ) ), seq!( not!( lit!( "\\" ) ), base::Dot ) ) )
+  rule!( Char <- or!( seq!( lit!( "\\" ), class!( "nrt'\"[]\\" ) ), seq!( lit!( "\\" ), class!( "0-2" ), class!( "0-7" ), class!( "0-7" ) ), seq!( lit!( "\\" ), class!( "0-7" ), opt!( class!( "0-7" ) ) ), seq!( not!( lit!( "\\" ) ), &base::Dot ) ) )
   rule!( ARROW <- or!( ex!( FUSEARROW ), ex!( LEFTARROW ) ) )
   rule!( LEFTARROW <- seq!( lit!( "<-" ), ex!( Spacing ) ) )
   rule!( FUSEARROW <- seq!( lit!( "<~" ), ex!( Spacing ) ) )
@@ -891,9 +889,9 @@ mod rules {
   rule!( DOT <- seq!( lit!( "." ), ex!( Spacing ) ) )
   rule!( FUSE <- seq!( lit!( "~" ), ex!( Spacing ) ) )
   rule!( Spacing <- fuse!( star!( or!( ex!( Space ), ex!( Comment ) ) ) ) )
-  rule!( Comment <- fuse!( seq!( lit!( "#" ), star!( seq!( not!( ex!( EndOfLine ) ), base::Dot ) ), ex!( EndOfLine ) ) ) )
+  rule!( Comment <- fuse!( seq!( lit!( "#" ), star!( seq!( not!( ex!( EndOfLine ) ), &base::Dot ) ), ex!( EndOfLine ) ) ) )
   rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
   rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
-  rule!( EndOfFile <- not!( base::Dot ) )
+  rule!( EndOfFile <- not!( &base::Dot ) )
   
 }
