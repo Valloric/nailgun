@@ -75,7 +75,7 @@ mod rules {
   rule!( Literal <- seq!( fuse!( or!( seq!( class!( "'" ), star!( seq!( not!( class!( "'" ) ), ex!( Char ) ) ), class!( "'" ) ), seq!( class!( "\"" ), star!( seq!( not!( class!( "\"" ) ), ex!( Char ) ) ), class!( "\"" ) ) ) ), ex!( Spacing ) ) )
   rule!( Class <- seq!( lit!( "[" ), star!( seq!( not!( lit!( "]" ) ), ex!( Range ) ) ), lit!( "]" ), ex!( Spacing ) ) )
   rule!( Range <- or!( seq!( ex!( Char ), lit!( "-" ), ex!( Char ) ), ex!( Char ) ) )
-  rule!( Char <- or!( seq!( lit!( "\\" ), class!( "nrt'\"[]\\" ) ), seq!( lit!( "\\" ), class!( "0-2" ), class!( "0-7" ), class!( "0-7" ) ), seq!( lit!( "\\" ), class!( "0-7" ), opt!( class!( "0-7" ) ) ), seq!( not!( lit!( "\\" ) ), base::Dot ) ) )
+  rule!( Char <- or!( seq!( lit!( "\\" ), class!( "nrt'\"[]\\" ) ), seq!( lit!( "\\" ), class!( "0-2" ), class!( "0-7" ), class!( "0-7" ) ), seq!( lit!( "\\" ), class!( "0-7" ), opt!( class!( "0-7" ) ) ), seq!( not!( lit!( "\\" ) ), &base::Dot ) ) )
   rule!( ARROW <- or!( ex!( FUSEARROW ), ex!( LEFTARROW ) ) )
   rule!( LEFTARROW <- seq!( lit!( "<-" ), ex!( Spacing ) ) )
   rule!( FUSEARROW <- seq!( lit!( "<~" ), ex!( Spacing ) ) )
@@ -90,10 +90,10 @@ mod rules {
   rule!( DOT <- seq!( lit!( "." ), ex!( Spacing ) ) )
   rule!( FUSE <- seq!( lit!( "~" ), ex!( Spacing ) ) )
   rule!( Spacing <- fuse!( star!( or!( ex!( Space ), ex!( Comment ) ) ) ) )
-  rule!( Comment <- fuse!( seq!( lit!( "#" ), star!( seq!( not!( ex!( EndOfLine ) ), base::Dot ) ), ex!( EndOfLine ) ) ) )
+  rule!( Comment <- fuse!( seq!( lit!( "#" ), star!( seq!( not!( ex!( EndOfLine ) ), &base::Dot ) ), ex!( EndOfLine ) ) ) )
   rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
   rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
-  rule!( EndOfFile <- not!( base::Dot ) )
+  rule!( EndOfFile <- not!( &base::Dot ) )
 
   // RULES END
 

@@ -16,7 +16,7 @@ use super::{Expression, ParseState, ParseResult};
 macro_rules! lit( ( $ex:expr ) => ( {
       use base;
       use std::str::StrSlice;
-      base::Literal::new( $ex.as_bytes() ) as base::Expression } ) )
+      &base::Literal::new( $ex.as_bytes() ) } ) )
 
 
 pub struct Literal {
@@ -50,7 +50,7 @@ mod tests {
 
   #[test]
   fn Literal_Match() {
-    let expr = &lit!( "foo" );
+    let expr = lit!( "foo" );
     match expr.apply( &input_state!( "foobar" ) ) {
       Some( ParseResult{ nodes: nodes,
                          parse_state: parse_state } ) => {
@@ -66,7 +66,7 @@ mod tests {
 
   #[test]
   fn Literal_NoMatch() {
-    let expr = &lit!( "zoo" );
+    let expr = lit!( "zoo" );
     assert!( expr.apply( &input_state!( "foobar" ) ).is_none() );
     assert!( expr.apply( &input_state!( "" ) ).is_none() );
   }

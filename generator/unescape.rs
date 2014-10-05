@@ -80,7 +80,7 @@ fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8, ..4] ) -> Vec<u8> {
     Some( x ) => match from_u32( x ) {
       Some( character ) => {
         let utf8chars: &mut [u8] = [0, ..4];
-        let num_written = character.encode_utf8( utf8chars );
+        let num_written = character.encode_utf8( utf8chars ).unwrap();
         for i in range( 0, num_written ) {
           input.push( *utf8chars.get( i ).unwrap() );
         }

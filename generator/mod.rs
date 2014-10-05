@@ -36,7 +36,7 @@ pub fn codeForNode( node: &Node ) -> String {
     "Suffix" => suffixOutput( node ),
     "Prefix" => prefixOutput( node ),
     "Primary" => primaryOutput( node ),
-    "DOT" => String::from_str( "base::Dot" ),
+    "DOT" => String::from_str( "&base::Dot" ),
     "ARROW" => String::from_str( " <- " ),
     "SLASH" => String::from_str( ", " ),
     "Spacing" | "EndOfLine" | "OPEN" | "CLOSE" => String::new(),
