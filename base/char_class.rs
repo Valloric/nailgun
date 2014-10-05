@@ -69,12 +69,12 @@ impl CharClass {
       }
     }
 
-    let chars = toU32Vector( contents.as_slice() );
+    let chars = toU32Vector( contents[] );
     let mut char_class = CharClass { single_chars: Vec::new(),
                                      ranges: Vec::new() };
     let mut index = 0;
     loop {
-      match rangeAtIndex( index, chars.as_slice() ) {
+      match rangeAtIndex( index, chars[] ) {
         Some( range ) => {
           char_class.ranges.push( range );
           index += 3;

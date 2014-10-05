@@ -21,7 +21,7 @@ fn inputFromFile( input_file: &str ) -> Vec<u8> {
 
 fn main() {
   let args = std::os::args();
-  match parse( inputFromFile( args.get( 1 ).as_slice() ).as_slice() ) {
+  match parse( inputFromFile( args.get( 1 )[] )[] ) {
     Some( ref node ) => println!( "{}", node ),
     _ => {
       println!( "Couldn't parse input." );

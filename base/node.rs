@@ -27,7 +27,7 @@ impl<'a, 'b:'a> Iterator<&'a Node<'b>> for PreOrderNodes<'a, 'b> {
       Some( node ) => {
         match node.contents {
           Children( ref x ) => {
-            for child in x.as_slice().iter().rev() {
+            for child in x[].iter().rev() {
               self.queue.push( child )
             }
           }
@@ -181,7 +181,7 @@ impl<'a> Node<'a> {
       Children( ref children ) => {
         let mut out : Vec<u8> = vec!();
         for child in children.iter() {
-          out.push_all( child.matchedData().as_slice() );
+          out.push_all( child.matchedData()[] );
         }
         out
       }
@@ -247,6 +247,6 @@ mod tests {
   #[test]
   fn matchedData_FullTree() {
     let root = testTreeWithContents();
-    assert_eq!( b"efgd", root.matchedData().as_slice() )
+    assert_eq!( b"efgd", root.matchedData()[] )
   }
 }

@@ -87,16 +87,16 @@ fn definitionOutput( node: &Node ) -> String {
   let children = node_children!( node );
   let inner_code = match arrowName( node ) {
     "FUSEARROW" => {
-      [ codeForNode( &children[ 0 ] ).as_slice(),
-        codeForNode( &children[ 1 ] ).as_slice(),
+      [ codeForNode( &children[ 0 ] )[],
+        codeForNode( &children[ 1 ] )[],
         "fuse!( ",
-        codeForNode( &children[ 2 ] ).as_slice(),
+        codeForNode( &children[ 2 ] )[],
         " )" ].concat()
     },
     _ => codeForNodeContents( node )
   };
 
-  [ "rule!( ", inner_code.as_slice(), " )\n" ].concat()
+  [ "rule!( ", inner_code[], " )\n" ].concat()
 }
 
 
@@ -115,7 +115,7 @@ fn sequenceOutput( node: &Node ) -> String {
   if children.len() > 1 {
     let mut output = String::from_str( "seq!( " );
     for i in range( 0, children.len() ) {
-      output.push_str( codeForNode( &children[ i ] ).as_slice() );
+      output.push_str( codeForNode( &children[ i ] )[] );
       if i != children.len() -1 {
         output.push_str( ", " );
       }
@@ -140,7 +140,7 @@ fn suffixOutput( node: &Node ) -> String {
 
     [ macro_name,
       "!( ",
-      codeForNode( &children[ 0 ] ).as_slice(),
+      codeForNode( &children[ 0 ] )[],
       " )" ].concat()
   } else {
     codeForNodeContents( node )
@@ -154,9 +154,9 @@ fn prefixOutput( node: &Node ) -> String {
     let macro_name = children[ 0 ].name.chars()
       .map( |x| x.to_lowercase() ).collect::<String>();
 
-    [ macro_name.as_slice(),
+    [ macro_name[],
       "!( ",
-      codeForNode( &children[ 1 ] ).as_slice(),
+      codeForNode( &children[ 1 ] )[],
       " )" ].concat()
   } else {
     codeForNodeContents( node )
@@ -200,6 +200,6 @@ fn stringBasedRule( node: &Node, rule_name: &str ) -> String {
   let full = codeForNodeContents( node );
   let content = escapeToRustLiteral(
     unescapeString(
-      full.as_slice().slice_chars( 1, full.len() - 1 ) ).as_slice() );
+      full[].slice_chars( 1, full.len() - 1 ) )[] );
   format!( "{}!( \"{}\" )", rule_name, content )
 }

@@ -47,15 +47,15 @@ fn inputFromFile( input_file: &str ) -> Vec<u8> {
 fn indentLines( input: &str, num_spaces: uint ) -> String {
   let indent = " ".repeat( num_spaces );
   input.split( '\n' ).map(
-    |x| [ indent.as_slice(), x, "\n" ].concat() )
+    |x| [ indent[], x, "\n" ].concat() )
     .collect::<Vec<String>>().concat()
 }
 
 
 fn printUsage( opts: &[getopts::OptGroup] ) {
-  let program = Path::new( os::args()[ 0 ].as_slice() );
+  let program = Path::new( os::args()[ 0 ][] );
   let short = getopts::short_usage( program.filename_str().unwrap(), opts );
-  let usage = getopts::usage( short.as_slice(), opts );
+  let usage = getopts::usage( short[], opts );
   println!( "{}", usage );
 }
 
@@ -63,23 +63,23 @@ fn printUsage( opts: &[getopts::OptGroup] ) {
 fn nameOfFirstRule<'a>( root: &'a Node<'a> ) -> String {
   str::from_utf8(
     root.preOrder().find( |x| x.name == "Identifier" ).unwrap()
-        .matchedData().as_slice() ).unwrap().trim_chars(' ').to_string()
+        .matchedData()[] ).unwrap().trim_chars(' ').to_string()
 }
 
 
 fn codeForGrammar( input: &[u8] ) -> Option<String> {
   match parse( input ) {
     Some( ref node ) => {
-      let parse_rules = indentLines( generator::codeForNode( node ).as_slice(),
+      let parse_rules = indentLines( generator::codeForNode( node )[],
                                      2 );
       let prepared_prelude = str::replace(
         PRELUDE.slice_to( PRELUDE.len() -1 ),
         TOP_LEVEL_RULE,
-        nameOfFirstRule( node ).as_slice() );
+        nameOfFirstRule( node )[] );
 
-      Some( [ prepared_prelude.as_slice(),
+      Some( [ prepared_prelude[],
               "\n",
-              parse_rules.as_slice(),
+              parse_rules[],
               "}" ].concat() )
     }
     _ => None
@@ -115,7 +115,7 @@ fn printParseTree( grammar_code: &str, input_path: &str ) {
 
   match command_output {
     Ok( output ) => {
-      println!( "{}", String::from_utf8_lossy( output.output.as_slice() ) );
+      println!( "{}", String::from_utf8_lossy( output.output[] ) );
       os::set_exit_status( match output.status {
         ExitStatus( code ) => code,
         _ => 1
@@ -152,7 +152,7 @@ fn main() {
 
   let grammar_code = if matches.opt_present( "g" ) {
     codeForGrammar( inputFromFile(
-        matches.opt_str( "g" ).unwrap().as_slice() ).as_slice() )
+        matches.opt_str( "g" ).unwrap()[] )[] )
     .unwrap_or_else( || fail!( "Couldn't parse given PEG grammar" ) )
   } else {
     fail!( "Missing -g option." )
@@ -161,8 +161,8 @@ fn main() {
 
   if matches.opt_present( "i" ) {
     printParseTree(
-      grammar_code.as_slice(),
-      matches.opt_str( "i" ).unwrap().as_slice() );
+      grammar_code[],
+      matches.opt_str( "i" ).unwrap()[] );
   } else {
     println!( "{}", grammar_code );
   }
