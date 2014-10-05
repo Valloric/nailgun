@@ -70,8 +70,7 @@ fn nameOfFirstRule<'a>( root: &'a Node<'a> ) -> String {
 fn codeForGrammar( input: &[u8] ) -> Option<String> {
   match parse( input ) {
     Some( ref node ) => {
-      let parse_rules = indentLines( generator::codeForNode( node )[],
-                                     2 );
+      let parse_rules = indentLines( generator::codeForNode( node )[], 2 );
       let prepared_prelude = str::replace(
         PRELUDE.slice_to( PRELUDE.len() -1 ),
         TOP_LEVEL_RULE,
