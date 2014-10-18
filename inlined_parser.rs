@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 #![feature(macro_rules)]
+#![feature(slicing_syntax)]
 #![allow(non_snake_case)]
 
 #[cfg(not(test))]
@@ -186,7 +187,7 @@ mod base {
       #[allow(dead_code)]
       pub fn matchedData( &self ) -> Vec<u8> {
         match self.contents {
-          Data( x ) => x.into_vec(),
+          Data( x ) => x.to_vec(),
           Children( ref children ) => {
             let mut out : Vec<u8> = vec!();
             for child in children.iter() {
@@ -893,5 +894,5 @@ mod rules {
   rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
   rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
   rule!( EndOfFile <- not!( &base::Dot ) )
-  
+
 }

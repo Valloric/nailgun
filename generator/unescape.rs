@@ -61,7 +61,7 @@ pub fn unescape( input: &[u8] ) -> Vec<u8> {
 
 
 pub fn unescapeString( input: &str ) -> String {
-  from_utf8( unescape( input.as_bytes() )[] ).unwrap().to_string()
+  from_utf8( unescape( input.as_bytes() ).as_slice() ).unwrap().to_string()
 }
 
 
@@ -152,7 +152,7 @@ mod tests {
   use super::{unescape};
 
   fn vecBytes( input: &'static str ) -> Vec<u8> {
-    input.as_bytes().into_vec()
+    input.as_bytes().to_vec()
   }
 
   #[test]

@@ -15,6 +15,7 @@
 pub static PRELUDE : &'static str = r###"#![allow(dead_code)]
 
 #![feature(macro_rules)]
+#![feature(slicing_syntax)]
 #![allow(non_snake_case)]
 
 #[cfg(not(test))]
