@@ -113,8 +113,7 @@ mod rules {
           use std::collections::Collection;
 
           match $name( &input_state!( $input ) ) {
-            Some( ParseResult{ nodes: _,
-                              parse_state: parse_state } ) => {
+            Some( ParseResult{ nodes: _, parse_state } ) => {
               parse_state.input.is_empty()
             }
             _ => false

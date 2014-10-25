@@ -51,8 +51,7 @@ mod tests {
   fn Or_Match_FirstExpr() {
     let orig_state = input_state!( "a" );
     match or!( lit!( "a" ), lit!( "b" ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
@@ -65,8 +64,7 @@ mod tests {
   fn Or_Match_SecondExpr() {
     let orig_state = input_state!( "a" );
     match or!( lit!( "b" ), lit!( "a" ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
@@ -79,8 +77,7 @@ mod tests {
   fn Or_Match_FirstExprIfBoth() {
     let orig_state = input_state!( "a" );
     match or!( lit!( "a" ), lit!( "a" ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );

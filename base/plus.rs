@@ -62,8 +62,7 @@ mod tests {
   fn Plus_Match() {
     let orig_state = input_state!( "aaa" );
     match plus!( lit!( "a" ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( nodes[ 1 ],
@@ -80,8 +79,7 @@ mod tests {
   fn Plus_Match_JustOne() {
     let orig_state = input_state!( "abb" );
     match plus!( lit!( "a" ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );

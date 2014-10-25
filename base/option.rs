@@ -48,8 +48,7 @@ mod tests {
   fn OptionEx_Match_WithLiteral() {
     let orig_state = input_state!( "foo" );
     match opt!( lit!( "foo" ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 3, Data( b"foo" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 3 ) );
@@ -62,8 +61,7 @@ mod tests {
   fn OptionEx_Match_Empty() {
     let orig_state = input_state!( "y" );
     match opt!( lit!( "x" ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert!( nodes.is_empty() );
         assert_eq!( parse_state, orig_state );
       }

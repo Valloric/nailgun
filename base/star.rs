@@ -55,8 +55,7 @@ mod tests {
   fn Star_Match() {
     let orig_state = input_state!( "aaa" );
     match star!( lit!( "a" ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( nodes[ 1 ],
@@ -73,8 +72,7 @@ mod tests {
   fn Star_Match_JustOne() {
     let orig_state = input_state!( "abb" );
     match star!( lit!( "a" ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
@@ -88,8 +86,7 @@ mod tests {
   fn Star_Match_Empty() {
     let orig_state = input_state!( "y" );
     match star!( lit!( "x" ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert!( nodes.is_empty() );
         assert_eq!( parse_state, orig_state );
       }

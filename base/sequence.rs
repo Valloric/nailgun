@@ -55,8 +55,7 @@ mod tests {
   fn Sequence_Match() {
     let orig_state = input_state!( "ab" );
     match seq!( lit!( "a" ), lit!( "b" ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( nodes[ 1 ],

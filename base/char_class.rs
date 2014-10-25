@@ -150,8 +150,7 @@ mod tests {
     }
 
     match char_class.apply( &ToParseState( input ) ) {
-      Some( ParseResult { nodes: nodes,
-                          parse_state: parse_state } ) => {
+      Some( ParseResult { nodes, parse_state } ) => {
         let bytes_read = bytesRead( input );
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, bytes_read, Data( input ) ) );

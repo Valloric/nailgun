@@ -52,8 +52,7 @@ mod tests {
   fn Literal_Match() {
     let expr = lit!( "foo" );
     match expr.apply( &input_state!( "foobar" ) ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 3, Data( b"foo" ) ) );
         assert_eq!( parse_state, ParseState{ input: b"bar",

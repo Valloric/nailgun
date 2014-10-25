@@ -52,8 +52,7 @@ mod tests {
   fn Fuse_Match_WithLiteralStar() {
     let orig_state = input_state!( "ooo" );
     match fuse!( plus!( lit!( "o" ) ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 3, Data( b"ooo" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 3 ) );
@@ -67,8 +66,7 @@ mod tests {
   fn Fuse_Match_WithCharClass() {
     let orig_state = input_state!( "abc" );
     match fuse!( plus!( class!( "a-z" ) ) ).apply( &orig_state ) {
-      Some( ParseResult{ nodes: nodes,
-                         parse_state: parse_state } ) => {
+      Some( ParseResult{ nodes, parse_state } ) => {
         assert_eq!( nodes[ 0 ],
                     Node::withoutName( 0, 3, Data( b"abc" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 3 ) );
