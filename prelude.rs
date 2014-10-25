@@ -201,7 +201,7 @@ mod base {
       #[allow(dead_code)]
       pub fn matchedData( &self ) -> Vec<u8> {
         match self.contents {
-          Data( x ) => x.into_vec(),
+          Data( x ) => x.to_vec(),
           Children( ref children ) => {
             let mut out : Vec<u8> = vec!();
             for child in children.iter() {

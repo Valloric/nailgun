@@ -894,5 +894,5 @@ mod rules {
   rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
   rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
   rule!( EndOfFile <- not!( &base::Dot ) )
-
+  
 }
