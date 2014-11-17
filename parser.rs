@@ -110,7 +110,7 @@ mod rules {
         {
           use base::ParseResult;
           use std::option::Some;
-          use std::collections::Collection;
+          use std::slice::SlicePrelude;
 
           match $name( &input_state!( $input ) ) {
             Some( ParseResult{ nodes: _, parse_state } ) => {
