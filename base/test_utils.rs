@@ -19,6 +19,6 @@ pub fn ToParseState<'a>( bytes: &'a [u8] ) -> ParseState<'a> {
 
 macro_rules! input_state( ( $ex:expr ) => ( {
       use base::ParseState;
-      use std::str::StrSlice;
+      use std::str::StrPrelude;
       ParseState { input: $ex.as_bytes(), offset: 0 }
     } ) )
