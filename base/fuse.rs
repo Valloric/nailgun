@@ -57,7 +57,7 @@ mod tests {
                     Node::withoutName( 0, 3, Data( b"ooo" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 3 ) );
       }
-      _ => fail!( "No match." )
+      _ => panic!( "No match." )
     }
   }
 
@@ -71,7 +71,7 @@ mod tests {
                     Node::withoutName( 0, 3, Data( b"abc" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 3 ) );
       }
-      _ => fail!( "No match." )
+      _ => panic!( "No match." )
     }
   }
 

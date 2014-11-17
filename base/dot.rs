@@ -47,7 +47,7 @@ mod tests {
                     Node::withoutName( 0, 1, Data( b"x" ) ) );
         assert_eq!( parse_state, ParseState{ input: &[], offset: 1 } );
       }
-      _ => fail!( "No match!" )
+      _ => panic!( "No match!" )
     };
   }
 
@@ -60,7 +60,7 @@ mod tests {
                     Node::withoutName( 0, 3, Data( "葉".as_bytes() ) ) );
         assert_eq!( parse_state, ParseState{ input: &[], offset: 3 } );
       }
-      _ => fail!( "No match!" )
+      _ => panic!( "No match!" )
     };
   }
 
@@ -74,7 +74,7 @@ mod tests {
         assert_eq!( parse_state, ParseState{ input: b"b",
                                              offset: 1 } );
       }
-      _ => fail!( "No match!" )
+      _ => panic!( "No match!" )
     };
   }
 

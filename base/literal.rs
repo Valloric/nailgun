@@ -58,7 +58,7 @@ mod tests {
         assert_eq!( parse_state, ParseState{ input: b"bar",
                                              offset: 3 } );
       }
-      _ => fail!( "No match!" )
+      _ => panic!( "No match!" )
     };
   }
 

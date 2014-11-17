@@ -71,7 +71,7 @@ mod tests {
                     Node::withoutName( 2, 3, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 3 ) );
       }
-      _ => fail!( "No match." )
+      _ => panic!( "No match." )
     }
   }
 
@@ -84,7 +84,7 @@ mod tests {
                     Node::withoutName( 0, 1, Data( b"a" ) ) );
         assert_eq!( parse_state, orig_state.advanceTo( 1 ) );
       }
-      _ => fail!( "No match." )
+      _ => panic!( "No match." )
     }
   }
 
@@ -94,7 +94,7 @@ mod tests {
     let orig_state = input_state!( "y" );
     match plus!( lit!( "x" ) ).apply( &orig_state ) {
       None => (),
-      _ => fail!( "Should not match." ),
+      _ => panic!( "Should not match." ),
     }
   }
 }

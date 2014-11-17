@@ -85,9 +85,9 @@ fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8, ..4] ) -> Vec<u8> {
           input.push( *utf8chars.get( i ).unwrap() );
         }
       },
-      _ => fail!( "Invalid unicode code point: {}", x )
+      _ => panic!( "Invalid unicode code point: {}", x )
     },
-    _ => fail!( r"Invalid unicode escape sequence: \u{}{}{}{}",
+    _ => panic!( r"Invalid unicode escape sequence: \u{}{}{}{}",
                 bytes.get( 0 ).unwrap(),
                 bytes.get( 1 ).unwrap(),
                 bytes.get( 2 ).unwrap(),
@@ -100,7 +100,7 @@ fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8, ..4] ) -> Vec<u8> {
 fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8, ..2] ) -> Vec<u8> {
   match u8::parse_bytes( bytes, 16 ) {
     Some( byte ) => input.push( byte ),
-    _ => fail!( r"Invalid hex escape sequence: \x{}{}",
+    _ => panic!( r"Invalid hex escape sequence: \x{}{}",
                 bytes.get( 0 ).unwrap(),
                 bytes.get( 1 ).unwrap() )
   }
@@ -111,7 +111,7 @@ fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8, ..2] ) -> Vec<u8> {
 fn addThreeBytesAsOctal( mut input: Vec<u8>, bytes: [u8, ..3] ) -> Vec<u8> {
   match u8::parse_bytes( bytes, 8 ) {
     Some( byte ) => input.push( byte ),
-    _ => fail!( r"Invalid octal escape sequence: \{}{}{}",
+    _ => panic!( r"Invalid octal escape sequence: \{}{}{}",
                 bytes.get( 0 ).unwrap(),
                 bytes.get( 1 ).unwrap(),
                 bytes.get( 2 ).unwrap() )

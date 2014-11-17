@@ -22,7 +22,7 @@ mod unescape;
 macro_rules! node_children( ( $node:expr ) => ( {
   match $node.contents {
     Children( ref nodes ) => nodes,
-    _ => fail!( "No children in node." )
+    _ => panic!( "No children in node." )
   } } ) )
 
 
@@ -77,10 +77,10 @@ fn definitionOutput( node: &Node ) -> String {
           Children( ref nodes2 ) => {
             nodes2[ 0 ].name
           },
-          _ => fail!( "No children in node.")
+          _ => panic!( "No children in node.")
         }
       },
-      _ => fail!( "No children in node.")
+      _ => panic!( "No children in node.")
     }
   }
 
@@ -135,7 +135,7 @@ fn suffixOutput( node: &Node ) -> String {
       "QUESTION" => "opt",
       "STAR" => "star",
       "PLUS" => "plus",
-      _ => fail!( "Bad second child." )
+      _ => panic!( "Bad second child." )
     };
 
     [ macro_name,

@@ -40,7 +40,7 @@ static TOP_LEVEL_RULE : &'static str = "NGTOP_LEVEL_RULE";
 fn inputFromFile( input_file: &str ) -> Vec<u8> {
   match File::open( &Path::new( input_file ) ).read_to_end() {
     Ok( x ) => x,
-    _ => fail!( "Couldn't read input file: {}", input_file )
+    _ => panic!( "Couldn't read input file: {}", input_file )
   }
 }
 
@@ -95,7 +95,7 @@ fn printParseTree( grammar_code: &str, input_path: &str ) {
   let printer = temp_dir.path().join( "printer" );
 
   match File::create( &code_file ).write( final_code.as_bytes() ) {
-    Err( e ) => fail!( "File error: {}", e ),
+    Err( e ) => panic!( "File error: {}", e ),
     _ => {}
   };
 
@@ -104,8 +104,8 @@ fn printParseTree( grammar_code: &str, input_path: &str ) {
                                .arg( code_file.as_str().unwrap() )
                                .status() {
     Ok( status ) if !status.success() =>
-      fail!( "Compiling with rustc failed." ),
-    Err( e ) => fail!( "Failed to execute process: {}", e ),
+      panic!( "Compiling with rustc failed." ),
+    Err( e ) => panic!( "Failed to execute process: {}", e ),
     _ => {}
   };
 
@@ -121,7 +121,7 @@ fn printParseTree( grammar_code: &str, input_path: &str ) {
         _ => 1
       } );
     },
-    Err( e ) => fail!( "Failed to execute process: {}", e ),
+    Err( e ) => panic!( "Failed to execute process: {}", e ),
   };
 }
 
@@ -142,7 +142,7 @@ fn main() {
   let args = os::args();
   let matches = match getopts( args.tail(), opts ) {
     Ok( m ) => m,
-    Err( erorr ) => fail!( erorr )
+    Err( erorr ) => panic!( erorr )
   };
 
   if matches.opt_present( "h" ) || args.len() < 2 {
@@ -153,9 +153,9 @@ fn main() {
   let grammar_code = if matches.opt_present( "g" ) {
     codeForGrammar( inputFromFile(
         matches.opt_str( "g" ).unwrap()[] )[] )
-    .unwrap_or_else( || fail!( "Couldn't parse given PEG grammar" ) )
+    .unwrap_or_else( || panic!( "Couldn't parse given PEG grammar" ) )
   } else {
-    fail!( "Missing -g option." )
+    panic!( "Missing -g option." )
   };
 
 

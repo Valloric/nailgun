@@ -53,7 +53,7 @@ mod tests {
         assert!( nodes.is_empty() );
         assert_eq!( parse_state, orig_state );
       }
-      _ => fail!( "No match." )
+      _ => panic!( "No match." )
     }
   }
 
@@ -66,7 +66,7 @@ mod tests {
         assert!( nodes.is_empty() );
         assert_eq!( parse_state, orig_state );
       }
-      _ => fail!( "No match." )
+      _ => panic!( "No match." )
     }
   }
 

@@ -15,7 +15,7 @@ pub static PRINTER_MAIN : &'static str = r###"
 fn inputFromFile( input_file: &str ) -> Vec<u8> {
   match std::io::File::open( &Path::new( input_file ) ).read_to_end() {
     Ok( x ) => x,
-    _ => fail!( "Couldn't read input file: {}", input_file )
+    _ => panic!( "Couldn't read input file: {}", input_file )
   }
 }
 
