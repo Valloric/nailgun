@@ -833,7 +833,7 @@ mod base {
         -> Option< ParseResult<'a> >;
   }
 
-  type Rule = fn<'a>( &ParseState<'a> ) -> Option< ParseResult<'a> >;
+  type Rule = for<'a> fn( &ParseState<'a> ) -> Option< ParseResult<'a> >;
 }
 
 macro_rules! rule(

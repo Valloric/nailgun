@@ -819,7 +819,7 @@ mod base {
         -> Option< ParseResult<'a> >;
   }
 
-  type Rule = fn<'a>( &ParseState<'a> ) -> Option< ParseResult<'a> >;
+  type Rule = for<'a> fn( &ParseState<'a> ) -> Option< ParseResult<'a> >;
 }
 
 macro_rules! rule(
@@ -894,5 +894,5 @@ mod rules {
   rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
   rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
   rule!( EndOfFile <- not!( &base::Dot ) )
-
+  
 }
