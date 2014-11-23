@@ -14,6 +14,7 @@
 use std::fmt;
 use std::str;
 use std::fmt::{Result};
+pub use self::NodeContents::{Data, Children};
 
 static NO_NAME : &'static str = "<none>";
 

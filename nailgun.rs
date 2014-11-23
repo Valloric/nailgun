@@ -140,13 +140,13 @@ fn main() {
   ];
 
   let args = os::args();
-  let matches = match getopts( args.tail(), opts ) {
+  let matches = match getopts( args.tail(), &opts ) {
     Ok( m ) => m,
     Err( erorr ) => panic!( erorr )
   };
 
   if matches.opt_present( "h" ) || args.len() < 2 {
-    printUsage( opts );
+    printUsage( &opts );
     return;
   }
 

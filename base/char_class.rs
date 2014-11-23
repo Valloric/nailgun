@@ -194,7 +194,7 @@ mod tests {
 
   #[test]
   fn CharClass_Match_NonUnicode() {
-    assert!( charClassMatch( &CharClass::new( [255] ), [255] ) );
+    assert!( charClassMatch( &CharClass::new( &[255] ), &[255] ) );
   }
 
 

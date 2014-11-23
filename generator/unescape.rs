@@ -15,7 +15,6 @@
 
 use std::str::from_utf8;
 use std::char::from_u32;
-use std::char;
 use std::num::from_str_radix;
 
 // See:
@@ -65,22 +64,22 @@ pub fn unescapeString( input: &str ) -> String {
 
 
 fn isOctal( byte: u8 ) -> bool {
-  char::is_digit_radix( byte as char, 8 )
+  (byte as char).is_digit( 8 )
 }
 
 
 fn isHex( byte: u8 ) -> bool {
-  char::is_digit_radix( byte as char, 16 )
+  (byte as char).is_digit( 16 )
 }
 
 
 fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8, ..4] ) -> Vec<u8> {
-  let slice = from_utf8( bytes ).unwrap();
+  let slice = from_utf8( &bytes ).unwrap();
   match from_str_radix( slice, 16 ) {
     Some( x ) => match from_u32( x ) {
       Some( character ) => {
-        let utf8chars: &mut [u8] = [0, ..4];
-        let num_written = character.encode_utf8( utf8chars ).unwrap();
+        let mut utf8chars = [0, ..4];
+        let num_written = character.encode_utf8( &mut utf8chars ).unwrap();
         for i in range( 0, num_written ) {
           input.push( *utf8chars.get( i ).unwrap() );
         }
@@ -98,7 +97,7 @@ fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8, ..4] ) -> Vec<u8> {
 
 
 fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8, ..2] ) -> Vec<u8> {
-  let slice = from_utf8( bytes ).unwrap();
+  let slice = from_utf8( &bytes ).unwrap();
   match from_str_radix( slice, 16 ) {
     Some( byte ) => input.push( byte ),
     _ => panic!( r"Invalid hex escape sequence: \x{}{}",
@@ -110,7 +109,7 @@ fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8, ..2] ) -> Vec<u8> {
 
 
 fn addThreeBytesAsOctal( mut input: Vec<u8>, bytes: [u8, ..3] ) -> Vec<u8> {
-  let slice = from_utf8( bytes ).unwrap();
+  let slice = from_utf8( &bytes ).unwrap();
   match from_str_radix( slice, 8 ) {
     Some( byte ) => input.push( byte ),
     _ => panic!( r"Invalid octal escape sequence: \{}{}{}",

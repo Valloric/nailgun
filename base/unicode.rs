@@ -123,8 +123,8 @@ mod tests {
 
   #[test]
   fn readCodepoint_FailsOnBadChars() {
-    assert!( readCodepoint( [ 0b11111111 ] ).is_none() );
-    assert!( readCodepoint( [ 0b10000000 ] ).is_none() );
-    assert!( readCodepoint( [ UTF8_1BYTE_FOLLOWING, 0b11000000 ] ).is_none() );
+    assert!( readCodepoint( &[ 0b11111111 ] ).is_none() );
+    assert!( readCodepoint( &[ 0b10000000 ] ).is_none() );
+    assert!( readCodepoint( &[ UTF8_1BYTE_FOLLOWING, 0b11000000 ] ).is_none() );
   }
 }
