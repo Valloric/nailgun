@@ -18,7 +18,7 @@ macro_rules! not( ( $ex:expr ) => ( {
     &base::NotEx::new($ex) } ); )
 
 pub struct NotEx<'a> {
-  expr: &'a Expression + 'a
+  expr: &'a ( Expression + 'a )
 }
 
 

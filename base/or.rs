@@ -18,7 +18,7 @@ macro_rules! or( ( $( $ex:expr ),* ) => ( {
     &base::Or::new( &[ $( $ex ),* ] ) } ); )
 
 pub struct Or<'a> {
-  exprs: &'a [&'a Expression + 'a]
+  exprs: &'a [&'a (Expression + 'a)]
 }
 
 

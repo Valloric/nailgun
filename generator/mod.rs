@@ -56,16 +56,16 @@ fn codeForNodeContents( node: &Node ) -> String {
 
 
 fn wrapChildrenOutput( before: &str, node: &Node, after: &str ) -> String {
-  [ before.into_maybe_owned(),
-    codeForNodeContents( node ).into_maybe_owned(),
-    after.into_maybe_owned() ].concat()
+  [ before.into_cow(),
+    codeForNodeContents( node ).into_cow(),
+    after.into_cow() ].concat()
 }
 
 
 fn wrapNodeOutput( before: &str, node: &Node, after: &str ) -> String {
-  [ before.into_maybe_owned(),
-    codeForNode( node ).into_maybe_owned(),
-    after.into_maybe_owned() ].concat()
+  [ before.into_cow(),
+    codeForNode( node ).into_cow(),
+    after.into_cow() ].concat()
 }
 
 

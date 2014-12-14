@@ -18,7 +18,7 @@ macro_rules! star( ( $ex:expr ) => ( {
     &base::Star::new( $ex ) } ); )
 
 pub struct Star<'a> {
-  expr: &'a Expression + 'a
+  expr: &'a ( Expression + 'a )
 }
 
 

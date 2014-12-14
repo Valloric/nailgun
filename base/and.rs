@@ -19,7 +19,7 @@ macro_rules! and( ( $ex:expr ) => ( {
     &base::And::new( $ex ) } ); )
 
 pub struct And<'a> {
-  expr: &'a Expression + 'a
+  expr: &'a ( Expression + 'a )
 }
 
 

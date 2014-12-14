@@ -31,7 +31,7 @@ macro_rules! rule(
       use base::Node;
       use base::ParseResult;
       use std::clone::Clone;
-      use std::option::{Some, None};
+      use std::option::Option::{Some, None};
 
       match $body.apply( parse_state ) {
         Some( result ) => {
@@ -109,7 +109,7 @@ mod rules {
       ) => (
         {
           use base::ParseResult;
-          use std::option::Some;
+          use std::option::Option::Some;
           use std::slice::SlicePrelude;
 
           match $name( &input_state!( $input ) ) {

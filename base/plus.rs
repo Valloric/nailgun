@@ -18,7 +18,7 @@ macro_rules! plus( ( $ex:expr ) => ( {
     &base::Plus::new( $ex ) } ); )
 
 pub struct Plus<'a> {
-  expr: &'a Expression + 'a
+  expr: &'a ( Expression + 'a )
 }
 
 

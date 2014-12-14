@@ -18,7 +18,7 @@ macro_rules! seq( ( $( $ex:expr ),* ) => ( {
     &base::Sequence::new( &[ $( $ex ),* ] ) } ); )
 
 pub struct Sequence<'a> {
-  exprs: &'a [&'a Expression + 'a]
+  exprs: &'a [&'a (Expression + 'a)]
 }
 
 

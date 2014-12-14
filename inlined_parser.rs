@@ -383,7 +383,7 @@ mod base {
         &base::NotEx::new($ex) } ); )
 
     pub struct NotEx<'a> {
-      expr: &'a Expression + 'a
+      expr: &'a ( Expression + 'a )
     }
 
 
@@ -414,7 +414,7 @@ mod base {
         &base::And::new( $ex ) } ); )
 
     pub struct And<'a> {
-      expr: &'a Expression + 'a
+      expr: &'a ( Expression + 'a )
     }
 
 
@@ -467,7 +467,7 @@ mod base {
         &base::OptionEx::new( $ex ) } ); )
 
     pub struct OptionEx<'a> {
-      expr: &'a Expression + 'a
+      expr: &'a ( Expression + 'a )
     }
 
 
@@ -497,7 +497,7 @@ mod base {
         &base::Star::new( $ex ) } ); )
 
     pub struct Star<'a> {
-      expr: &'a Expression + 'a
+      expr: &'a ( Expression + 'a )
     }
 
 
@@ -534,7 +534,7 @@ mod base {
         &base::Plus::new( $ex ) } ); )
 
     pub struct Plus<'a> {
-      expr: &'a Expression + 'a
+      expr: &'a ( Expression + 'a )
     }
 
 
@@ -578,7 +578,7 @@ mod base {
         &base::Or::new( &[ $( $ex ),* ] ) } ); )
 
     pub struct Or<'a> {
-      exprs: &'a [&'a Expression + 'a]
+      exprs: &'a [&'a (Expression + 'a)]
     }
 
 
@@ -611,7 +611,7 @@ mod base {
         &base::Fuse::new( $ex ) } ); )
 
     pub struct Fuse<'a> {
-      expr: &'a Expression + 'a
+      expr: &'a ( Expression + 'a )
     }
 
 
@@ -643,7 +643,7 @@ mod base {
         &base::Sequence::new( &[ $( $ex ),* ] ) } ); )
 
     pub struct Sequence<'a> {
-      exprs: &'a [&'a Expression + 'a]
+      exprs: &'a [&'a (Expression + 'a)]
     }
 
 
@@ -767,7 +767,7 @@ mod base {
 
 
   #[doc(hidden)]
-  #[deriving(Show, Clone, PartialEq)]
+  #[deriving(Show, Clone, PartialEq, Copy)]
   pub struct ParseState<'a> {
     pub input: &'a [u8],
     pub offset: uint
@@ -833,7 +833,7 @@ macro_rules! rule(
       use base::Node;
       use base::ParseResult;
       use std::clone::Clone;
-      use std::option::{Some, None};
+      use std::option::Option::{Some, None};
 
       match $body.apply( parse_state ) {
         Some( result ) => {
