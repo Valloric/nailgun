@@ -15,7 +15,7 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! opt( ( $ex:expr ) => ( {
     use base;
-    &base::OptionEx::new( $ex ) } ); )
+    &base::OptionEx::new( $ex ) } ); );
 
 pub struct OptionEx<'a> {
   expr: &'a ( Expression + 'a )
@@ -23,13 +23,13 @@ pub struct OptionEx<'a> {
 
 
 impl<'a> OptionEx<'a> {
-  pub fn new( expr: &'a Expression ) -> OptionEx<'a> {
+  pub fn new( expr: &Expression ) -> OptionEx {
     OptionEx { expr: expr }
   }
 }
 
 
-impl<'a> Expression for OptionEx<'a> {
+impl<'b> Expression for OptionEx<'b> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {

@@ -15,21 +15,21 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! seq( ( $( $ex:expr ),* ) => ( {
     use base;
-    &base::Sequence::new( &[ $( $ex ),* ] ) } ); )
+    &base::Sequence::new( &[ $( $ex ),* ] ) } ); );
 
 pub struct Sequence<'a> {
   exprs: &'a [&'a (Expression + 'a)]
 }
 
 
-impl<'a> Sequence<'a> {
+impl<'b> Sequence<'b> {
   pub fn new<'a>( exprs: &'a [&Expression] ) -> Sequence<'a> {
     Sequence { exprs: exprs }
   }
 }
 
 
-impl<'a> Expression for Sequence<'a> {
+impl<'b> Expression for Sequence<'b> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     let mut final_result = ParseResult::fromParseState( *parse_state );
@@ -69,6 +69,6 @@ mod tests {
   #[test]
   fn Sequence_NoMatch() {
     assert!( seq!( lit!( "a" ), lit!( "b" ) ).apply(
-        &input_state!( "aa" ) ).is_none() )
+        &input_state!( "aa" ) ).is_none() );
   }
 }

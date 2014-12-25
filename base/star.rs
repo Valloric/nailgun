@@ -15,21 +15,21 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! star( ( $ex:expr ) => ( {
     use base;
-    &base::Star::new( $ex ) } ); )
+    &base::Star::new( $ex ) } ); );
 
 pub struct Star<'a> {
   expr: &'a ( Expression + 'a )
 }
 
 
-impl<'a> Star<'a> {
-  pub fn new<'a>( expr: &'a Expression ) -> Star<'a> {
+impl<'b> Star<'b> {
+  pub fn new( expr: &Expression ) -> Star {
     Star { expr: expr }
   }
 }
 
 
-impl<'a> Expression for Star<'a> {
+impl<'b> Expression for Star<'b> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     let mut final_result = ParseResult::fromParseState( *parse_state );

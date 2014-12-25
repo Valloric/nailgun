@@ -15,7 +15,7 @@ use super::{Expression, ParseState, ParseResult, Rule};
 
 macro_rules! ex( ( $ex:expr ) => ( {
     use base;
-    &base::WrapEx{ rule: $ex } } ); )
+    &base::WrapEx{ rule: $ex } } ); );
 
 pub struct WrapEx {
   pub rule: Rule

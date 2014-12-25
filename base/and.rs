@@ -16,7 +16,7 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! and( ( $ex:expr ) => ( {
     use base;
-    &base::And::new( $ex ) } ); )
+    &base::And::new( $ex ) } ); );
 
 pub struct And<'a> {
   expr: &'a ( Expression + 'a )
@@ -24,13 +24,13 @@ pub struct And<'a> {
 
 
 impl<'a> And<'a> {
-  pub fn new( expr: &'a Expression ) -> And<'a> {
+  pub fn new( expr: &Expression ) -> And {
     And { expr: expr }
   }
 }
 
 
-impl<'a> Expression for And<'a> {
+impl<'b> Expression for And<'b> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
@@ -73,8 +73,8 @@ mod tests {
 
   #[test]
   fn And_NoMatch() {
-    assert!( and!( class!( "a-z" ) ).apply( &input_state!( "0" ) ).is_none() )
-    assert!( and!( lit!( "x" ) ).apply( &input_state!( "y" ) ).is_none() )
+    assert!( and!( class!( "a-z" ) ).apply( &input_state!( "0" ) ).is_none() );
+    assert!( and!( lit!( "x" ) ).apply( &input_state!( "y" ) ).is_none() );
   }
 }
 

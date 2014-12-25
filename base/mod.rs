@@ -95,12 +95,12 @@ pub struct ParseResult<'a> {
 
 
 impl<'a> ParseResult<'a> {
-  pub fn oneNode<'a>( node: Node<'a>, parse_state: ParseState<'a> )
+  pub fn oneNode( node: Node<'a>, parse_state: ParseState<'a> )
       -> ParseResult<'a> {
     ParseResult { nodes: vec!( node ), parse_state: parse_state }
   }
 
-  pub fn fromParseState<'a>( parse_state: ParseState<'a> ) -> ParseResult<'a> {
+  pub fn fromParseState( parse_state: ParseState<'a> ) -> ParseResult<'a> {
     ParseResult { nodes: vec!(), parse_state: parse_state }
   }
 }

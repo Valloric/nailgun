@@ -15,21 +15,21 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! or( ( $( $ex:expr ),* ) => ( {
     use base;
-    &base::Or::new( &[ $( $ex ),* ] ) } ); )
+    &base::Or::new( &[ $( $ex ),* ] ) } ); );
 
 pub struct Or<'a> {
   exprs: &'a [&'a (Expression + 'a)]
 }
 
 
-impl<'a> Or<'a> {
+impl<'b> Or<'b> {
   pub fn new<'a>( exprs: &'a [&Expression] ) -> Or<'a> {
     Or { exprs: exprs }
   }
 }
 
 
-impl<'a> Expression for Or<'a> {
+impl<'b> Expression for Or<'b> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     for expr in self.exprs.iter() {
@@ -89,7 +89,7 @@ mod tests {
   #[test]
   fn Or_NoMatch() {
     assert!( or!( lit!( "b" ), lit!( "c" ) ).apply(
-        &input_state!( "a" ) ).is_none() )
+        &input_state!( "a" ) ).is_none() );
   }
 }
 

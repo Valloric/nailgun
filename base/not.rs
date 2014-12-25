@@ -15,7 +15,7 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! not( ( $ex:expr ) => ( {
     use base;
-    &base::NotEx::new($ex) } ); )
+    &base::NotEx::new($ex) } ); );
 
 pub struct NotEx<'a> {
   expr: &'a ( Expression + 'a )
@@ -23,13 +23,13 @@ pub struct NotEx<'a> {
 
 
 impl<'a> NotEx<'a> {
-  pub fn new<'a>( expr: &'a Expression ) -> NotEx<'a> {
+  pub fn new( expr: &Expression ) -> NotEx {
     NotEx { expr: expr }
   }
 }
 
 
-impl<'a> Expression for NotEx<'a> {
+impl<'b> Expression for NotEx<'b> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
@@ -72,7 +72,7 @@ mod tests {
 
   #[test]
   fn NotEx_NoMatch() {
-    assert!( not!( class!( "a-z" ) ).apply( &input_state!( "b" ) ).is_none() )
-    assert!( not!( lit!( "x" ) ).apply( &input_state!( "x" ) ).is_none() )
+    assert!( not!( class!( "a-z" ) ).apply( &input_state!( "b" ) ).is_none() );
+    assert!( not!( lit!( "x" ) ).apply( &input_state!( "x" ) ).is_none() );
   }
 }

@@ -43,7 +43,7 @@ macro_rules! rule(
       }
     }
   );
-)
+);
 
 #[cfg(not(test))]
 pub fn parse<'a>( input: &'a [u8] ) -> Option< Node<'a> > {
@@ -63,38 +63,38 @@ mod rules {
 
   // RULES START
 
-  rule!( Grammar <- seq!( ex!( Spacing ), plus!( ex!( Definition ) ), ex!( EndOfFile ) ) )
-  rule!( Definition <- seq!( ex!( Identifier ), ex!( ARROW ), ex!( Expression ) ) )
-  rule!( Expression <- seq!( ex!( Sequence ), star!( seq!( ex!( SLASH ), ex!( Sequence ) ) ) ) )
-  rule!( Sequence <- star!( ex!( Prefix ) ) )
-  rule!( Prefix <- seq!( opt!( or!( ex!( AND ), ex!( NOT ), ex!( FUSE ) ) ), ex!( Suffix ) ) )
-  rule!( Suffix <- seq!( ex!( Primary ), opt!( or!( ex!( QUESTION ), ex!( STAR ), ex!( PLUS ) ) ) ) )
-  rule!( Primary <- or!( seq!( ex!( Identifier ), not!( ex!( ARROW ) ) ), seq!( ex!( OPEN ), ex!( Expression ), ex!( CLOSE ) ), ex!( Literal ), ex!( Class ), ex!( DOT ) ) )
-  rule!( Identifier <- seq!( fuse!( seq!( ex!( IdentStart ), star!( ex!( IdentCont ) ) ) ), ex!( Spacing ) ) )
-  rule!( IdentStart <- class!( "a-zA-Z_" ) )
-  rule!( IdentCont <- or!( ex!( IdentStart ), class!( "0-9" ) ) )
-  rule!( Literal <- seq!( fuse!( or!( seq!( class!( "'" ), star!( seq!( not!( class!( "'" ) ), ex!( Char ) ) ), class!( "'" ) ), seq!( class!( "\"" ), star!( seq!( not!( class!( "\"" ) ), ex!( Char ) ) ), class!( "\"" ) ) ) ), ex!( Spacing ) ) )
-  rule!( Class <- seq!( lit!( "[" ), star!( seq!( not!( lit!( "]" ) ), ex!( Range ) ) ), lit!( "]" ), ex!( Spacing ) ) )
-  rule!( Range <- or!( seq!( ex!( Char ), lit!( "-" ), ex!( Char ) ), ex!( Char ) ) )
-  rule!( Char <- or!( seq!( lit!( "\\" ), class!( "nrt'\"[]\\" ) ), seq!( lit!( "\\" ), class!( "0-2" ), class!( "0-7" ), class!( "0-7" ) ), seq!( lit!( "\\" ), class!( "0-7" ), opt!( class!( "0-7" ) ) ), seq!( not!( lit!( "\\" ) ), &base::Dot ) ) )
-  rule!( ARROW <- or!( ex!( FUSEARROW ), ex!( LEFTARROW ) ) )
-  rule!( LEFTARROW <- seq!( lit!( "<-" ), ex!( Spacing ) ) )
-  rule!( FUSEARROW <- seq!( lit!( "<~" ), ex!( Spacing ) ) )
-  rule!( SLASH <- seq!( lit!( "/" ), ex!( Spacing ) ) )
-  rule!( AND <- seq!( lit!( "&" ), ex!( Spacing ) ) )
-  rule!( NOT <- seq!( lit!( "!" ), ex!( Spacing ) ) )
-  rule!( QUESTION <- seq!( lit!( "?" ), ex!( Spacing ) ) )
-  rule!( STAR <- seq!( lit!( "*" ), ex!( Spacing ) ) )
-  rule!( PLUS <- seq!( lit!( "+" ), ex!( Spacing ) ) )
-  rule!( OPEN <- seq!( lit!( "(" ), ex!( Spacing ) ) )
-  rule!( CLOSE <- seq!( lit!( ")" ), ex!( Spacing ) ) )
-  rule!( DOT <- seq!( lit!( "." ), ex!( Spacing ) ) )
-  rule!( FUSE <- seq!( lit!( "~" ), ex!( Spacing ) ) )
-  rule!( Spacing <- fuse!( star!( or!( ex!( Space ), ex!( Comment ) ) ) ) )
-  rule!( Comment <- fuse!( seq!( lit!( "#" ), star!( seq!( not!( ex!( EndOfLine ) ), &base::Dot ) ), ex!( EndOfLine ) ) ) )
-  rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) )
-  rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) )
-  rule!( EndOfFile <- not!( &base::Dot ) )
+  rule!( Grammar <- seq!( ex!( Spacing ), plus!( ex!( Definition ) ), ex!( EndOfFile ) ) );
+  rule!( Definition <- seq!( ex!( Identifier ), ex!( ARROW ), ex!( Expression ) ) );
+  rule!( Expression <- seq!( ex!( Sequence ), star!( seq!( ex!( SLASH ), ex!( Sequence ) ) ) ) );
+  rule!( Sequence <- star!( ex!( Prefix ) ) );
+  rule!( Prefix <- seq!( opt!( or!( ex!( AND ), ex!( NOT ), ex!( FUSE ) ) ), ex!( Suffix ) ) );
+  rule!( Suffix <- seq!( ex!( Primary ), opt!( or!( ex!( QUESTION ), ex!( STAR ), ex!( PLUS ) ) ) ) );
+  rule!( Primary <- or!( seq!( ex!( Identifier ), not!( ex!( ARROW ) ) ), seq!( ex!( OPEN ), ex!( Expression ), ex!( CLOSE ) ), ex!( Literal ), ex!( Class ), ex!( DOT ) ) );
+  rule!( Identifier <- seq!( fuse!( seq!( ex!( IdentStart ), star!( ex!( IdentCont ) ) ) ), ex!( Spacing ) ) );
+  rule!( IdentStart <- class!( "a-zA-Z_" ) );
+  rule!( IdentCont <- or!( ex!( IdentStart ), class!( "0-9" ) ) );
+  rule!( Literal <- seq!( fuse!( or!( seq!( class!( "'" ), star!( seq!( not!( class!( "'" ) ), ex!( Char ) ) ), class!( "'" ) ), seq!( class!( "\"" ), star!( seq!( not!( class!( "\"" ) ), ex!( Char ) ) ), class!( "\"" ) ) ) ), ex!( Spacing ) ) );
+  rule!( Class <- seq!( lit!( "[" ), star!( seq!( not!( lit!( "]" ) ), ex!( Range ) ) ), lit!( "]" ), ex!( Spacing ) ) );
+  rule!( Range <- or!( seq!( ex!( Char ), lit!( "-" ), ex!( Char ) ), ex!( Char ) ) );
+  rule!( Char <- or!( seq!( lit!( "\\" ), class!( "nrt'\"[]\\" ) ), seq!( lit!( "\\" ), class!( "0-2" ), class!( "0-7" ), class!( "0-7" ) ), seq!( lit!( "\\" ), class!( "0-7" ), opt!( class!( "0-7" ) ) ), seq!( not!( lit!( "\\" ) ), &base::Dot ) ) );
+  rule!( ARROW <- or!( ex!( FUSEARROW ), ex!( LEFTARROW ) ) );
+  rule!( LEFTARROW <- seq!( lit!( "<-" ), ex!( Spacing ) ) );
+  rule!( FUSEARROW <- seq!( lit!( "<~" ), ex!( Spacing ) ) );
+  rule!( SLASH <- seq!( lit!( "/" ), ex!( Spacing ) ) );
+  rule!( AND <- seq!( lit!( "&" ), ex!( Spacing ) ) );
+  rule!( NOT <- seq!( lit!( "!" ), ex!( Spacing ) ) );
+  rule!( QUESTION <- seq!( lit!( "?" ), ex!( Spacing ) ) );
+  rule!( STAR <- seq!( lit!( "*" ), ex!( Spacing ) ) );
+  rule!( PLUS <- seq!( lit!( "+" ), ex!( Spacing ) ) );
+  rule!( OPEN <- seq!( lit!( "(" ), ex!( Spacing ) ) );
+  rule!( CLOSE <- seq!( lit!( ")" ), ex!( Spacing ) ) );
+  rule!( DOT <- seq!( lit!( "." ), ex!( Spacing ) ) );
+  rule!( FUSE <- seq!( lit!( "~" ), ex!( Spacing ) ) );
+  rule!( Spacing <- fuse!( star!( or!( ex!( Space ), ex!( Comment ) ) ) ) );
+  rule!( Comment <- fuse!( seq!( lit!( "#" ), star!( seq!( not!( ex!( EndOfLine ) ), &base::Dot ) ), ex!( EndOfLine ) ) ) );
+  rule!( Space <- or!( lit!( " " ), lit!( "\t" ), ex!( EndOfLine ) ) );
+  rule!( EndOfLine <- or!( lit!( "\r\n" ), lit!( "\n" ), lit!( "\r" ) ) );
+  rule!( EndOfFile <- not!( &base::Dot ) );
 
   // RULES END
 
@@ -110,7 +110,7 @@ mod rules {
         {
           use base::ParseResult;
           use std::option::Option::Some;
-          use std::slice::SlicePrelude;
+          use std::slice::SliceExt;
 
           match $name( &input_state!( $input ) ) {
             Some( ParseResult{ nodes: _, parse_state } ) => {
@@ -120,7 +120,7 @@ mod rules {
           }
         }
       );
-    )
+    );
 
     macro_rules! matches(
       (
@@ -128,7 +128,7 @@ mod rules {
       ) => (
         $name( &input_state!( $input ) ).is_some()
       );
-    )
+    );
 
     #[test]
     fn Grammar_Works() {
@@ -137,18 +137,18 @@ mod rules {
         h16           <- HEXDIGIT (HEXDIGIT (HEXDIGIT HEXDIGIT?)?)?
         ls32          <- h16 ":" h16 / IPv4address
         IPv4address   <- dec_octet "." dec_octet "." dec_octet "." dec_octet"#
-        ) )
+        ) );
     }
 
     #[test]
     fn Definition_Works() {
       assert!( consumes!( Definition,
-                          "Grammar <- Spacing Definition+ EndOfFile" ) )
+                          "Grammar <- Spacing Definition+ EndOfFile" ) );
       assert!( consumes!( Definition,
                           r#"Char <- '\\' [nrt'"\[\]\\] /
                                     '\\' [0-2][0-7][0-7] /
                                     '\\' [0-7][0-7]? /
-                                    !'\\' ."# ) )
+                                    !'\\' ."# ) );
     }
 
     #[test]

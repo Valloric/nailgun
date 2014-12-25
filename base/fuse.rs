@@ -15,7 +15,7 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! fuse( ( $ex:expr ) => ( {
     use base;
-    &base::Fuse::new( $ex ) } ); )
+    &base::Fuse::new( $ex ) } ); );
 
 pub struct Fuse<'a> {
   expr: &'a ( Expression + 'a )
@@ -23,13 +23,13 @@ pub struct Fuse<'a> {
 
 
 impl<'a> Fuse<'a> {
-  pub fn new<'a>( expr: &'a Expression ) -> Fuse<'a> {
+  pub fn new( expr: & Expression ) -> Fuse {
     Fuse { expr: expr }
   }
 }
 
 
-impl<'a> Expression for Fuse<'a> {
+impl<'b> Expression for Fuse<'b> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     match self.expr.apply( parse_state ) {
@@ -78,8 +78,8 @@ mod tests {
 
   #[test]
   fn Fuse_NoMatch() {
-    assert!( fuse!( class!( "a-z" ) ).apply( &input_state!( "5" ) ).is_none() )
-    assert!( fuse!( lit!( "x" ) ).apply( &input_state!( "g" ) ).is_none() )
+    assert!( fuse!( class!( "a-z" ) ).apply( &input_state!( "5" ) ).is_none() );
+    assert!( fuse!( lit!( "x" ) ).apply( &input_state!( "g" ) ).is_none() );
   }
 }
 

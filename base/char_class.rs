@@ -16,8 +16,8 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! class( ( $ex:expr ) => ( {
       use base;
-      use std::str::StrPrelude;
-      &base::CharClass::new( $ex.as_bytes() ) } ) )
+      use std::str::StrExt;
+      &base::CharClass::new( $ex.as_bytes() ) } ) );
 
 
 fn toU32Vector( input: &[u8] ) -> Vec<u32> {

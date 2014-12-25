@@ -93,7 +93,7 @@ impl<'a> Node<'a> {
     match self.contents {
       Data( data ) => {
         match str::from_utf8( data ) {
-          Some( string ) => {
+          Ok( string ) => {
             try!( writeln!( formatter,
                             ": \"{0}\"",
                             string ) );

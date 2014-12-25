@@ -23,7 +23,7 @@ macro_rules! node_children( ( $node:expr ) => ( {
   match $node.contents {
     Children( ref nodes ) => nodes,
     _ => panic!( "No children in node." )
-  } } ) )
+  } } ) );
 
 
 pub fn codeForNode( node: &Node ) -> String {
@@ -96,7 +96,7 @@ fn definitionOutput( node: &Node ) -> String {
     _ => codeForNodeContents( node )
   };
 
-  [ "rule!( ", inner_code[], " )\n" ].concat()
+  [ "rule!( ", inner_code[], " );\n" ].concat()
 }
 
 
@@ -121,7 +121,7 @@ fn sequenceOutput( node: &Node ) -> String {
       }
     }
     output.push_str( " )" );
-    output.into_string()
+    output
   } else {
     codeForNodeContents( node )
   }

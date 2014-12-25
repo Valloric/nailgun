@@ -29,6 +29,7 @@ use self::prelude::PRELUDE;
 use self::printer::PRINTER_MAIN;
 use inlined_parser::{parse, Node};
 use std::str;
+use std::iter::repeat;
 
 mod generator;
 mod prelude;
@@ -46,7 +47,7 @@ fn inputFromFile( input_file: &str ) -> Vec<u8> {
 
 
 fn indentLines( input: &str, num_spaces: uint ) -> String {
-  let indent = " ".repeat( num_spaces );
+  let indent: String = repeat( " " ).take( num_spaces ).collect();
   input.split( '\n' ).map(
     |x| [ indent[], x, "\n" ].concat() )
     .collect::<Vec<String>>().concat()
@@ -72,8 +73,7 @@ fn codeForGrammar( input: &[u8] ) -> Option<String> {
   match parse( input ) {
     Some( ref node ) => {
       let parse_rules = indentLines( generator::codeForNode( node )[], 2 );
-      let prepared_prelude = str::replace(
-        PRELUDE.slice_to( PRELUDE.len() -1 ),
+      let prepared_prelude = PRELUDE.slice_to( PRELUDE.len() -1 ).replace(
         TOP_LEVEL_RULE,
         nameOfFirstRule( node )[] );
 

@@ -119,7 +119,7 @@ mod base {
         match self.contents {
           Data( data ) => {
             match str::from_utf8( data ) {
-              Some( string ) => {
+              Ok( string ) => {
                 try!( writeln!( formatter,
                                 ": \"{0}\"",
                                 string ) );
@@ -231,9 +231,9 @@ mod base {
 
     macro_rules! input_state( ( $ex:expr ) => ( {
           use base::ParseState;
-          use std::str::StrPrelude;
+          use std::str::StrExt;
           ParseState { input: $ex.as_bytes(), offset: 0 }
-        } ) )
+        } ) );
   }
 
   #[macro_escape]
@@ -242,8 +242,8 @@ mod base {
 
     macro_rules! lit( ( $ex:expr ) => ( {
           use base;
-          use std::str::StrPrelude;
-          &base::Literal::new( $ex.as_bytes() ) } ) )
+          use std::str::StrExt;
+          &base::Literal::new( $ex.as_bytes() ) } ) );
 
 
     pub struct Literal {
@@ -277,8 +277,8 @@ mod base {
 
     macro_rules! class( ( $ex:expr ) => ( {
           use base;
-          use std::str::StrPrelude;
-          &base::CharClass::new( $ex.as_bytes() ) } ) )
+          use std::str::StrExt;
+          &base::CharClass::new( $ex.as_bytes() ) } ) );
 
 
     fn toU32Vector( input: &[u8] ) -> Vec<u32> {
@@ -394,7 +394,7 @@ mod base {
 
     macro_rules! not( ( $ex:expr ) => ( {
         use base;
-        &base::NotEx::new($ex) } ); )
+        &base::NotEx::new($ex) } ); );
 
     pub struct NotEx<'a> {
       expr: &'a ( Expression + 'a )
@@ -402,13 +402,13 @@ mod base {
 
 
     impl<'a> NotEx<'a> {
-      pub fn new<'a>( expr: &'a Expression ) -> NotEx<'a> {
+      pub fn new( expr: &Expression ) -> NotEx {
         NotEx { expr: expr }
       }
     }
 
 
-    impl<'a> Expression for NotEx<'a> {
+    impl<'b> Expression for NotEx<'b> {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
         match self.expr.apply( parse_state ) {
@@ -425,7 +425,7 @@ mod base {
 
     macro_rules! and( ( $ex:expr ) => ( {
         use base;
-        &base::And::new( $ex ) } ); )
+        &base::And::new( $ex ) } ); );
 
     pub struct And<'a> {
       expr: &'a ( Expression + 'a )
@@ -433,13 +433,13 @@ mod base {
 
 
     impl<'a> And<'a> {
-      pub fn new( expr: &'a Expression ) -> And<'a> {
+      pub fn new( expr: &Expression ) -> And {
         And { expr: expr }
       }
     }
 
 
-    impl<'a> Expression for And<'a> {
+    impl<'b> Expression for And<'b> {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
         match self.expr.apply( parse_state ) {
@@ -478,7 +478,7 @@ mod base {
 
     macro_rules! opt( ( $ex:expr ) => ( {
         use base;
-        &base::OptionEx::new( $ex ) } ); )
+        &base::OptionEx::new( $ex ) } ); );
 
     pub struct OptionEx<'a> {
       expr: &'a ( Expression + 'a )
@@ -486,13 +486,13 @@ mod base {
 
 
     impl<'a> OptionEx<'a> {
-      pub fn new( expr: &'a Expression ) -> OptionEx<'a> {
+      pub fn new( expr: &Expression ) -> OptionEx {
         OptionEx { expr: expr }
       }
     }
 
 
-    impl<'a> Expression for OptionEx<'a> {
+    impl<'b> Expression for OptionEx<'b> {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
         match self.expr.apply( parse_state ) {
@@ -508,21 +508,21 @@ mod base {
 
     macro_rules! star( ( $ex:expr ) => ( {
         use base;
-        &base::Star::new( $ex ) } ); )
+        &base::Star::new( $ex ) } ); );
 
     pub struct Star<'a> {
       expr: &'a ( Expression + 'a )
     }
 
 
-    impl<'a> Star<'a> {
-      pub fn new<'a>( expr: &'a Expression ) -> Star<'a> {
+    impl<'b> Star<'b> {
+      pub fn new( expr: &Expression ) -> Star {
         Star { expr: expr }
       }
     }
 
 
-    impl<'a> Expression for Star<'a> {
+    impl<'b> Expression for Star<'b> {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
         let mut final_result = ParseResult::fromParseState( *parse_state );
@@ -545,21 +545,21 @@ mod base {
 
     macro_rules! plus( ( $ex:expr ) => ( {
         use base;
-        &base::Plus::new( $ex ) } ); )
+        &base::Plus::new( $ex ) } ); );
 
     pub struct Plus<'a> {
       expr: &'a ( Expression + 'a )
     }
 
 
-    impl<'a> Plus<'a> {
-      pub fn new( expr: &'a Expression ) -> Plus<'a> {
+    impl<'b> Plus<'b> {
+      pub fn new( expr: &Expression ) -> Plus {
         Plus { expr: expr }
       }
     }
 
 
-    impl<'a> Expression for Plus<'a> {
+    impl<'b> Expression for Plus<'b> {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
         let mut final_result = ParseResult::fromParseState( *parse_state );
@@ -589,21 +589,21 @@ mod base {
 
     macro_rules! or( ( $( $ex:expr ),* ) => ( {
         use base;
-        &base::Or::new( &[ $( $ex ),* ] ) } ); )
+        &base::Or::new( &[ $( $ex ),* ] ) } ); );
 
     pub struct Or<'a> {
       exprs: &'a [&'a (Expression + 'a)]
     }
 
 
-    impl<'a> Or<'a> {
+    impl<'b> Or<'b> {
       pub fn new<'a>( exprs: &'a [&Expression] ) -> Or<'a> {
         Or { exprs: exprs }
       }
     }
 
 
-    impl<'a> Expression for Or<'a> {
+    impl<'b> Expression for Or<'b> {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
         for expr in self.exprs.iter() {
@@ -622,7 +622,7 @@ mod base {
 
     macro_rules! fuse( ( $ex:expr ) => ( {
         use base;
-        &base::Fuse::new( $ex ) } ); )
+        &base::Fuse::new( $ex ) } ); );
 
     pub struct Fuse<'a> {
       expr: &'a ( Expression + 'a )
@@ -630,13 +630,13 @@ mod base {
 
 
     impl<'a> Fuse<'a> {
-      pub fn new<'a>( expr: &'a Expression ) -> Fuse<'a> {
+      pub fn new( expr: & Expression ) -> Fuse {
         Fuse { expr: expr }
       }
     }
 
 
-    impl<'a> Expression for Fuse<'a> {
+    impl<'b> Expression for Fuse<'b> {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
         match self.expr.apply( parse_state ) {
@@ -654,21 +654,21 @@ mod base {
 
     macro_rules! seq( ( $( $ex:expr ),* ) => ( {
         use base;
-        &base::Sequence::new( &[ $( $ex ),* ] ) } ); )
+        &base::Sequence::new( &[ $( $ex ),* ] ) } ); );
 
     pub struct Sequence<'a> {
       exprs: &'a [&'a (Expression + 'a)]
     }
 
 
-    impl<'a> Sequence<'a> {
+    impl<'b> Sequence<'b> {
       pub fn new<'a>( exprs: &'a [&Expression] ) -> Sequence<'a> {
         Sequence { exprs: exprs }
       }
     }
 
 
-    impl<'a> Expression for Sequence<'a> {
+    impl<'b> Expression for Sequence<'b> {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
         let mut final_result = ParseResult::fromParseState( *parse_state );
@@ -691,7 +691,7 @@ mod base {
 
     macro_rules! ex( ( $ex:expr ) => ( {
         use base;
-        &base::WrapEx{ rule: $ex } } ); )
+        &base::WrapEx{ rule: $ex } } ); );
 
     pub struct WrapEx {
       pub rule: Rule
@@ -818,12 +818,12 @@ mod base {
 
 
   impl<'a> ParseResult<'a> {
-    pub fn oneNode<'a>( node: Node<'a>, parse_state: ParseState<'a> )
+    pub fn oneNode( node: Node<'a>, parse_state: ParseState<'a> )
         -> ParseResult<'a> {
       ParseResult { nodes: vec!( node ), parse_state: parse_state }
     }
 
-    pub fn fromParseState<'a>( parse_state: ParseState<'a> ) -> ParseResult<'a> {
+    pub fn fromParseState( parse_state: ParseState<'a> ) -> ParseResult<'a> {
       ParseResult { nodes: vec!(), parse_state: parse_state }
     }
   }
@@ -859,7 +859,7 @@ macro_rules! rule(
       }
     }
   );
-)
+);
 
 #[cfg(not(test))]
 pub fn parse<'a>( input: &'a [u8] ) -> Option< Node<'a> > {
