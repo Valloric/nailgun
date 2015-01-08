@@ -28,37 +28,37 @@ pub use self::node::{Node, NodeContents, Data, Children, PreOrderNodes};
 
 mod node;
 #[cfg(test)]
-#[macro_escape]
+#[macro_use]
 pub mod test_utils;
 
-#[macro_escape]
+#[macro_use]
 mod literal;
-#[macro_escape]
+#[macro_use]
 mod char_class;
-#[macro_escape]
+#[macro_use]
 mod not;
-#[macro_escape]
+#[macro_use]
 mod and;
 mod dot;
-#[macro_escape]
+#[macro_use]
 mod option;
-#[macro_escape]
+#[macro_use]
 mod star;
-#[macro_escape]
+#[macro_use]
 mod plus;
-#[macro_escape]
+#[macro_use]
 mod or;
-#[macro_escape]
+#[macro_use]
 mod fuse;
-#[macro_escape]
+#[macro_use]
 mod sequence;
-#[macro_escape]
+#[macro_use]
 mod wrap;
 mod unicode;
 
 
 #[doc(hidden)]
-#[deriving(Show, Clone, PartialEq, Copy)]
+#[derive(Show, Clone, PartialEq, Copy)]
 pub struct ParseState<'a> {
   pub input: &'a [u8],  // Unconsumed input from "main" slice.
   pub offset: uint  // Offset of 'input' from start of "main" slice.

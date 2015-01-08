@@ -11,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#![feature(macro_rules)]
 #![feature(slicing_syntax)]
 #![allow(non_snake_case)]
 
@@ -65,7 +64,7 @@ fn printUsage( opts: &[getopts::OptGroup] ) {
 fn nameOfFirstRule<'a>( root: &'a Node<'a> ) -> String {
   str::from_utf8(
     root.preOrder().find( |x| x.name == "Identifier" ).unwrap()
-        .matchedData()[] ).unwrap().trim_chars(' ').to_string()
+        .matchedData()[] ).unwrap().trim_matches(' ').to_string()
 }
 
 

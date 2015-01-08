@@ -1,13 +1,12 @@
 #![allow(dead_code)]
 
-#![feature(macro_rules)]
 #![feature(slicing_syntax)]
 #![allow(non_snake_case)]
 
 #[cfg(not(test))]
 pub use base::{Node, ParseState, Data, Children, NodeContents, PreOrderNodes};
 
-#[macro_escape]
+#[macro_use]
 mod base {
   pub use self::not::NotEx;
   pub use self::and::And;
@@ -34,7 +33,9 @@ mod base {
       queue: Vec<&'a Node<'b>>
     }
 
-    impl<'a, 'b:'a> Iterator<&'a Node<'b>> for PreOrderNodes<'a, 'b> {
+    impl<'a, 'b:'a> Iterator for PreOrderNodes<'a, 'b> {
+      type Item = &'a Node<'b>;
+
       fn next( &mut self ) -> Option<&'a Node<'b>> {
         match self.queue.pop() {
           Some( node ) => {
@@ -54,7 +55,7 @@ mod base {
     }
 
 
-    #[deriving(Show, PartialEq)]
+    #[derive(Show, PartialEq)]
     pub enum NodeContents<'a> {
       /// A `&[u8]` byte slice this node matched in the parse input. Only leaf nodes
       /// have `Data` contents.
@@ -66,7 +67,7 @@ mod base {
     }
 
 
-    #[deriving(PartialEq)]
+    #[derive(PartialEq)]
     pub struct Node<'a> {
       /// The name of the node.
       pub name: &'static str,
@@ -207,7 +208,7 @@ mod base {
     }
   }
   #[cfg(test)]
-  #[macro_escape]
+  #[macro_use]
   pub mod test_utils {
     use base::ParseState;
 
@@ -222,7 +223,7 @@ mod base {
         } ) );
   }
 
-  #[macro_escape]
+  #[macro_use]
   mod literal {
     use super::{Expression, ParseState, ParseResult};
 
@@ -256,7 +257,7 @@ mod base {
       }
     }
   }
-  #[macro_escape]
+  #[macro_use]
   mod char_class {
     use base::unicode::{bytesFollowing, readCodepoint};
     use super::{Expression, ParseState, ParseResult};
@@ -374,7 +375,7 @@ mod base {
       }
     }
   }
-  #[macro_escape]
+  #[macro_use]
   mod not {
     use super::{Expression, ParseState, ParseResult};
 
@@ -404,7 +405,7 @@ mod base {
       }
     }
   }
-  #[macro_escape]
+  #[macro_use]
   mod and {
 
     use super::{Expression, ParseState, ParseResult};
@@ -458,7 +459,7 @@ mod base {
       }
     }
   }
-  #[macro_escape]
+  #[macro_use]
   mod option {
     use super::{Expression, ParseState, ParseResult};
 
@@ -488,7 +489,7 @@ mod base {
       }
     }
   }
-  #[macro_escape]
+  #[macro_use]
   mod star {
     use super::{Expression, ParseState, ParseResult};
 
@@ -525,7 +526,7 @@ mod base {
       }
     }
   }
-  #[macro_escape]
+  #[macro_use]
   mod plus {
     use super::{Expression, ParseState, ParseResult};
 
@@ -569,7 +570,7 @@ mod base {
       }
     }
   }
-  #[macro_escape]
+  #[macro_use]
   mod or {
     use super::{Expression, ParseState, ParseResult};
 
@@ -602,7 +603,7 @@ mod base {
       }
     }
   }
-  #[macro_escape]
+  #[macro_use]
   mod fuse {
     use super::{Expression, ParseState, ParseResult};
 
@@ -634,7 +635,7 @@ mod base {
       }
     }
   }
-  #[macro_escape]
+  #[macro_use]
   mod sequence {
     use super::{Expression, ParseState, ParseResult};
 
@@ -671,7 +672,7 @@ mod base {
       }
     }
   }
-  #[macro_escape]
+  #[macro_use]
   mod wrap {
     use super::{Expression, ParseState, ParseResult, Rule};
 
@@ -767,7 +768,7 @@ mod base {
 
 
   #[doc(hidden)]
-  #[deriving(Show, Clone, PartialEq, Copy)]
+  #[derive(Show, Clone, PartialEq, Copy)]
   pub struct ParseState<'a> {
     pub input: &'a [u8],
     pub offset: uint

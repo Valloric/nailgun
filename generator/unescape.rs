@@ -73,12 +73,12 @@ fn isHex( byte: u8 ) -> bool {
 }
 
 
-fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8, ..4] ) -> Vec<u8> {
+fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8; 4] ) -> Vec<u8> {
   let slice = from_utf8( &bytes ).unwrap();
   match from_str_radix( slice, 16 ) {
     Some( x ) => match from_u32( x ) {
       Some( character ) => {
-        let mut utf8chars = [0, ..4];
+        let mut utf8chars = [0; 4];
         let num_written = character.encode_utf8( &mut utf8chars ).unwrap();
         for i in range( 0, num_written ) {
           input.push( *utf8chars.get( i ).unwrap() );
@@ -96,7 +96,7 @@ fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8, ..4] ) -> Vec<u8> {
 }
 
 
-fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8, ..2] ) -> Vec<u8> {
+fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8; 2] ) -> Vec<u8> {
   let slice = from_utf8( &bytes ).unwrap();
   match from_str_radix( slice, 16 ) {
     Some( byte ) => input.push( byte ),
@@ -108,7 +108,7 @@ fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8, ..2] ) -> Vec<u8> {
 }
 
 
-fn addThreeBytesAsOctal( mut input: Vec<u8>, bytes: [u8, ..3] ) -> Vec<u8> {
+fn addThreeBytesAsOctal( mut input: Vec<u8>, bytes: [u8; 3] ) -> Vec<u8> {
   let slice = from_utf8( &bytes ).unwrap();
   match from_str_radix( slice, 8 ) {
     Some( byte ) => input.push( byte ),

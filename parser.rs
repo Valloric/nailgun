@@ -11,14 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#![feature(macro_rules)]
 #![feature(slicing_syntax)]
 #![allow(non_snake_case)]
 
 #[cfg(not(test))]
 pub use base::{Node, ParseState, Data, Children, NodeContents, PreOrderNodes};
 
-#[macro_escape]
+#[macro_use]
 mod base;
 
 macro_rules! rule(

@@ -22,7 +22,9 @@ pub struct PreOrderNodes<'a, 'b:'a> {
   queue: Vec<&'a Node<'b>>
 }
 
-impl<'a, 'b:'a> Iterator<&'a Node<'b>> for PreOrderNodes<'a, 'b> {
+impl<'a, 'b:'a> Iterator for PreOrderNodes<'a, 'b> {
+  type Item = &'a Node<'b>;
+
   fn next( &mut self ) -> Option<&'a Node<'b>> {
     match self.queue.pop() {
       Some( node ) => {
@@ -42,7 +44,7 @@ impl<'a, 'b:'a> Iterator<&'a Node<'b>> for PreOrderNodes<'a, 'b> {
 }
 
 
-#[deriving(Show, PartialEq)]
+#[derive(Show, PartialEq)]
 pub enum NodeContents<'a> {
   /// A `&[u8]` byte slice this node matched in the parse input. Only leaf nodes
   /// have `Data` contents.
@@ -54,7 +56,7 @@ pub enum NodeContents<'a> {
 }
 
 
-#[deriving(PartialEq)]
+#[derive(PartialEq)]
 pub struct Node<'a> {
   /// The name of the node.
   pub name: &'static str,
