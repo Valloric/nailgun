@@ -13,3 +13,6 @@ path = "nailgun.rs"
 
 name = "inlined_parser"
 path = "inlined_parser.rs"
+
+[dependencies]
+getopts = "0.1.0"
