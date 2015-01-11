@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #![allow(non_snake_case)]
+#![allow(unstable)]
 
 use std::str::from_utf8;
 use std::char::from_u32;

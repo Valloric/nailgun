@@ -59,7 +59,7 @@ pub struct CharClass {
 impl CharClass {
   // Takes the inner content of square brackets, so for [a-z], send "a-z".
   pub fn new( contents: &[u8] ) -> CharClass {
-    fn rangeAtIndex( index: uint, chars: &[u32] ) -> Option<( u32, u32 )> {
+    fn rangeAtIndex( index: usize, chars: &[u32] ) -> Option<( u32, u32 )> {
       match ( chars.get( index ),
               chars.get( index + 1 ),
               chars.get( index + 2 ) ) {
@@ -69,12 +69,12 @@ impl CharClass {
       }
     }
 
-    let chars = toU32Vector( contents[] );
+    let chars = toU32Vector( &contents[] );
     let mut char_class = CharClass { single_chars: Vec::new(),
                                      ranges: Vec::new() };
     let mut index = 0;
     loop {
-      match rangeAtIndex( index, chars[] ) {
+      match rangeAtIndex( index, &chars[] ) {
         Some( range ) => {
           char_class.ranges.push( range );
           index += 3;
@@ -142,7 +142,7 @@ mod tests {
   use super::{CharClass};
 
   fn charClassMatch( char_class: &Expression, input: &[u8] ) -> bool {
-    fn bytesRead( input: &[u8] ) -> uint {
+    fn bytesRead( input: &[u8] ) -> usize {
       match bytesFollowing( input[ 0 ] ) {
         Some( num_following ) => num_following + 1,
         _ => 1

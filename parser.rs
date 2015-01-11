@@ -13,6 +13,8 @@
 // limitations under the License.
 #![feature(slicing_syntax)]
 #![allow(non_snake_case)]
+#![allow(unstable)]
+#![deny(deprecated)]
 
 #[cfg(not(test))]
 pub use base::{Node, ParseState, Data, Children, NodeContents, PreOrderNodes};

@@ -61,23 +61,23 @@ mod unicode;
 #[derive(Show, Clone, PartialEq, Copy)]
 pub struct ParseState<'a> {
   pub input: &'a [u8],  // Unconsumed input from "main" slice.
-  pub offset: uint  // Offset of 'input' from start of "main" slice.
+  pub offset: usize  // Offset of 'input' from start of "main" slice.
 }
 
 
 impl<'a> ParseState<'a> {
-  fn advanceTo( &self, new_offset: uint ) -> ParseState<'a> {
+  fn advanceTo( &self, new_offset: usize ) -> ParseState<'a> {
     let mut clone = self.clone();
     clone.input = clone.input.slice_from( new_offset - clone.offset );
     clone.offset = new_offset;
     clone
   }
 
-  fn sliceTo( &self, new_offset: uint ) -> &'a [u8] {
+  fn sliceTo( &self, new_offset: usize ) -> &'a [u8] {
     self.input.slice_to( new_offset - self.offset )
   }
 
-  fn offsetToResult( &self, new_offset: uint )
+  fn offsetToResult( &self, new_offset: usize )
       -> Option< ParseResult<'a> > {
     Some( ParseResult::oneNode(
             Node::withoutName( self.offset,

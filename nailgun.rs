@@ -13,6 +13,8 @@
 // limitations under the License.
 #![feature(slicing_syntax)]
 #![allow(non_snake_case)]
+#![allow(unstable)]
+#![deny(deprecated)]
 
 extern crate getopts;
 extern crate inlined_parser;
@@ -45,25 +47,25 @@ fn inputFromFile( input_file: &str ) -> Vec<u8> {
 }
 
 
-fn indentLines( input: &str, num_spaces: uint ) -> String {
+fn indentLines( input: &str, num_spaces: usize ) -> String {
   let indent: String = repeat( " " ).take( num_spaces ).collect();
   input.split( '\n' ).map(
-    |x| [ indent[], x, "\n" ].concat() )
+    |x| [ &indent[], x, "\n" ].concat() )
     .collect::<Vec<String>>().concat()
 }
 
 
 fn printUsage( opts: &[getopts::OptGroup] ) {
-  let program = Path::new( os::args()[ 0 ][] );
+  let program = Path::new( &os::args()[ 0 ][] );
   let short = getopts::short_usage( program.filename_str().unwrap(), opts );
-  let usage = getopts::usage( short[], opts );
+  let usage = getopts::usage( &short[], opts );
   println!( "{}", usage );
 }
 
 
 fn nameOfFirstRule<'a>( root: &'a Node<'a> ) -> String {
   str::from_utf8(
-    root.preOrder().find( |x| x.name == "Identifier" ).unwrap()
+    &root.preOrder().find( |x| x.name == "Identifier" ).unwrap()
         .matchedData()[] ).unwrap().trim_matches(' ').to_string()
 }
 
@@ -71,14 +73,14 @@ fn nameOfFirstRule<'a>( root: &'a Node<'a> ) -> String {
 fn codeForGrammar( input: &[u8] ) -> Option<String> {
   match parse( input ) {
     Some( ref node ) => {
-      let parse_rules = indentLines( generator::codeForNode( node )[], 2 );
+      let parse_rules = indentLines( &generator::codeForNode( node )[], 2 );
       let prepared_prelude = PRELUDE.slice_to( PRELUDE.len() -1 ).replace(
         TOP_LEVEL_RULE,
-        nameOfFirstRule( node )[] );
+        &nameOfFirstRule( node )[] );
 
-      Some( [ prepared_prelude[],
+      Some( [ &prepared_prelude[],
               "\n",
-              parse_rules[],
+              &parse_rules[],
               "}" ].concat() )
     }
     _ => None
@@ -114,7 +116,7 @@ fn printParseTree( grammar_code: &str, input_path: &str ) {
 
   match command_output {
     Ok( output ) => {
-      println!( "{}", String::from_utf8_lossy( output.output[] ) );
+      println!( "{}", String::from_utf8_lossy( &output.output[] ) );
       os::set_exit_status( match output.status {
         ExitStatus( code ) => code,
         _ => 1
@@ -150,8 +152,8 @@ fn main() {
   }
 
   let grammar_code = if matches.opt_present( "g" ) {
-    codeForGrammar( inputFromFile(
-        matches.opt_str( "g" ).unwrap()[] )[] )
+    codeForGrammar( &inputFromFile(
+        &matches.opt_str( "g" ).unwrap()[] )[] )
     .unwrap_or_else( || panic!( "Couldn't parse given PEG grammar" ) )
   } else {
     panic!( "Missing -g option." )
@@ -160,8 +162,8 @@ fn main() {
 
   if matches.opt_present( "i" ) {
     printParseTree(
-      grammar_code[],
-      matches.opt_str( "i" ).unwrap()[] );
+      &grammar_code[],
+      &matches.opt_str( "i" ).unwrap()[] );
   } else {
     println!( "{}", grammar_code );
   }

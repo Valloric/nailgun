@@ -66,7 +66,7 @@ pub fn readCodepoint( input: &[u8] ) -> Option< char > {
 }
 
 
-pub fn bytesFollowing( byte: u8 ) -> Option< uint > {
+pub fn bytesFollowing( byte: u8 ) -> Option< usize > {
   if isAscii( byte ) {
     Some( 0 )
   } else if byte & 0b11100000 == UTF8_1BYTE_FOLLOWING {

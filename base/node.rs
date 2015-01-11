@@ -63,11 +63,11 @@ pub struct Node<'a> {
 
   /// The (inclusive) start index of the range this node matches. It's the byte
   /// (NOT char) offset of the parse input.
-  pub start: uint,
+  pub start: usize,
 
   /// The (exclusive) end index of the range this node matches. It's the byte
   /// (NOT char) offset of the parse input.
-  pub end: uint,
+  pub end: usize,
 
   /// The contents of the node; this can be either children nodes or a matched
   /// `&[u8]` slice.
@@ -75,7 +75,7 @@ pub struct Node<'a> {
 }
 
 
-fn indent( formatter: &mut fmt::Formatter, indent_spaces: int )
+fn indent( formatter: &mut fmt::Formatter, indent_spaces: u32 )
     -> fmt::Result {
   for _ in range( 0, indent_spaces ) {
     try!( write!( formatter, " " ) )
@@ -85,11 +85,11 @@ fn indent( formatter: &mut fmt::Formatter, indent_spaces: int )
 
 
 impl<'a> Node<'a> {
-  fn format( &self, formatter: &mut fmt::Formatter, indent_spaces: int )
+  fn format( &self, formatter: &mut fmt::Formatter, indent_spaces: u32 )
       -> fmt::Result {
     try!( indent( formatter, indent_spaces ) );
     try!( write!( formatter,
-                  "{0} [{1}, {2}>",
+                  "{0:?} [{1:?}, {2:?}>",
                   self.displayName(), self.start, self.end ) );
 
     match self.contents {
@@ -97,12 +97,12 @@ impl<'a> Node<'a> {
         match str::from_utf8( data ) {
           Ok( string ) => {
             try!( writeln!( formatter,
-                            ": \"{0}\"",
+                            ": \"{0:?}\"",
                             string ) );
           }
           _ => {
             try!( writeln!( formatter,
-                            ": \"{0}\"",
+                            ": \"{0:?}\"",
                             data ) );
           }
         }
@@ -128,7 +128,7 @@ impl<'a> Node<'a> {
   }
 
   /// Creates a `Node` with an empty name.
-  pub fn withoutName( start: uint, end: uint, contents: NodeContents<'a> )
+  pub fn withoutName( start: usize, end: usize, contents: NodeContents<'a> )
       -> Node<'a> {
     Node { name: "", start: start, end: end, contents: contents }
   }
@@ -184,7 +184,7 @@ impl<'a> Node<'a> {
       Children( ref children ) => {
         let mut out : Vec<u8> = vec!();
         for child in children.iter() {
-          out.push_all( child.matchedData()[] );
+          out.push_all( &child.matchedData()[] );
         }
         out
       }
@@ -250,6 +250,6 @@ mod tests {
   #[test]
   fn matchedData_FullTree() {
     let root = testTreeWithContents();
-    assert_eq!( b"efgd", root.matchedData()[] )
+    assert_eq!( b"efgd", &root.matchedData()[] )
   }
 }

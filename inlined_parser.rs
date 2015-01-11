@@ -2,6 +2,8 @@
 
 #![feature(slicing_syntax)]
 #![allow(non_snake_case)]
+#![allow(unstable)]
+#![deny(deprecated)]
 
 #[cfg(not(test))]
 pub use base::{Node, ParseState, Data, Children, NodeContents, PreOrderNodes};
@@ -74,11 +76,11 @@ mod base {
 
       /// The (inclusive) start index of the range this node matches. It's the byte
       /// (NOT char) offset of the parse input.
-      pub start: uint,
+      pub start: usize,
 
       /// The (exclusive) end index of the range this node matches. It's the byte
       /// (NOT char) offset of the parse input.
-      pub end: uint,
+      pub end: usize,
 
       /// The contents of the node; this can be either children nodes or a matched
       /// `&[u8]` slice.
@@ -86,7 +88,7 @@ mod base {
     }
 
 
-    fn indent( formatter: &mut fmt::Formatter, indent_spaces: int )
+    fn indent( formatter: &mut fmt::Formatter, indent_spaces: u32 )
         -> fmt::Result {
       for _ in range( 0, indent_spaces ) {
         try!( write!( formatter, " " ) )
@@ -96,11 +98,11 @@ mod base {
 
 
     impl<'a> Node<'a> {
-      fn format( &self, formatter: &mut fmt::Formatter, indent_spaces: int )
+      fn format( &self, formatter: &mut fmt::Formatter, indent_spaces: u32 )
           -> fmt::Result {
         try!( indent( formatter, indent_spaces ) );
         try!( write!( formatter,
-                      "{0} [{1}, {2}>",
+                      "{0:?} [{1:?}, {2:?}>",
                       self.displayName(), self.start, self.end ) );
 
         match self.contents {
@@ -108,12 +110,12 @@ mod base {
             match str::from_utf8( data ) {
               Ok( string ) => {
                 try!( writeln!( formatter,
-                                ": \"{0}\"",
+                                ": \"{0:?}\"",
                                 string ) );
               }
               _ => {
                 try!( writeln!( formatter,
-                                ": \"{0}\"",
+                                ": \"{0:?}\"",
                                 data ) );
               }
             }
@@ -139,7 +141,7 @@ mod base {
       }
 
       /// Creates a `Node` with an empty name.
-      pub fn withoutName( start: uint, end: uint, contents: NodeContents<'a> )
+      pub fn withoutName( start: usize, end: usize, contents: NodeContents<'a> )
           -> Node<'a> {
         Node { name: "", start: start, end: end, contents: contents }
       }
@@ -193,7 +195,7 @@ mod base {
           Children( ref children ) => {
             let mut out : Vec<u8> = vec!();
             for child in children.iter() {
-              out.push_all( child.matchedData()[] );
+              out.push_all( &child.matchedData()[] );
             }
             out
           }
@@ -301,7 +303,7 @@ mod base {
 
     impl CharClass {
       pub fn new( contents: &[u8] ) -> CharClass {
-        fn rangeAtIndex( index: uint, chars: &[u32] ) -> Option<( u32, u32 )> {
+        fn rangeAtIndex( index: usize, chars: &[u32] ) -> Option<( u32, u32 )> {
           match ( chars.get( index ),
                   chars.get( index + 1 ),
                   chars.get( index + 2 ) ) {
@@ -311,12 +313,12 @@ mod base {
           }
         }
 
-        let chars = toU32Vector( contents[] );
+        let chars = toU32Vector( &contents[] );
         let mut char_class = CharClass { single_chars: Vec::new(),
                                          ranges: Vec::new() };
         let mut index = 0;
         loop {
-          match rangeAtIndex( index, chars[] ) {
+          match rangeAtIndex( index, &chars[] ) {
             Some( range ) => {
               char_class.ranges.push( range );
               index += 3;
@@ -550,7 +552,7 @@ mod base {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
         let mut final_result = ParseResult::fromParseState( *parse_state );
-        let mut num_matches = 0u;
+        let mut num_matches = 0;
         loop {
           match self.expr.apply( &final_result.parse_state ) {
             Some( result ) => {
@@ -746,7 +748,7 @@ mod base {
     }
 
 
-    pub fn bytesFollowing( byte: u8 ) -> Option< uint > {
+    pub fn bytesFollowing( byte: u8 ) -> Option< usize > {
       if isAscii( byte ) {
         Some( 0 )
       } else if byte & 0b11100000 == UTF8_1BYTE_FOLLOWING {
@@ -771,23 +773,23 @@ mod base {
   #[derive(Show, Clone, PartialEq, Copy)]
   pub struct ParseState<'a> {
     pub input: &'a [u8],
-    pub offset: uint
+    pub offset: usize
   }
 
 
   impl<'a> ParseState<'a> {
-    fn advanceTo( &self, new_offset: uint ) -> ParseState<'a> {
+    fn advanceTo( &self, new_offset: usize ) -> ParseState<'a> {
       let mut clone = self.clone();
       clone.input = clone.input.slice_from( new_offset - clone.offset );
       clone.offset = new_offset;
       clone
     }
 
-    fn sliceTo( &self, new_offset: uint ) -> &'a [u8] {
+    fn sliceTo( &self, new_offset: usize ) -> &'a [u8] {
       self.input.slice_to( new_offset - self.offset )
     }
 
-    fn offsetToResult( &self, new_offset: uint )
+    fn offsetToResult( &self, new_offset: usize )
         -> Option< ParseResult<'a> > {
       Some( ParseResult::oneNode(
               Node::withoutName( self.offset,

@@ -33,7 +33,7 @@ impl<'b> Expression for Plus<'b> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     let mut final_result = ParseResult::fromParseState( *parse_state );
-    let mut num_matches = 0u;
+    let mut num_matches = 0;
     loop {
       match self.expr.apply( &final_result.parse_state ) {
         Some( result ) => {
