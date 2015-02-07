@@ -44,7 +44,7 @@ impl<'a, 'b:'a> Iterator for PreOrderNodes<'a, 'b> {
 }
 
 
-#[derive(Show, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum NodeContents<'a> {
   /// A `&[u8]` byte slice this node matched in the parse input. Only leaf nodes
   /// have `Data` contents.
@@ -195,7 +195,7 @@ impl<'a> Node<'a> {
   // iterators for walking the node tree structure
 }
 
-impl<'a> fmt::Show for Node<'a> {
+impl<'a> fmt::Debug for Node<'a> {
   fn fmt( &self, formatter: &mut fmt::Formatter ) -> fmt::Result {
     self.format( formatter, 0 )
   }

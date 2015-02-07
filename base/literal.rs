@@ -35,7 +35,7 @@ impl Expression for Literal {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
     if parse_state.input.len() < self.text.len() ||
-       parse_state.input.slice_to( self.text.len() ) != self.text {
+       &parse_state.input[ .. self.text.len() ] != self.text {
       return None;
     }
 

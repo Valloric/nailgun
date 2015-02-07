@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #![feature(slicing_syntax)]
+#![feature(core)]
+#![feature(collections)]
 #![allow(non_snake_case)]
-#![allow(unstable)]
 #![deny(deprecated)]
 
 #[cfg(not(test))]

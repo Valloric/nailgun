@@ -15,4 +15,4 @@ name = "inlined_parser"
 path = "inlined_parser.rs"
 
 [dependencies]
-getopts = "0.1.0"
+getopts = "0.2.0"

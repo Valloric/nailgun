@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #![allow(non_snake_case)]
-#![allow(unstable)]
+#![feature(core)]
+#![feature(unicode)]
 
 use std::str::from_utf8;
 use std::char::from_u32;
@@ -27,7 +28,7 @@ pub fn unescape( input: &[u8] ) -> Vec<u8> {
   let mut index = 0;
   loop {
     // TODO: support \u12345678, not just \u1234
-    match input.slice_from( index ) {
+    match &input[ index.. ] {
       [ b'\\', b'u', c1, c2, c3, c4, .. ]
           if isHex( c1 ) && isHex( c2 ) && isHex( c3 ) && isHex( c4 ) => {
         final_bytes = addFourBytesAsCodepoint( final_bytes, [c1, c2, c3, c4] );
@@ -77,7 +78,7 @@ fn isHex( byte: u8 ) -> bool {
 fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8; 4] ) -> Vec<u8> {
   let slice = from_utf8( &bytes ).unwrap();
   match from_str_radix( slice, 16 ) {
-    Some( x ) => match from_u32( x ) {
+    Ok( x ) => match from_u32( x ) {
       Some( character ) => {
         let mut utf8chars = [0; 4];
         let num_written = character.encode_utf8( &mut utf8chars ).unwrap();
@@ -100,7 +101,7 @@ fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8; 4] ) -> Vec<u8> {
 fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8; 2] ) -> Vec<u8> {
   let slice = from_utf8( &bytes ).unwrap();
   match from_str_radix( slice, 16 ) {
-    Some( byte ) => input.push( byte ),
+    Ok( byte ) => input.push( byte ),
     _ => panic!( r"Invalid hex escape sequence: \x{}{}",
                 bytes.get( 0 ).unwrap(),
                 bytes.get( 1 ).unwrap() )
@@ -112,7 +113,7 @@ fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8; 2] ) -> Vec<u8> {
 fn addThreeBytesAsOctal( mut input: Vec<u8>, bytes: [u8; 3] ) -> Vec<u8> {
   let slice = from_utf8( &bytes ).unwrap();
   match from_str_radix( slice, 8 ) {
-    Some( byte ) => input.push( byte ),
+    Ok( byte ) => input.push( byte ),
     _ => panic!( r"Invalid octal escape sequence: \{}{}{}",
                 bytes.get( 0 ).unwrap(),
                 bytes.get( 1 ).unwrap(),

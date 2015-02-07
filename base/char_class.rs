@@ -28,7 +28,7 @@ fn toU32Vector( input: &[u8] ) -> Vec<u32> {
       Some( byte ) => match bytesFollowing( *byte ) {
         Some( num_following ) => {
           if num_following > 0 {
-            match readCodepoint( input.slice_from( i ) ) {
+            match readCodepoint( &input[ i.. ] ) {
               Some( ch ) => {
                 out_vec.push( ch as u32 );
                 i += num_following + 1

@@ -12,20 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #![feature(slicing_syntax)]
+#![feature(path)]
+#![feature(io)]
+#![feature(os)]
+#![feature(env)]
+#![feature(collections)]
+#![feature(core)]
+#![feature(unicode)]
 #![allow(non_snake_case)]
-#![allow(unstable)]
+#![allow(unused_attributes)]
 #![deny(deprecated)]
 
 extern crate getopts;
 extern crate inlined_parser;
 
-use getopts::{optflag, getopts, optopt};
-use std::os;
-use std::io::File;
-use std::io::TempDir;
-use std::io::Command;
-use std::io::process::ExitStatus;
+use getopts::Options;
+use std::env;
+use std::old_io::File;
+use std::old_io::TempDir;
+use std::old_io::Command;
+use std::old_io::process::ExitStatus;
 use std::path::Path;
+use std::old_path;
 use self::prelude::PRELUDE;
 use self::printer::PRINTER_MAIN;
 use inlined_parser::{parse, Node};
@@ -40,7 +48,7 @@ static TOP_LEVEL_RULE : &'static str = "NGTOP_LEVEL_RULE";
 
 
 fn inputFromFile( input_file: &str ) -> Vec<u8> {
-  match File::open( &Path::new( input_file ) ).read_to_end() {
+  match File::open( &old_path::Path::new( input_file ) ).read_to_end() {
     Ok( x ) => x,
     _ => panic!( "Couldn't read input file: {}", input_file )
   }
@@ -55,10 +63,11 @@ fn indentLines( input: &str, num_spaces: usize ) -> String {
 }
 
 
-fn printUsage( opts: &[getopts::OptGroup] ) {
-  let program = Path::new( &os::args()[ 0 ][] );
-  let short = getopts::short_usage( program.filename_str().unwrap(), opts );
-  let usage = getopts::usage( &short[], opts );
+fn printUsage( opts: &getopts::Options ) {
+  let program_path = env::args().next().unwrap();
+  let program = Path::new( &program_path );
+  let short = opts.short_usage( program.file_name().unwrap().to_str().unwrap() );
+  let usage = opts.usage( &short[] );
   println!( "{}", usage );
 }
 
@@ -74,7 +83,7 @@ fn codeForGrammar( input: &[u8] ) -> Option<String> {
   match parse( input ) {
     Some( ref node ) => {
       let parse_rules = indentLines( &generator::codeForNode( node )[], 2 );
-      let prepared_prelude = PRELUDE.slice_to( PRELUDE.len() -1 ).replace(
+      let prepared_prelude = PRELUDE[ .. PRELUDE.len() -1 ].replace(
         TOP_LEVEL_RULE,
         &nameOfFirstRule( node )[] );
 
@@ -95,7 +104,7 @@ fn printParseTree( grammar_code: &str, input_path: &str ) {
   let code_file = temp_dir.path().join( "printer.rs" );
   let printer = temp_dir.path().join( "printer" );
 
-  match File::create( &code_file ).write( final_code.as_bytes() ) {
+  match File::create( &code_file ).write_all( final_code.as_bytes() ) {
     Err( e ) => panic!( "File error: {}", e ),
     _ => {}
   };
@@ -117,8 +126,8 @@ fn printParseTree( grammar_code: &str, input_path: &str ) {
   match command_output {
     Ok( output ) => {
       println!( "{}", String::from_utf8_lossy( &output.output[] ) );
-      os::set_exit_status( match output.status {
-        ExitStatus( code ) => code,
+      env::set_exit_status( match output.status {
+        ExitStatus( code ) => code as i32,
         _ => 1
       } );
     },
@@ -129,19 +138,17 @@ fn printParseTree( grammar_code: &str, input_path: &str ) {
 
 #[cfg(not(test))]
 fn main() {
-  let opts = [
-    optflag( "h", "help", "Print this help menu." ),
-    optopt( "i", "input",
-            "Path to input file to parse with grammar given to -g option",
-            "FILE" ),
-    optopt( "g", "grammar",
-            "Path to PEG grammar. Prints code for grammar if -i not given.",
-            "FILE" )
+  let mut opts = Options::new();
+  opts.optflag( "h", "help", "Print this help menu." );
+  opts.optopt( "i", "input",
+               "Path to input file to parse with grammar given to -g option",
+               "FILE" );
+  opts.optopt( "g", "grammar",
+               "Path to PEG grammar. Prints code for grammar if -i not given.",
+               "FILE" );
 
-  ];
-
-  let args = os::args();
-  let matches = match getopts( args.tail(), &opts ) {
+  let args: Vec<_> = env::args().collect();
+  let matches = match opts.parse( args.tail() ) {
     Ok( m ) => m,
     Err( erorr ) => panic!( erorr )
   };

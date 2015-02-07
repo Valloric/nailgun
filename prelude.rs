@@ -15,8 +15,9 @@
 pub static PRELUDE : &'static str = r###"#![allow(dead_code)]
 
 #![feature(slicing_syntax)]
+#![feature(core)]
+#![feature(collections)]
 #![allow(non_snake_case)]
-#![allow(unstable)]
 #![deny(deprecated)]
 
 #[cfg(not(test))]
@@ -71,7 +72,7 @@ mod base {
     }
 
 
-    #[derive(Show, PartialEq)]
+    #[derive(Debug, PartialEq)]
     pub enum NodeContents<'a> {
       /// A `&[u8]` byte slice this node matched in the parse input. Only leaf nodes
       /// have `Data` contents.
@@ -217,7 +218,7 @@ mod base {
       }
     }
 
-    impl<'a> fmt::Show for Node<'a> {
+    impl<'a> fmt::Debug for Node<'a> {
       fn fmt( &self, formatter: &mut fmt::Formatter ) -> fmt::Result {
         self.format( formatter, 0 )
       }
@@ -265,7 +266,7 @@ mod base {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
         if parse_state.input.len() < self.text.len() ||
-           parse_state.input.slice_to( self.text.len() ) != self.text {
+           &parse_state.input[ .. self.text.len() ] != self.text {
           return None;
         }
 
@@ -292,7 +293,7 @@ mod base {
           Some( byte ) => match bytesFollowing( *byte ) {
             Some( num_following ) => {
               if num_following > 0 {
-                match readCodepoint( input.slice_from( i ) ) {
+                match readCodepoint( &input[ i.. ] ) {
                   Some( ch ) => {
                     out_vec.push( ch as u32 );
                     i += num_following + 1
@@ -784,7 +785,7 @@ mod base {
 
 
   #[doc(hidden)]
-  #[derive(Show, Clone, PartialEq, Copy)]
+  #[derive(Debug, Clone, PartialEq, Copy)]
   pub struct ParseState<'a> {
     pub input: &'a [u8],
     pub offset: usize
@@ -794,13 +795,13 @@ mod base {
   impl<'a> ParseState<'a> {
     fn advanceTo( &self, new_offset: usize ) -> ParseState<'a> {
       let mut clone = self.clone();
-      clone.input = clone.input.slice_from( new_offset - clone.offset );
+      clone.input = &clone.input[ new_offset - clone.offset .. ];
       clone.offset = new_offset;
       clone
     }
 
     fn sliceTo( &self, new_offset: usize ) -> &'a [u8] {
-      self.input.slice_to( new_offset - self.offset )
+      &self.input[ .. new_offset - self.offset ]
     }
 
     fn offsetToResult( &self, new_offset: usize )
