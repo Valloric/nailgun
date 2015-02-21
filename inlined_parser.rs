@@ -1,6 +1,5 @@
 #![allow(dead_code)]
 
-#![feature(slicing_syntax)]
 #![feature(core)]
 #![feature(collections)]
 #![allow(non_snake_case)]
@@ -44,7 +43,7 @@ mod base {
           Some( node ) => {
             match node.contents {
               Children( ref x ) => {
-                for child in x[].iter().rev() {
+                for child in x.iter().rev() {
                   self.queue.push( child )
                 }
               }
@@ -196,7 +195,7 @@ mod base {
           Children( ref children ) => {
             let mut out : Vec<u8> = vec!();
             for child in children.iter() {
-              out.push_all( &child.matchedData()[] );
+              out.push_all( &child.matchedData() );
             }
             out
           }
@@ -314,12 +313,12 @@ mod base {
           }
         }
 
-        let chars = toU32Vector( &contents[] );
+        let chars = toU32Vector( &contents );
         let mut char_class = CharClass { single_chars: Vec::new(),
                                          ranges: Vec::new() };
         let mut index = 0;
         loop {
-          match rangeAtIndex( index, &chars[] ) {
+          match rangeAtIndex( index, &chars ) {
             Some( range ) => {
               char_class.ranges.push( range );
               index += 3;
