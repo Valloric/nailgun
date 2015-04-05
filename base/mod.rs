@@ -111,4 +111,4 @@ pub trait Expression {
       -> Option< ParseResult<'a> >;
 }
 
-type Rule = for<'a> fn( &ParseState<'a> ) -> Option< ParseResult<'a> >;
+pub type Rule = for<'a> fn( &ParseState<'a> ) -> Option< ParseResult<'a> >;

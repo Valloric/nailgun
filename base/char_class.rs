@@ -16,7 +16,6 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! class( ( $ex:expr ) => ( {
       use base;
-      use std::str::StrExt;
       &base::CharClass::new( $ex.as_bytes() ) } ) );
 
 

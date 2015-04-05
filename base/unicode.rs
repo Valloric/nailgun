@@ -47,7 +47,7 @@ pub fn readCodepoint( input: &[u8] ) -> Option< char > {
         Some( num_following ) => {
           let mut codepoint: u32 =
             codepointBitsFromLeadingByte( *first_byte ) << 6 * num_following;
-          for i in range( 1, num_following + 1 ) {
+          for i in 1 .. num_following + 1 {
             match input.get( i ) {
               Some( byte ) if isContinuationByte( *byte ) => {
                 codepoint |= codepointBitsFromContinuationByte( *byte ) <<

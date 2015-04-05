@@ -77,7 +77,7 @@ pub struct Node<'a> {
 
 fn indent( formatter: &mut fmt::Formatter, indent_spaces: u32 )
     -> fmt::Result {
-  for _ in range( 0, indent_spaces ) {
+  for _ in 0 .. indent_spaces {
     try!( write!( formatter, " " ) )
   }
   Ok(())
@@ -184,7 +184,7 @@ impl<'a> Node<'a> {
       Children( ref children ) => {
         let mut out : Vec<u8> = vec!();
         for child in children.iter() {
-          out.push_all( &child.matchedData() );
+          out.extend( child.matchedData() );
         }
         out
       }
@@ -242,8 +242,8 @@ mod tests {
   fn preOrder_FullIteration() {
     let root = testTree();
     let names =
-      root.preOrder().map( |x| x.name.char_at( 0 ) ).collect::<Vec<_>>();
-    assert_eq!( names, vec!( 'a', 'b', 'e', 'f', 'c', 'g', 'd' ) )
+      root.preOrder().map( |x| x.name ).collect::<Vec<_>>();
+    assert_eq!( names, vec!( "a", "b", "e", "f", "c", "g", "d" ) )
   }
 
 

@@ -11,8 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#![feature(core)]
-#![feature(collections)]
 #![allow(non_snake_case)]
 #![deny(deprecated)]
 
@@ -111,7 +109,6 @@ mod rules {
         {
           use base::ParseResult;
           use std::option::Option::Some;
-          use std::slice::SliceExt;
 
           match $name( &input_state!( $input ) ) {
             Some( ParseResult{ nodes: _, parse_state } ) => {

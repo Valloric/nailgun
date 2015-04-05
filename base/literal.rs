@@ -15,7 +15,6 @@ use super::{Expression, ParseState, ParseResult};
 
 macro_rules! lit( ( $ex:expr ) => ( {
       use base;
-      use std::str::StrExt;
       &base::Literal::new( $ex.as_bytes() ) } ) );
 
 
