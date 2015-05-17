@@ -1,7 +1,5 @@
 #![allow(dead_code)]
 
-#![feature(core)]
-#![feature(collections)]
 #![allow(non_snake_case)]
 #![deny(deprecated)]
 
@@ -90,7 +88,7 @@ mod base {
 
     fn indent( formatter: &mut fmt::Formatter, indent_spaces: u32 )
         -> fmt::Result {
-      for _ in range( 0, indent_spaces ) {
+      for _ in 0 .. indent_spaces {
         try!( write!( formatter, " " ) )
       }
       Ok(())
@@ -195,7 +193,7 @@ mod base {
           Children( ref children ) => {
             let mut out : Vec<u8> = vec!();
             for child in children.iter() {
-              out.push_all( &child.matchedData() );
+              out.extend( child.matchedData() );
             }
             out
           }
@@ -220,7 +218,6 @@ mod base {
 
     macro_rules! input_state( ( $ex:expr ) => ( {
           use base::ParseState;
-          use std::str::StrExt;
           ParseState { input: $ex.as_bytes(), offset: 0 }
         } ) );
   }
@@ -229,10 +226,8 @@ mod base {
   mod literal {
     use super::{Expression, ParseState, ParseResult};
 
-    macro_rules! lit( ( $ex:expr ) => ( {
-          use base;
-          use std::str::StrExt;
-          &base::Literal::new( $ex.as_bytes() ) } ) );
+    macro_rules! lit( ( $ex:expr ) => (
+          &base::Literal::new( $ex.as_bytes() ) ) );
 
 
     pub struct Literal {
@@ -264,10 +259,8 @@ mod base {
     use base::unicode::{bytesFollowing, readCodepoint};
     use super::{Expression, ParseState, ParseResult};
 
-    macro_rules! class( ( $ex:expr ) => ( {
-          use base;
-          use std::str::StrExt;
-          &base::CharClass::new( $ex.as_bytes() ) } ) );
+    macro_rules! class( ( $ex:expr ) => (
+          &base::CharClass::new( $ex.as_bytes() ) ) );
 
 
     fn toU32Vector( input: &[u8] ) -> Vec<u32> {
@@ -381,9 +374,7 @@ mod base {
   mod not {
     use super::{Expression, ParseState, ParseResult};
 
-    macro_rules! not( ( $ex:expr ) => ( {
-        use base;
-        &base::NotEx::new($ex) } ); );
+    macro_rules! not( ( $ex:expr ) => ( &base::NotEx::new($ex) ); );
 
     pub struct NotEx<'a> {
       expr: &'a ( Expression + 'a )
@@ -412,9 +403,7 @@ mod base {
 
     use super::{Expression, ParseState, ParseResult};
 
-    macro_rules! and( ( $ex:expr ) => ( {
-        use base;
-        &base::And::new( $ex ) } ); );
+    macro_rules! and( ( $ex:expr ) => ( &base::And::new( $ex ) ); );
 
     pub struct And<'a> {
       expr: &'a ( Expression + 'a )
@@ -465,9 +454,7 @@ mod base {
   mod option {
     use super::{Expression, ParseState, ParseResult};
 
-    macro_rules! opt( ( $ex:expr ) => ( {
-        use base;
-        &base::OptionEx::new( $ex ) } ); );
+    macro_rules! opt( ( $ex:expr ) => ( &base::OptionEx::new( $ex ) ); );
 
     pub struct OptionEx<'a> {
       expr: &'a ( Expression + 'a )
@@ -495,9 +482,7 @@ mod base {
   mod star {
     use super::{Expression, ParseState, ParseResult};
 
-    macro_rules! star( ( $ex:expr ) => ( {
-        use base;
-        &base::Star::new( $ex ) } ); );
+    macro_rules! star( ( $ex:expr ) => ( &base::Star::new( $ex ) ); );
 
     pub struct Star<'a> {
       expr: &'a ( Expression + 'a )
@@ -532,9 +517,7 @@ mod base {
   mod plus {
     use super::{Expression, ParseState, ParseResult};
 
-    macro_rules! plus( ( $ex:expr ) => ( {
-        use base;
-        &base::Plus::new( $ex ) } ); );
+    macro_rules! plus( ( $ex:expr ) => ( &base::Plus::new( $ex ) ); );
 
     pub struct Plus<'a> {
       expr: &'a ( Expression + 'a )
@@ -576,9 +559,8 @@ mod base {
   mod or {
     use super::{Expression, ParseState, ParseResult};
 
-    macro_rules! or( ( $( $ex:expr ),* ) => ( {
-        use base;
-        &base::Or::new( &[ $( $ex ),* ] ) } ); );
+    macro_rules! or( ( $( $ex:expr ),* ) => (
+        &base::Or::new( &[ $( $ex ),* ] ) ); );
 
     pub struct Or<'a> {
       exprs: &'a [&'a (Expression + 'a)]
@@ -609,9 +591,7 @@ mod base {
   mod fuse {
     use super::{Expression, ParseState, ParseResult};
 
-    macro_rules! fuse( ( $ex:expr ) => ( {
-        use base;
-        &base::Fuse::new( $ex ) } ); );
+    macro_rules! fuse( ( $ex:expr ) => ( &base::Fuse::new( $ex ) ); );
 
     pub struct Fuse<'a> {
       expr: &'a ( Expression + 'a )
@@ -641,9 +621,8 @@ mod base {
   mod sequence {
     use super::{Expression, ParseState, ParseResult};
 
-    macro_rules! seq( ( $( $ex:expr ),* ) => ( {
-        use base;
-        &base::Sequence::new( &[ $( $ex ),* ] ) } ); );
+    macro_rules! seq( ( $( $ex:expr ),* ) => (
+        &base::Sequence::new( &[ $( $ex ),* ] ) ); );
 
     pub struct Sequence<'a> {
       exprs: &'a [&'a (Expression + 'a)]
@@ -678,9 +657,7 @@ mod base {
   mod wrap {
     use super::{Expression, ParseState, ParseResult, Rule};
 
-    macro_rules! ex( ( $ex:expr ) => ( {
-        use base;
-        &base::WrapEx{ rule: $ex } } ); );
+    macro_rules! ex( ( $ex:expr ) => ( &base::WrapEx{ rule: $ex } ); );
 
     pub struct WrapEx {
       pub rule: Rule
@@ -729,7 +706,7 @@ mod base {
             Some( num_following ) => {
               let mut codepoint: u32 =
                 codepointBitsFromLeadingByte( *first_byte ) << 6 * num_following;
-              for i in range( 1, num_following + 1 ) {
+              for i in 1 .. num_following + 1 {
                 match input.get( i ) {
                   Some( byte ) if isContinuationByte( *byte ) => {
                     codepoint |= codepointBitsFromContinuationByte( *byte ) <<
@@ -823,7 +800,7 @@ mod base {
         -> Option< ParseResult<'a> >;
   }
 
-  type Rule = for<'a> fn( &ParseState<'a> ) -> Option< ParseResult<'a> >;
+  pub type Rule = for<'a> fn( &ParseState<'a> ) -> Option< ParseResult<'a> >;
 }
 
 macro_rules! rule(
