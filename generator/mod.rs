@@ -84,16 +84,16 @@ fn definitionOutput( node: &Node ) -> String {
   let children = node_children!( node );
   let inner_code = match arrowName( node ) {
     "FUSEARROW" => {
-      [ &codeForNode( &children[ 0 ] )[..],
-        &codeForNode( &children[ 1 ] )[..],
-        "fuse!( ",
-        &codeForNode( &children[ 2 ] )[..],
-        " )" ].concat()
+      codeForNode( &children[ 0 ] ) +
+      &codeForNode( &children[ 1 ] ) +
+      "fuse!( " +
+      &codeForNode( &children[ 2 ] ) +
+      " )"
     },
     _ => codeForNodeContents( node )
   };
 
-  [ "rule!( ", &inner_code[..], " );\n" ].concat()
+  "rule!( ".to_string() + &inner_code + " );\n"
 }
 
 
@@ -135,10 +135,7 @@ fn suffixOutput( node: &Node ) -> String {
       _ => panic!( "Bad second child." )
     };
 
-    [ macro_name,
-      "!( ",
-      &codeForNode( &children[ 0 ] )[..],
-      " )" ].concat()
+    macro_name.to_string() + "!( " + &codeForNode( &children[ 0 ] ) + " )"
   } else {
     codeForNodeContents( node )
   }
@@ -149,11 +146,7 @@ fn prefixOutput( node: &Node ) -> String {
   let children = node_children!( node );
   if children.len() == 2 {
     let macro_name = children[ 0 ].name.to_ascii_lowercase();
-
-    [ &macro_name[..],
-      "!( ",
-      &codeForNode( &children[ 1 ] )[..],
-      " )" ].concat()
+    macro_name + "!( " + &codeForNode( &children[ 1 ] ) + " )"
   } else {
     codeForNodeContents( node )
   }

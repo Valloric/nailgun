@@ -250,6 +250,6 @@ mod tests {
   #[test]
   fn matchedData_FullTree() {
     let root = testTreeWithContents();
-    assert_eq!( b"efgd", &root.matchedData()[..] )
+    assert_eq!( b"efgd", &root.matchedData() )
   }
 }

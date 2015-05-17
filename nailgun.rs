@@ -59,16 +59,16 @@ fn inputFromFile( input_file: &str ) -> Vec<u8> {
 fn indentLines( input: &str, num_spaces: usize ) -> String {
   let indent: String = repeat( " " ).take( num_spaces ).collect();
   input.split( '\n' ).map(
-    |x| [ &indent[..], x, "\n" ].concat() )
-    .collect::<Vec<String>>().concat()
+    |x| indent.clone() + x + "\n" ).collect::<Vec<String>>().concat()
 }
 
 
 fn printUsage( opts: &getopts::Options ) {
   let program_path = env::args().next().unwrap();
   let program = Path::new( &program_path );
-  let short = opts.short_usage( program.file_name().unwrap().to_str().unwrap() );
-  let usage = opts.usage( &short[..] );
+  let short = opts.short_usage(
+    program.file_name().unwrap().to_str().unwrap() );
+  let usage = opts.usage( &short );
   println!( "{}", usage );
 }
 
@@ -76,22 +76,19 @@ fn printUsage( opts: &getopts::Options ) {
 fn nameOfFirstRule<'a>( root: &'a Node<'a> ) -> String {
   str::from_utf8(
     &root.preOrder().find( |x| x.name == "Identifier" ).unwrap()
-        .matchedData()[..] ).unwrap().trim_matches(' ').to_string()
+        .matchedData() ).unwrap().trim_matches(' ').to_string()
 }
 
 
 fn codeForGrammar( input: &[u8] ) -> Option<String> {
   match parse( input ) {
     Some( ref node ) => {
-      let parse_rules = indentLines( &generator::codeForNode( node )[..], 2 );
+      let parse_rules = indentLines( &generator::codeForNode( node ), 2 );
       let prepared_prelude = PRELUDE[ .. PRELUDE.len() -1 ].replace(
         TOP_LEVEL_RULE,
-        &nameOfFirstRule( node )[..] );
+        &nameOfFirstRule( node ) );
 
-      Some( [ &prepared_prelude[..],
-              "\n",
-              &parse_rules[..],
-              "}" ].concat() )
+      Some( prepared_prelude + "\n" + &parse_rules + "}" )
     }
     _ => None
   }
@@ -162,7 +159,7 @@ fn main() {
 
   let grammar_code = if matches.opt_present( "g" ) {
     codeForGrammar( &inputFromFile(
-        &matches.opt_str( "g" ).unwrap() )[..] )
+        &matches.opt_str( "g" ).unwrap() ) )
     .unwrap_or_else( || panic!( "Couldn't parse given PEG grammar" ) )
   } else {
     panic!( "Missing -g option." )
