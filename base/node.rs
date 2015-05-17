@@ -250,6 +250,8 @@ mod tests {
   #[test]
   fn matchedData_FullTree() {
     let root = testTreeWithContents();
-    assert_eq!( b"efgd", &root.matchedData() )
+    // TODO: drop "[..]" when this bug is fixed:
+    //   https://github.com/rust-lang/rust/issues/22649
+    assert_eq!( b"efgd", &root.matchedData()[..] )
   }
 }
