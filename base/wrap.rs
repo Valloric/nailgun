@@ -13,9 +13,7 @@
 // limitations under the License.
 use super::{Expression, ParseState, ParseResult, Rule};
 
-macro_rules! ex( ( $ex:expr ) => ( {
-    use base;
-    &base::WrapEx{ rule: $ex } } ); );
+macro_rules! ex( ( $ex:expr ) => ( &base::WrapEx{ rule: $ex } ); );
 
 pub struct WrapEx {
   pub rule: Rule
@@ -32,6 +30,7 @@ impl Expression for WrapEx {
 
 #[cfg(test)]
 mod tests {
+  use base;
   use base::{ParseResult, Expression, ParseState};
   use super::{WrapEx};
 

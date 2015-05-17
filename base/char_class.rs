@@ -14,9 +14,8 @@
 use base::unicode::{bytesFollowing, readCodepoint};
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! class( ( $ex:expr ) => ( {
-      use base;
-      &base::CharClass::new( $ex.as_bytes() ) } ) );
+macro_rules! class( ( $ex:expr ) => (
+      &base::CharClass::new( $ex.as_bytes() ) ) );
 
 
 fn toU32Vector( input: &[u8] ) -> Vec<u32> {
@@ -135,6 +134,7 @@ impl Expression for CharClass {
 
 #[cfg(test)]
 mod tests {
+  use base;
   use base::{Node, Data, ParseResult, Expression, ParseState};
   use base::test_utils::ToParseState;
   use base::unicode::bytesFollowing;

@@ -13,9 +13,7 @@
 // limitations under the License.
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! fuse( ( $ex:expr ) => ( {
-    use base;
-    &base::Fuse::new( $ex ) } ); );
+macro_rules! fuse( ( $ex:expr ) => ( &base::Fuse::new( $ex ) ); );
 
 pub struct Fuse<'a> {
   expr: &'a ( Expression + 'a )
@@ -46,6 +44,7 @@ impl<'b> Expression for Fuse<'b> {
 
 #[cfg(test)]
 mod tests {
+  use base;
   use base::{Node, Data, ParseResult, Expression};
 
   #[test]

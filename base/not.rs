@@ -13,9 +13,7 @@
 // limitations under the License.
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! not( ( $ex:expr ) => ( {
-    use base;
-    &base::NotEx::new($ex) } ); );
+macro_rules! not( ( $ex:expr ) => ( &base::NotEx::new($ex) ); );
 
 pub struct NotEx<'a> {
   expr: &'a ( Expression + 'a )
@@ -42,6 +40,7 @@ impl<'b> Expression for NotEx<'b> {
 
 #[cfg(test)]
 mod tests {
+  use base;
   use base::{ParseResult, Expression};
 
   #[test]

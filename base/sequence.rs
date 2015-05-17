@@ -13,9 +13,8 @@
 // limitations under the License.
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! seq( ( $( $ex:expr ),* ) => ( {
-    use base;
-    &base::Sequence::new( &[ $( $ex ),* ] ) } ); );
+macro_rules! seq( ( $( $ex:expr ),* ) => (
+    &base::Sequence::new( &[ $( $ex ),* ] ) ); );
 
 pub struct Sequence<'a> {
   exprs: &'a [&'a (Expression + 'a)]
@@ -49,6 +48,7 @@ impl<'b> Expression for Sequence<'b> {
 
 #[cfg(test)]
 mod tests {
+  use base;
   use base::{Node, ParseResult, Expression, Data};
 
   #[test]

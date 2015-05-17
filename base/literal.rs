@@ -13,9 +13,8 @@
 // limitations under the License.
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! lit( ( $ex:expr ) => ( {
-      use base;
-      &base::Literal::new( $ex.as_bytes() ) } ) );
+macro_rules! lit( ( $ex:expr ) => (
+      &base::Literal::new( $ex.as_bytes() ) ) );
 
 
 pub struct Literal {
@@ -45,6 +44,7 @@ impl Expression for Literal {
 
 #[cfg(test)]
 mod tests {
+  use base;
   use base::{Node, Data, ParseResult, ParseState, Expression};
 
   #[test]

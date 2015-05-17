@@ -13,9 +13,8 @@
 // limitations under the License.
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! or( ( $( $ex:expr ),* ) => ( {
-    use base;
-    &base::Or::new( &[ $( $ex ),* ] ) } ); );
+macro_rules! or( ( $( $ex:expr ),* ) => (
+    &base::Or::new( &[ $( $ex ),* ] ) ); );
 
 pub struct Or<'a> {
   exprs: &'a [&'a (Expression + 'a)]
@@ -45,6 +44,7 @@ impl<'b> Expression for Or<'b> {
 
 #[cfg(test)]
 mod tests {
+  use base;
   use base::{Node, ParseResult, Expression, Data};
 
   #[test]

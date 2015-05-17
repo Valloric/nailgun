@@ -13,9 +13,7 @@
 // limitations under the License.
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! plus( ( $ex:expr ) => ( {
-    use base;
-    &base::Plus::new( $ex ) } ); );
+macro_rules! plus( ( $ex:expr ) => ( &base::Plus::new( $ex ) ); );
 
 pub struct Plus<'a> {
   expr: &'a ( Expression + 'a )
@@ -56,6 +54,7 @@ impl<'b> Expression for Plus<'b> {
 
 #[cfg(test)]
 mod tests {
+  use base;
   use base::{Node, ParseResult, Expression, Data};
 
   #[test]

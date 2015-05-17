@@ -13,9 +13,7 @@
 // limitations under the License.
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! opt( ( $ex:expr ) => ( {
-    use base;
-    &base::OptionEx::new( $ex ) } ); );
+macro_rules! opt( ( $ex:expr ) => ( &base::OptionEx::new( $ex ) ); );
 
 pub struct OptionEx<'a> {
   expr: &'a ( Expression + 'a )
@@ -42,6 +40,7 @@ impl<'b> Expression for OptionEx<'b> {
 
 #[cfg(test)]
 mod tests {
+  use base;
   use base::{Node, ParseResult, Expression, Data};
 
   #[test]

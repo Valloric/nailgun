@@ -14,9 +14,7 @@
 
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! and( ( $ex:expr ) => ( {
-    use base;
-    &base::And::new( $ex ) } ); );
+macro_rules! and( ( $ex:expr ) => ( &base::And::new( $ex ) ); );
 
 pub struct And<'a> {
   expr: &'a ( Expression + 'a )
@@ -43,6 +41,7 @@ impl<'b> Expression for And<'b> {
 
 #[cfg(test)]
 mod tests {
+  use base;
   use base::{ParseResult, Expression};
 
   #[test]

@@ -13,9 +13,7 @@
 // limitations under the License.
 use super::{Expression, ParseState, ParseResult};
 
-macro_rules! star( ( $ex:expr ) => ( {
-    use base;
-    &base::Star::new( $ex ) } ); );
+macro_rules! star( ( $ex:expr ) => ( &base::Star::new( $ex ) ); );
 
 pub struct Star<'a> {
   expr: &'a ( Expression + 'a )
@@ -49,6 +47,7 @@ impl<'b> Expression for Star<'b> {
 
 #[cfg(test)]
 mod tests {
+  use base;
   use base::{Node, ParseResult, Expression, Data};
 
   #[test]
