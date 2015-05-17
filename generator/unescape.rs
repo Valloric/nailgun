@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #![allow(non_snake_case)]
-#![feature(core)]
 #![feature(unicode)]
+#![feature(convert)]
+#![feature(slice_patterns)]
 
 use std::str::from_utf8;
 use std::char::from_u32;
-use std::num::from_str_radix;
 
 // See:
 //   http://en.wikipedia.org/wiki/Escape_sequences_in_C
@@ -77,12 +77,12 @@ fn isHex( byte: u8 ) -> bool {
 
 fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8; 4] ) -> Vec<u8> {
   let slice = from_utf8( &bytes ).unwrap();
-  match from_str_radix( slice, 16 ) {
+  match u32::from_str_radix( slice, 16 ) {
     Ok( x ) => match from_u32( x ) {
       Some( character ) => {
         let mut utf8chars = [0; 4];
         let num_written = character.encode_utf8( &mut utf8chars ).unwrap();
-        for i in range( 0, num_written ) {
+        for i in 0 .. num_written {
           input.push( *utf8chars.get( i ).unwrap() );
         }
       },
@@ -100,7 +100,7 @@ fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8; 4] ) -> Vec<u8> {
 
 fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8; 2] ) -> Vec<u8> {
   let slice = from_utf8( &bytes ).unwrap();
-  match from_str_radix( slice, 16 ) {
+  match u8::from_str_radix( slice, 16 ) {
     Ok( byte ) => input.push( byte ),
     _ => panic!( r"Invalid hex escape sequence: \x{}{}",
                 bytes.get( 0 ).unwrap(),
@@ -112,7 +112,7 @@ fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8; 2] ) -> Vec<u8> {
 
 fn addThreeBytesAsOctal( mut input: Vec<u8>, bytes: [u8; 3] ) -> Vec<u8> {
   let slice = from_utf8( &bytes ).unwrap();
-  match from_str_radix( slice, 8 ) {
+  match u8::from_str_radix( slice, 8 ) {
     Ok( byte ) => input.push( byte ),
     _ => panic!( r"Invalid octal escape sequence: \{}{}{}",
                 bytes.get( 0 ).unwrap(),
