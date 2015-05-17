@@ -11,29 +11,26 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#![feature(path)]
-#![feature(old_path)]
-#![feature(old_io)]
-#![feature(os)]
-#![feature(env)]
 #![feature(collections)]
-#![feature(core)]
 #![feature(unicode)]
+#![feature(slice_patterns)]
 #![allow(non_snake_case)]
 #![allow(unused_attributes)]
 #![deny(deprecated)]
 
 extern crate getopts;
+extern crate tempdir;
 extern crate inlined_parser;
 
+use tempdir::TempDir;
 use getopts::Options;
 use std::env;
-use std::old_io::File;
-use std::old_io::TempDir;
-use std::old_io::Command;
-use std::old_io::process::ExitStatus;
+use std::io::Read;
+use std::io::Write;
+use std::fs::File;
+use std::process;
+use std::process::Command;
 use std::path::Path;
-use std::old_path;
 use self::prelude::PRELUDE;
 use self::printer::PRINTER_MAIN;
 use inlined_parser::{parse, Node};
@@ -48,8 +45,12 @@ static TOP_LEVEL_RULE : &'static str = "NGTOP_LEVEL_RULE";
 
 
 fn inputFromFile( input_file: &str ) -> Vec<u8> {
-  match File::open( &old_path::Path::new( input_file ) ).read_to_end() {
-    Ok( x ) => x,
+  match File::open( &Path::new( input_file ) ) {
+    Ok( mut x ) => {
+      let mut data = vec!();
+      x.read_to_end( &mut data ).ok().expect( "Reading file failed" );
+      data
+    },
     _ => panic!( "Couldn't read input file: {}", input_file )
   }
 }
@@ -97,21 +98,23 @@ fn codeForGrammar( input: &[u8] ) -> Option<String> {
 }
 
 
-fn printParseTree( grammar_code: &str, input_path: &str ) {
+// Returns exit code
+fn printParseTree( grammar_code: &str, input_path: &str ) -> Option<i32> {
   let mut final_code = grammar_code.to_string();
   final_code.push_str( PRINTER_MAIN );
   let temp_dir = TempDir::new( "temp" ).unwrap();
   let code_file = temp_dir.path().join( "printer.rs" );
   let printer = temp_dir.path().join( "printer" );
 
-  match File::create( &code_file ).write_all( final_code.as_bytes() ) {
+  match File::create( &code_file ) {
+    Ok( mut file ) =>
+      file.write_all( final_code.as_bytes() ).ok().expect( "Writing failed" ),
     Err( e ) => panic!( "File error: {}", e ),
-    _ => {}
   };
 
   match Command::new( "rustc" ).arg( "-o" )
-                               .arg( printer.as_str().unwrap() )
-                               .arg( code_file.as_str().unwrap() )
+                               .arg( printer.to_str().unwrap() )
+                               .arg( code_file.to_str().unwrap() )
                                .status() {
     Ok( status ) if !status.success() =>
       panic!( "Compiling with rustc failed." ),
@@ -121,18 +124,17 @@ fn printParseTree( grammar_code: &str, input_path: &str ) {
 
   let printer = temp_dir.path().join( "printer" );
   let command_output = Command::new(
-      printer.as_str().unwrap() ).arg( input_path ).output();
+      printer.to_str().unwrap() ).arg( input_path ).output();
 
   match command_output {
     Ok( output ) => {
-      println!( "{}", String::from_utf8_lossy( &output.output[..] ) );
-      env::set_exit_status( match output.status {
-        ExitStatus( code ) => code as i32,
-        _ => 1
-      } );
+      println!( "{}", String::from_utf8_lossy( &output.stdout ) );
+      output.status.code()
     },
     Err( e ) => panic!( "Failed to execute process: {}", e ),
   };
+
+  Some( 0 )
 }
 
 
@@ -160,19 +162,21 @@ fn main() {
 
   let grammar_code = if matches.opt_present( "g" ) {
     codeForGrammar( &inputFromFile(
-        &matches.opt_str( "g" ).unwrap()[..] )[..] )
+        &matches.opt_str( "g" ).unwrap() )[..] )
     .unwrap_or_else( || panic!( "Couldn't parse given PEG grammar" ) )
   } else {
     panic!( "Missing -g option." )
   };
 
 
-  if matches.opt_present( "i" ) {
-    printParseTree(
-      &grammar_code[..],
-      &matches.opt_str( "i" ).unwrap()[..] );
+  let exit_code = if matches.opt_present( "i" ) {
+    printParseTree( &grammar_code,
+                    &matches.opt_str( "i" ).unwrap() )
   } else {
     println!( "{}", grammar_code );
-  }
+    Some( 0 )
+  };
+
+  process::exit( exit_code.unwrap_or( 0 ) );
 }
 

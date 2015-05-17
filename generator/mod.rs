@@ -11,8 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use std::str::{self, StrExt};
-use std::borrow::IntoCow;
+use std::str;
+use std::ascii::AsciiExt;
 use inlined_parser::{Node, Children, Data};
 use self::unescape::unescapeString;
 
@@ -57,16 +57,12 @@ fn codeForNodeContents( node: &Node ) -> String {
 
 
 fn wrapChildrenOutput( before: &str, node: &Node, after: &str ) -> String {
-  [ before.into_cow(),
-    codeForNodeContents( node ).into_cow(),
-    after.into_cow() ].concat()
+  before.to_string() + &codeForNodeContents( node ) + after
 }
 
 
 fn wrapNodeOutput( before: &str, node: &Node, after: &str ) -> String {
-  [ before.into_cow(),
-    codeForNode( node ).into_cow(),
-    after.into_cow() ].concat()
+  before.to_string() + &codeForNode( node ) + after
 }
 
 
@@ -115,7 +111,7 @@ fn sequenceOutput( node: &Node ) -> String {
   let children = node_children!( node );
   if children.len() > 1 {
     let mut output = String::from_str( "seq!( " );
-    for i in range( 0, children.len() ) {
+    for i in 0 .. children.len() {
       output.push_str( &codeForNode( &children[ i ] ) );
       if i != children.len() -1 {
         output.push_str( ", " );
@@ -152,8 +148,7 @@ fn suffixOutput( node: &Node ) -> String {
 fn prefixOutput( node: &Node ) -> String {
   let children = node_children!( node );
   if children.len() == 2 {
-    let macro_name = children[ 0 ].name.chars()
-      .map( |x| x.to_lowercase() ).collect::<String>();
+    let macro_name = children[ 0 ].name.to_ascii_lowercase();
 
     [ &macro_name[..],
       "!( ",

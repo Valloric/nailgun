@@ -16,3 +16,4 @@ path = "inlined_parser.rs"
 
 [dependencies]
 getopts = "0.2.0"
+tempdir = "0.3"

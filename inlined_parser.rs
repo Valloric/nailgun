@@ -220,6 +220,7 @@ mod base {
 
     macro_rules! input_state( ( $ex:expr ) => ( {
           use base::ParseState;
+          use std::str::StrExt;
           ParseState { input: $ex.as_bytes(), offset: 0 }
         } ) );
   }
@@ -230,6 +231,7 @@ mod base {
 
     macro_rules! lit( ( $ex:expr ) => ( {
           use base;
+          use std::str::StrExt;
           &base::Literal::new( $ex.as_bytes() ) } ) );
 
 
@@ -264,6 +266,7 @@ mod base {
 
     macro_rules! class( ( $ex:expr ) => ( {
           use base;
+          use std::str::StrExt;
           &base::CharClass::new( $ex.as_bytes() ) } ) );
 
 
