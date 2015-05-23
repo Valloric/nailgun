@@ -155,10 +155,7 @@ impl<'a> Node<'a> {
       0
     };
 
-    let end = match children.last() {
-      Some( ref node ) => node.end,
-      _ => 0
-    };
+    let end = children.last().map_or( 0, |node| node.end );
 
     Node { name: name,
            start: start,

@@ -30,10 +30,8 @@ impl<'a> OptionEx<'a> {
 impl<'b> Expression for OptionEx<'b> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
-    match self.expr.apply( parse_state ) {
-      result @ Some( _ ) => result,
-      _ => Some( ParseResult::fromParseState( *parse_state ) )
-    }
+    self.expr.apply( parse_state ).or(
+      Some( ParseResult::fromParseState( *parse_state ) ) )
   }
 }
 

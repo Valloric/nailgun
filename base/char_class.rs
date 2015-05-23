@@ -124,10 +124,7 @@ impl CharClass {
 impl Expression for CharClass {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
-    match self.applyToUtf8( parse_state ) {
-      Some( x ) => Some( x ),
-      _ => self.applyToBytes( parse_state )
-    }
+    self.applyToUtf8( parse_state ).or( self.applyToBytes( parse_state ) )
   }
 }
 
@@ -142,10 +139,7 @@ mod tests {
 
   fn charClassMatch( char_class: &Expression, input: &[u8] ) -> bool {
     fn bytesRead( input: &[u8] ) -> usize {
-      match bytesFollowing( input[ 0 ] ) {
-        Some( num_following ) => num_following + 1,
-        _ => 1
-      }
+      bytesFollowing( input[ 0 ] ).map_or( 1, |num| num + 1 )
     }
 
     match char_class.apply( &ToParseState( input ) ) {

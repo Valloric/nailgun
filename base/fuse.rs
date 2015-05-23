@@ -30,14 +30,10 @@ impl<'a> Fuse<'a> {
 impl<'b> Expression for Fuse<'b> {
   fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
       Option< ParseResult<'a> > {
-    match self.expr.apply( parse_state ) {
-      Some( result ) => {
-        // NOTE: This will need a more complex implementation when we implement
-        // the prune (:) operator.
-        parse_state.offsetToResult( result.parse_state.offset )
-      },
-      _ => None
-    }
+    // NOTE: This will need a more complex implementation when we implement
+    // the prune (:) operator.
+    self.expr.apply( parse_state ).and_then(
+      |result| parse_state.offsetToResult( result.parse_state.offset ) )
   }
 }
 

@@ -25,6 +25,7 @@ extern crate inlined_parser;
 use tempdir::TempDir;
 use getopts::Options;
 use std::env;
+use std::io;
 use std::io::Read;
 use std::io::Write;
 use std::fs::File;
@@ -43,16 +44,32 @@ mod printer;
 
 static TOP_LEVEL_RULE : &'static str = "NGTOP_LEVEL_RULE";
 
+#[derive(Debug)]
+enum CliError {
+  Io( io::Error ),
+  Misc( String ),
+}
 
-fn inputFromFile( input_file: &str ) -> Vec<u8> {
-  match File::open( &Path::new( input_file ) ) {
-    Ok( mut x ) => {
-      let mut data = vec!();
-      x.read_to_end( &mut data ).ok().expect( "Reading file failed" );
-      data
-    },
-    _ => panic!( "Couldn't read input file: {}", input_file )
+
+impl From<io::Error> for CliError {
+  fn from( error: io::Error ) -> CliError {
+    CliError::Io( error )
   }
+}
+
+
+impl From<String> for CliError {
+  fn from( error: String ) -> CliError {
+    CliError::Misc( error )
+  }
+}
+
+
+fn inputFromFile( input_file: &str ) -> Result<Vec<u8>, CliError> {
+  File::open( &Path::new( input_file ) ).and_then( |mut file| {
+    let mut data: Vec<u8> = vec!();
+    file.read_to_end( &mut data ).map( |_| data )
+  }).map_err( |e| CliError::from( e ) )
 }
 
 
@@ -80,58 +97,46 @@ fn nameOfFirstRule<'a>( root: &'a Node<'a> ) -> String {
 }
 
 
-fn codeForGrammar( input: &[u8] ) -> Option<String> {
-  match parse( input ) {
-    Some( ref node ) => {
-      let parse_rules = indentLines( &generator::codeForNode( node ), 2 );
-      let prepared_prelude = PRELUDE[ .. PRELUDE.len() -1 ].replace(
-        TOP_LEVEL_RULE,
-        &nameOfFirstRule( node ) );
+fn codeForGrammar( input: &[u8] ) -> Result<String, CliError> {
+  parse( input ).map( |node| {
+    let parse_rules = indentLines( &generator::codeForNode( &node ), 2 );
+    let prepared_prelude = PRELUDE[ .. PRELUDE.len() -1 ].replace(
+      TOP_LEVEL_RULE,
+      &nameOfFirstRule( &node ) );
 
-      Some( prepared_prelude + "\n" + &parse_rules + "}" )
-    }
-    _ => None
-  }
+    prepared_prelude + "\n" + &parse_rules + "}"
+  } ).ok_or( CliError::Misc( "Failed to parse PEG grammar".to_string() ) )
 }
 
 
 // Returns exit code
-fn printParseTree( grammar_code: &str, input_path: &str ) -> Option<i32> {
-  let mut final_code = grammar_code.to_string();
-  final_code.push_str( PRINTER_MAIN );
+fn printParseTree( grammar_code: &str, input_path: &str )
+     -> Result<i32, CliError> {
+  let final_code = grammar_code.to_owned() + PRINTER_MAIN;
   let temp_dir = TempDir::new( "temp" ).unwrap();
   let code_file = temp_dir.path().join( "printer.rs" );
   let printer = temp_dir.path().join( "printer" );
 
-  match File::create( &code_file ) {
-    Ok( mut file ) =>
-      file.write_all( final_code.as_bytes() ).ok().expect( "Writing failed" ),
-    Err( e ) => panic!( "File error: {}", e ),
-  };
+  try!( File::create( &code_file ).and_then( |mut file| {
+    file.write_all( final_code.as_bytes() )
+  } ) );
 
-  match Command::new( "rustc" ).arg( "-o" )
-                               .arg( printer.to_str().unwrap() )
-                               .arg( code_file.to_str().unwrap() )
-                               .status() {
-    Ok( status ) if !status.success() =>
-      panic!( "Compiling with rustc failed." ),
-    Err( e ) => panic!( "Failed to execute process: {}", e ),
-    _ => {}
-  };
+  let status = try!( Command::new( "rustc" ).arg( "-o" )
+                     .arg( printer.to_str().unwrap() )
+                     .arg( code_file.to_str().unwrap() )
+                     .status() );
+
+  if !status.success() {
+    return Err( CliError::Misc( "Failed to write code file".to_string() ) )
+  }
 
   let printer = temp_dir.path().join( "printer" );
-  let command_output = Command::new(
-      printer.to_str().unwrap() ).arg( input_path ).output();
+  let output = try!( Command::new( printer.to_str().unwrap() )
+                     .arg( input_path ).output() );
 
-  match command_output {
-    Ok( output ) => {
-      println!( "{}", String::from_utf8_lossy( &output.stdout ) );
-      output.status.code()
-    },
-    Err( e ) => panic!( "Failed to execute process: {}", e ),
-  };
-
-  Some( 0 )
+  println!( "{}", String::from_utf8_lossy( &output.stdout ) );
+  output.status.code().ok_or(
+    CliError::Misc( "No status code for process.".to_string() ) )
 }
 
 
@@ -147,33 +152,25 @@ fn main() {
                "FILE" );
 
   let args: Vec<_> = env::args().collect();
-  let matches = match opts.parse( args.tail() ) {
-    Ok( m ) => m,
-    Err( erorr ) => panic!( erorr )
-  };
-
+  let matches = opts.parse( args.tail() ).unwrap();
   if matches.opt_present( "h" ) || args.len() < 2 {
     printUsage( &opts );
     return;
   }
 
-  let grammar_code = if matches.opt_present( "g" ) {
-    codeForGrammar( &inputFromFile(
-        &matches.opt_str( "g" ).unwrap() ) )
-    .unwrap_or_else( || panic!( "Couldn't parse given PEG grammar" ) )
-  } else {
-    panic!( "Missing -g option." )
-  };
+  let exit_code = matches.opt_str( "g" )
+    .ok_or( CliError::Misc( "Missing -g option".to_string() ) )
+    .and_then( |file| inputFromFile( &file ) )
+    .and_then( |input| codeForGrammar( &input ) )
+    .and_then( |grammar_code| {
+      if let Some( input_path ) = matches.opt_str( "i" ) {
+        printParseTree( &grammar_code, &input_path )
+      } else {
+        println!( "{}", grammar_code );
+        Ok( 0 )
+      }
+    } );
 
-
-  let exit_code = if matches.opt_present( "i" ) {
-    printParseTree( &grammar_code,
-                    &matches.opt_str( "i" ).unwrap() )
-  } else {
-    println!( "{}", grammar_code );
-    Some( 0 )
-  };
-
-  process::exit( exit_code.unwrap_or( 0 ) );
+  process::exit( exit_code.unwrap() );
 }
 

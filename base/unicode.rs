@@ -41,28 +41,23 @@ pub fn readCodepoint( input: &[u8] ) -> Option< char > {
     ( byte & 0b00111111 ) as u32
   }
 
-  match input.get( 0 ) {
-    Some( first_byte ) => {
-      match bytesFollowing( *first_byte ) {
-        Some( num_following ) => {
-          let mut codepoint: u32 =
-            codepointBitsFromLeadingByte( *first_byte ) << 6 * num_following;
-          for i in 1 .. num_following + 1 {
-            match input.get( i ) {
-              Some( byte ) if isContinuationByte( *byte ) => {
-                codepoint |= codepointBitsFromContinuationByte( *byte ) <<
-                  6 * ( num_following - i );
-              }
-              _ => return None
+  input.get( 0 )
+    .and_then( |first_byte| {
+      bytesFollowing( *first_byte ).and_then( |num_following| {
+        let mut codepoint: u32 =
+          codepointBitsFromLeadingByte( *first_byte ) << 6 * num_following;
+        for i in 1 .. num_following + 1 {
+          match input.get( i ) {
+            Some( byte ) if isContinuationByte( *byte ) => {
+              codepoint |= codepointBitsFromContinuationByte( *byte ) <<
+                6 * ( num_following - i );
             }
+            _ => return None
           }
-          char::from_u32( codepoint )
         }
-        _ => None
-      }
-    }
-    _ => None
-  }
+        char::from_u32( codepoint )
+      })
+    })
 }
 
 
