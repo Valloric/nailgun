@@ -176,15 +176,6 @@ mod tests {
     assert!( charClassMatch( class!( "a-a"        ), b"a" ) );
   }
 
-  // TODO: Use these tests for the char-class unescape code that will be written
-  // in the code generator.
-  // #[test]
-  // fn CharClass_Match_ClassEscapedChars() {
-  //   assert!( charClassMatch( &class!( r"\]" ), b"]" ) );
-  //   assert!( charClassMatch( &class!( r"\\" ),  br"\" ) );
-  //   assert!( !charClassMatch( &class!( r"\]" ), br"\" ) );
-  // }
-
   #[test]
   fn CharClass_Match_NonUnicode() {
     assert!( charClassMatch( &CharClass::new( &[255] ), &[255] ) );
