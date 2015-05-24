@@ -171,7 +171,7 @@ fn main() {
       }
     } );
 
-  process::exit( exit_code.unwrap_or_else( |error| {
+  std::process::exit( exit_code.unwrap_or_else( |error| {
     println!( "{:?}", error );
     1
   } ) );
