@@ -69,7 +69,7 @@ fn inputFromFile( input_file: &str ) -> Result<Vec<u8>, CliError> {
   File::open( &Path::new( input_file ) ).and_then( |mut file| {
     let mut data: Vec<u8> = vec!();
     file.read_to_end( &mut data ).map( |_| data )
-  }).map_err( |e| CliError::from( e ) )
+  }).map_err( |_| CliError::Misc( format!( "Couldn't read: {}", input_file ) ) )
 }
 
 
@@ -171,6 +171,9 @@ fn main() {
       }
     } );
 
-  process::exit( exit_code.unwrap() );
+  process::exit( exit_code.unwrap_or_else( |error| {
+    println!( "{:?}", error );
+    1
+  } ) );
 }
 
