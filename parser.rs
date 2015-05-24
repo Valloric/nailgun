@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #![allow(non_snake_case)]
+#![cfg_attr(test, allow(dead_code))]
 #![deny(deprecated)]
 
 #[cfg(not(test))]

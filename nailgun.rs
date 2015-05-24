@@ -16,6 +16,7 @@
 #![feature(slice_patterns)]
 #![allow(non_snake_case)]
 #![allow(unused_attributes)]
+#![cfg_attr(test, allow(dead_code))]
 #![deny(deprecated)]
 
 extern crate getopts;
@@ -29,7 +30,6 @@ use std::io;
 use std::io::Read;
 use std::io::Write;
 use std::fs::File;
-use std::process;
 use std::process::Command;
 use std::path::Path;
 use self::prelude::PRELUDE;
