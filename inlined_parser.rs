@@ -164,10 +164,7 @@ mod base {
           0
         };
 
-        let end = match children.last() {
-          Some( ref node ) => node.end,
-          _ => 0
-        };
+        let end = children.last().map_or( 0, |node| node.end );
 
         Node { name: name,
                start: start,
@@ -363,10 +360,7 @@ mod base {
     impl Expression for CharClass {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
-        match self.applyToUtf8( parse_state ) {
-          Some( x ) => Some( x ),
-          _ => self.applyToBytes( parse_state )
-        }
+        self.applyToUtf8( parse_state ).or( self.applyToBytes( parse_state ) )
       }
     }
   }
@@ -471,10 +465,8 @@ mod base {
     impl<'b> Expression for OptionEx<'b> {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
-        match self.expr.apply( parse_state ) {
-          result @ Some( _ ) => result,
-          _ => Some( ParseResult::fromParseState( *parse_state ) )
-        }
+        self.expr.apply( parse_state ).or(
+          Some( ParseResult::fromParseState( *parse_state ) ) )
       }
     }
   }
@@ -608,12 +600,8 @@ mod base {
     impl<'b> Expression for Fuse<'b> {
       fn apply<'a>( &self, parse_state: &ParseState<'a> ) ->
           Option< ParseResult<'a> > {
-        match self.expr.apply( parse_state ) {
-          Some( result ) => {
-            parse_state.offsetToResult( result.parse_state.offset )
-          },
-          _ => None
-        }
+        self.expr.apply( parse_state ).and_then(
+          |result| parse_state.offsetToResult( result.parse_state.offset ) )
       }
     }
   }
@@ -700,28 +688,23 @@ mod base {
         ( byte & 0b00111111 ) as u32
       }
 
-      match input.get( 0 ) {
-        Some( first_byte ) => {
-          match bytesFollowing( *first_byte ) {
-            Some( num_following ) => {
-              let mut codepoint: u32 =
-                codepointBitsFromLeadingByte( *first_byte ) << 6 * num_following;
-              for i in 1 .. num_following + 1 {
-                match input.get( i ) {
-                  Some( byte ) if isContinuationByte( *byte ) => {
-                    codepoint |= codepointBitsFromContinuationByte( *byte ) <<
-                      6 * ( num_following - i );
-                  }
-                  _ => return None
+      input.get( 0 )
+        .and_then( |first_byte| {
+          bytesFollowing( *first_byte ).and_then( |num_following| {
+            let mut codepoint: u32 =
+              codepointBitsFromLeadingByte( *first_byte ) << 6 * num_following;
+            for i in 1 .. num_following + 1 {
+              match input.get( i ) {
+                Some( byte ) if isContinuationByte( *byte ) => {
+                  codepoint |= codepointBitsFromContinuationByte( *byte ) <<
+                    6 * ( num_following - i );
                 }
+                _ => return None
               }
-              char::from_u32( codepoint )
             }
-            _ => None
-          }
-        }
-        _ => None
-      }
+            char::from_u32( codepoint )
+          })
+        })
     }
 
 
