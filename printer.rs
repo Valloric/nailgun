@@ -13,19 +13,22 @@
 // limitations under the License.
 pub static PRINTER_MAIN : &'static str = r###"
 fn inputFromFile( input_file: &str ) -> Vec<u8> {
-  match std::io::File::open( &Path::new( input_file ) ).read_to_end() {
-    Ok( x ) => x,
-    _ => panic!( "Couldn't read input file: {}", input_file )
-  }
+  use std::io::Read;
+
+  std::fs::File::open( &std::path::Path::new( input_file ) )
+  .and_then( |mut file| {
+    let mut data: Vec<u8> = vec!();
+    file.read_to_end( &mut data ).map( |_| data )
+  }).unwrap()
 }
 
 fn main() {
-  let args = std::os::args();
-  match parse( inputFromFile( args.get( 1 )[] )[] ) {
-    Some( ref node ) => println!( "{}", node ),
+  let args: std::vec::Vec<_> = std::env::args().collect();
+  match parse( &inputFromFile( &args.get( 1 ).unwrap() ) ) {
+    Some( ref node ) => println!( "{:?}", node ),
     _ => {
       println!( "Couldn't parse input." );
-      std::os::set_exit_status( 1 );
+      std::process::exit( 1 );
     }
   };
 }
