@@ -14,8 +14,7 @@ exclude = [
   "bootstrap.sh",
   "update_rustc.sh"
 ]
-keywords = ["peg", "parser", "grammar", "lex", "yacc", "parsing", "expression",
-            "generator"]
+keywords = ["peg", "parser", "parsing", "expression", "grammar"]
 
 [[bin]]
 
