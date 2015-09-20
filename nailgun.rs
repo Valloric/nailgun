@@ -11,9 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#![feature(collections)]
-#![feature(unicode)]
-#![feature(slice_patterns)]
 #![allow(non_snake_case)]
 #![allow(unused_attributes)]
 #![cfg_attr(test, allow(dead_code))]
@@ -152,7 +149,7 @@ fn main() {
                "FILE" );
 
   let args: Vec<_> = env::args().collect();
-  let matches = opts.parse( args.tail() ).unwrap();
+  let matches = opts.parse( &args[ 1.. ] ).unwrap();
   if matches.opt_present( "h" ) || args.len() < 2 {
     printUsage( &opts );
     return;

@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 #![allow(non_snake_case)]
+#![cfg_attr(test, allow(dead_code))]
 #![deny(deprecated)]
 
 #[cfg(not(test))]

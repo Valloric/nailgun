@@ -37,9 +37,9 @@ pub fn codeForNode( node: &Node ) -> String {
     "Suffix" => suffixOutput( node ),
     "Prefix" => prefixOutput( node ),
     "Primary" => primaryOutput( node ),
-    "DOT" => String::from_str( "&base::Dot" ),
-    "ARROW" => String::from_str( " <- " ),
-    "SLASH" => String::from_str( ", " ),
+    "DOT" => String::from( "&base::Dot" ),
+    "ARROW" => String::from( " <- " ),
+    "SLASH" => String::from( ", " ),
     "Spacing" | "EndOfLine" | "OPEN" | "CLOSE" => String::new(),
     _ => codeForNodeContents( node )
   }
@@ -110,7 +110,7 @@ fn expressionOutput( node: &Node ) -> String {
 fn sequenceOutput( node: &Node ) -> String {
   let children = node_children!( node );
   if children.len() > 1 {
-    let mut output = String::from_str( "seq!( " );
+    let mut output = String::from( "seq!( " );
     for i in 0 .. children.len() {
       output.push_str( &codeForNode( &children[ i ] ) );
       if i != children.len() -1 {
@@ -188,6 +188,6 @@ fn escapeToRustLiteral( input: &str ) -> String {
 fn stringBasedRule( node: &Node, rule_name: &str ) -> String {
   let full = codeForNodeContents( node );
   let content = escapeToRustLiteral(
-    &unescapeString( &full.slice_chars( 1, full.len() - 1 ) ) );
+    &unescapeString( &full[ 1 .. full.len() - 1 ] ) );
   format!( "{}!( \"{}\" )", rule_name, content )
 }
