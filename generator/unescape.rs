@@ -13,8 +13,6 @@
 // limitations under the License.
 #![allow(non_snake_case)]
 #![cfg_attr(test, allow(dead_code))]
-#![feature(unicode)]
-#![feature(slice_patterns)]
 
 use std::str::from_utf8;
 use std::char::from_u32;
@@ -26,37 +24,55 @@ use std::char::from_u32;
 pub fn unescape( input: &[u8] ) -> Vec<u8> {
   let mut final_bytes = Vec::new();
   let mut index = 0;
-  loop {
+
+  while index < input.len() {
+    if input[ index ] != b'\\' {
+      final_bytes.push( input[ index ] );
+      index += 1;
+      continue;
+    }
+    let num_chars_past_slash = input.len() - index - 1;
+
     // TODO: support \u12345678, not just \u1234
-    match &input[ index.. ] {
-      [ b'\\', b'u', c1, c2, c3, c4, .. ]
-          if isHex( c1 ) && isHex( c2 ) && isHex( c3 ) && isHex( c4 ) => {
-        final_bytes = addFourBytesAsCodepoint( final_bytes, [c1, c2, c3, c4] );
-        index += 6;
-      }
-      [ b'\\', b'x', c1, c2, .. ]
-          if isHex( c1 ) && isHex( c2 ) => {
-        final_bytes = addTwoBytesAsHex( final_bytes, [c1, c2] );
-        index += 4;
-      }
-      [ b'\\', c1, c2, c3, .. ]
-          if isOctal( c1 ) && isOctal( c2 ) && isOctal( c3 ) => {
-        final_bytes = addThreeBytesAsOctal( final_bytes, [c1, c2, c3] );
-        index += 4;
-      }
-      [ b'\\', c, .. ] => {
-        final_bytes = addEscapedByte( final_bytes, c );
-        index += 2;
-      }
-      [ c, .. ] => {
-        final_bytes.push( c );
-        index += 1;
-      }
-      [] => break,
+    if num_chars_past_slash >= 5 &&
+       input[ index + 1 ] == b'u' &&
+       isHex( input[ index + 2 ] ) &&
+       isHex( input[ index + 3 ] ) &&
+       isHex( input[ index + 4 ] ) &&
+       isHex( input[ index + 5 ] ) {
+      final_bytes = addFourBytesAsCodepoint( final_bytes,
+                                             &input[ index + 2 .. index + 6 ] );
+      index += 6;
+      continue;
+    }
+
+    if num_chars_past_slash >= 3 &&
+       input[ index + 1 ] == b'x' &&
+       isHex( input[ index + 2 ] ) &&
+       isHex( input[ index + 3 ] ) {
+      final_bytes = addTwoBytesAsHex( final_bytes,
+                                      &input[ index + 2 .. index + 4 ] );
+      index += 4;
+      continue;
+    }
+
+    if num_chars_past_slash >= 3 &&
+       isOctal( input[ index + 1 ] ) &&
+       isOctal( input[ index + 2 ] ) &&
+       isOctal( input[ index + 3 ] ) {
+      final_bytes = addThreeBytesAsOctal( final_bytes,
+                                          &input[ index + 1 .. index + 4 ] );
+      index += 4;
+      continue;
+    }
+
+    if num_chars_past_slash >= 1 {
+      final_bytes = addEscapedByte( final_bytes, input[ index + 1 ] );
+      index += 2;
     }
   }
 
-  return final_bytes;
+  final_bytes
 }
 
 
@@ -75,13 +91,16 @@ fn isHex( byte: u8 ) -> bool {
 }
 
 
-fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8; 4] ) -> Vec<u8> {
-  let slice = from_utf8( &bytes ).unwrap();
+fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: &[u8] ) -> Vec<u8> {
+  // &[u8] -> &str -> u32 -> char -> encode as utf8 bytes to input
+
+  let slice: &str = from_utf8( &bytes ).unwrap();
   match u32::from_str_radix( slice, 16 ) {
     Ok( x ) => match from_u32( x ) {
       Some( character ) => {
         let mut utf8chars = [0; 4];
-        let num_written = character.encode_utf8( &mut utf8chars ).unwrap();
+        let num_written = encode_utf8_raw( character as u32,
+                                           &mut utf8chars ).unwrap();
         for i in 0 .. num_written {
           input.push( *utf8chars.get( i ).unwrap() );
         }
@@ -98,8 +117,10 @@ fn addFourBytesAsCodepoint( mut input: Vec<u8>, bytes: [u8; 4] ) -> Vec<u8> {
 }
 
 
-fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8; 2] ) -> Vec<u8> {
-  let slice = from_utf8( &bytes ).unwrap();
+fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: &[u8] ) -> Vec<u8> {
+  // &[u8] -> &str -> u8 -> write to input
+
+  let slice: &str = from_utf8( &bytes ).unwrap();
   match u8::from_str_radix( slice, 16 ) {
     Ok( byte ) => input.push( byte ),
     _ => panic!( r"Invalid hex escape sequence: \x{}{}",
@@ -110,8 +131,10 @@ fn addTwoBytesAsHex( mut input: Vec<u8>, bytes: [u8; 2] ) -> Vec<u8> {
 }
 
 
-fn addThreeBytesAsOctal( mut input: Vec<u8>, bytes: [u8; 3] ) -> Vec<u8> {
-  let slice = from_utf8( &bytes ).unwrap();
+fn addThreeBytesAsOctal( mut input: Vec<u8>, bytes: &[u8] ) -> Vec<u8> {
+  // &[u8] -> &str -> u8 -> write to input
+
+  let slice: &str = from_utf8( &bytes ).unwrap();
   match u8::from_str_radix( slice, 8 ) {
     Ok( byte ) => input.push( byte ),
     _ => panic!( r"Invalid octal escape sequence: \{}{}{}",
@@ -147,6 +170,44 @@ fn addEscapedByte( mut input: Vec<u8>, byte: u8 ) -> Vec<u8> {
     }
   };
   input
+}
+
+// UTF-8 ranges and tags for encoding characters
+const TAG_CONT: u8    = 0b1000_0000;
+const TAG_TWO_B: u8   = 0b1100_0000;
+const TAG_THREE_B: u8 = 0b1110_0000;
+const TAG_FOUR_B: u8  = 0b1111_0000;
+const MAX_ONE_B: u32   =     0x80;
+const MAX_TWO_B: u32   =    0x800;
+const MAX_THREE_B: u32 =  0x10000;
+
+// Unstable api, so copied from:
+//   https://github.com/rust-lang/rust/blob/master/src/libcore/char.rs#L238
+// Replace with upstream char::encode_utf8 when it becomes stable!
+#[inline]
+pub fn encode_utf8_raw(code: u32, dst: &mut [u8]) -> Option<usize> {
+  // Marked #[inline] to allow llvm optimizing it away
+  if code < MAX_ONE_B && !dst.is_empty() {
+    dst[0] = code as u8;
+    Some(1)
+  } else if code < MAX_TWO_B && dst.len() >= 2 {
+    dst[0] = (code >> 6 & 0x1F) as u8 | TAG_TWO_B;
+    dst[1] = (code & 0x3F) as u8 | TAG_CONT;
+    Some(2)
+  } else if code < MAX_THREE_B && dst.len() >= 3  {
+    dst[0] = (code >> 12 & 0x0F) as u8 | TAG_THREE_B;
+    dst[1] = (code >>  6 & 0x3F) as u8 | TAG_CONT;
+    dst[2] = (code & 0x3F) as u8 | TAG_CONT;
+    Some(3)
+  } else if dst.len() >= 4 {
+    dst[0] = (code >> 18 & 0x07) as u8 | TAG_FOUR_B;
+    dst[1] = (code >> 12 & 0x3F) as u8 | TAG_CONT;
+    dst[2] = (code >>  6 & 0x3F) as u8 | TAG_CONT;
+    dst[3] = (code & 0x3F) as u8 | TAG_CONT;
+    Some(4)
+  } else {
+    None
+  }
 }
 
 
