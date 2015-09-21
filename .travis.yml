@@ -1,5 +1,6 @@
 language: rust
 rust: stable
+sudo: false
 script:
   - cargo build
   - ./test.sh
