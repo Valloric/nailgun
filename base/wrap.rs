@@ -32,7 +32,6 @@ impl Expression for WrapEx {
 mod tests {
   use base;
   use base::{ParseResult, Expression, ParseState};
-  use super::{WrapEx};
 
   fn advancesToOne<'a>( parse_state: &ParseState<'a> )
       -> Option< ParseResult<'a> > {
