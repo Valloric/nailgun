@@ -21,6 +21,7 @@ extern crate tempdir;
 extern crate inlined_parser;
 
 use tempdir::TempDir;
+#[cfg(not(test))]
 use getopts::Options;
 use std::env;
 use std::io;
